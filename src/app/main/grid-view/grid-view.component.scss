@@ -1,0 +1,22 @@
+.row-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.row {
+  list-style-type:none;
+  padding: 0;
+}
+
+.week {
+  height: 50px;
+  text-align: center;
+  width: 75px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-style: solid;
+  border-color: gray;
+}

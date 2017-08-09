@@ -1,0 +1,6 @@
+<app-entry class="main" [employeeName]='"Name"' [clientName]='"Client"' [projectName]='"Project"'></app-entry>
+
+<div *ngFor="let entry of entries" class="main">
+    <app-entry [employeeName]='entry.first_name + space + entry.last_name' [clientName]='entry.client_name' [projectName]='entry.project_name'>
+    </app-entry>
+</div>

@@ -1,0 +1,27 @@
+app-grid-view {
+  width: 75%;
+}
+
+app-side-list {
+  width: 25%;
+}
+
+.main {
+  padding-right: 50px;
+  flex-wrap: wrap;
+  flex-direction: row;
+  display: flex;
+  justify-content: left;
+}
+
+.header {
+  height: 50px;
+  width: 100%;
+  margin-bottom: 11px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-right: 30px;
+}

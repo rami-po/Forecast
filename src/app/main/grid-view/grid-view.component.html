@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+  <meta charset=utf-8 />
+  <title>Holy Grail</title>
+  <!-- Reset browser defaults -->
+</head>
+<body style="display: flex; height: 100%; flex-direction: column">
+<div>HEADER<br/>------------
+</div>
+<!-- No need for 'flex-direction: row' because it's the default value -->
+<div style="display: flex; flex: 1;">
+  <div>NAV|</div>
+  <div style="flex: 1; overflow: auto">
+    CONTENT - START<br/>
+    <script>
+      for (var i=0 ; i<1000 ; ++i) {
+        document.write(" Very long content!");
+      }
+    </script>
+    <br/>CONTENT - END
+  </div>
+  <div>|SIDE</div>
+</div>
+<div>------------<br/>FOOTER</div>
+</body>
+</html>

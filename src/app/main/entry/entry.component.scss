@@ -1,0 +1,64 @@
+.flex-container {
+  height: 50px;
+  width: 100%;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-right: 30px;
+}
+
+.name {
+  position: relative;
+  width: 33%;
+  margin-right: 10px;
+}
+
+.test {
+  position: relative;
+}
+
+.name-container {
+  top: 0;
+  left: 0;
+  position: relative;
+  display: inherit;
+  width: 60vh;
+}
+
+.row-container {
+  flex: 1;
+  overflow-x: auto;
+  left: 20vh;
+  margin-left: 50vh;
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
+
+.row {
+  list-style-type:none;
+  padding: 0;
+}
+
+.week {
+  height: 50px;
+  text-align: center;
+  width: 75px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-style: solid;
+  border-color: gray;
+}
+
+.green {
+  background-color: greenyellow;
+}
+
+.white {
+  background-color: white;
+}

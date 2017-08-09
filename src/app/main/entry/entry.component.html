@@ -1,0 +1,24 @@
+<div class="entry">
+  <div class="flex-container">
+    <div class="name-container">
+      <div class="name">
+        <p class="test">{{employeeName}}</p>
+      </div>
+      <div class="name">
+        <p class="test">{{clientName}}</p>
+      </div>
+      <div class="name">
+        <p class="test">{{projectName}}</p>
+      </div>
+    </div>
+
+    <div class="row-container">
+      <ul *ngFor="let week of staticWeeks" class="row">
+        <!-- <div class="week" (click)="test(weeks.indexOf(week))" [ngClass]="{green: !enabled, white: enabled && id > weeks.indexOf(week)}"> -->
+        <input class="week" maxlength="2" *ngIf="employeeName !== 'Name'" (input)="yo($event.target.value)">
+        <p class="week" *ngIf="employeeName === 'Name'">{{week | date: 'MM/dd/yyyy'}}</p>
+        <!-- </div> -->
+      </ul>
+    </div>
+  </div>
+</div>
