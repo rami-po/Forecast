@@ -39,4 +39,10 @@ export class MainService {
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
+
+  getCapacities() {
+    return this.http.get('http://localhost:3000/resource/capacity')
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
 }

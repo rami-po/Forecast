@@ -3,78 +3,106 @@
  */
 import {Component, Input, OnInit} from '@angular/core';
 import {Entry} from './entry.model';
-import {isNullOrUndefined} from "util";
-import {Observable} from "rxjs/Observable";
+import {isNullOrUndefined} from 'util';
+import {Observable} from 'rxjs/Observable';
+import {EntryService} from './entry.service';
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Component({
   selector: 'app-entry',
   templateUrl: './entry.component.html',
-  styleUrls: ['./entry.component.scss']
+  styleUrls: ['./entry.component.scss'],
+  providers: [EntryService]
 })
 export class EntryComponent implements OnInit {
 
-  static monday: Date;
-  static weeks = [];
-  static updates = [];
-  enabled: boolean;
-  id: number;
-  @Input()employeeName: string;
-  @Input()clientName: string;
-  @Input()projectName: string;
+  static index = 0;
+  @Input() static weeks = [];
+  @Input() static capacity: any;
+  static array = [];
   @Input()entry: Entry;
+  lastWeek: Date;
   timerSubscription;
 
-
-  test(week) {
-    this.enabled = false;
-    console.log('id: ' + this.id);
-    console.log('week: ' + week);
-    if (this.id - 1 === week) {
-      this.id = week;
-    } else {
-      this.id = week + 1;
-    }
-    this.enabled = true;
-  }
-
-  constructor() { }
+  constructor(
+    private entryService: EntryService
+  ) { }
 
   ngOnInit() {
 
-    if (isNullOrUndefined(EntryComponent.monday)) {
-      EntryComponent.monday = this.getMonday();
-    }
+  }
 
-    if (EntryComponent.weeks.length !== 20) {
-      const monday = EntryComponent.monday;
-      for (let i = 0; i < 20; i++) {
-        const date = new Date(monday.toDateString());
-        EntryComponent.weeks.push(date);
-        monday.setDate(monday.getDate() + 7);
+  getCapacity(week: Date): string {
+    if (!isNullOrUndefined(EntryComponent.capacity)) {
+      const capacity = EntryComponent.capacity[EntryComponent.index];
+      if (!isNullOrUndefined(capacity)) {
+        if (capacity.employee_id === this.entry.employeeId &&
+        capacity.client_id === this.entry.clientId &&
+        capacity.project_id === this.entry.projectId &&
+        capacity.week_of === week.toUTCString()) {
+          console.log('ay');
+          EntryComponent.index++;
+          return capacity.capacity;
+        }
       }
     }
+    /*
+    if (!isNullOrUndefined(EntryComponent.capacity)) {
+      const i = EntryComponent.index;
+      const capacity = EntryComponent.capacity[i];
+      if (!isNullOrUndefined(capacity)) {
+        /*console.log(capacity.employee_id + ' ' + this.entry.employeeId);
+         console.log(capacity.client_id + ' ' + this.entry.clientId);
+         console.log(capacity.project_id + ' ' + this.entry.projectId);
+         console.log(capacity.week_of + ' ' + week.getUTCDate());
+        if (capacity.employee_id === this.entry.employeeId &&
+          capacity.client_id === this.entry.clientId &&
+          capacity.project_id === this.entry.projectId &&
+          capacity.week_of === week.toUTCString()
+        ) {
+          console.log('ay');
+          const x = new BehaviorSubject(capacity.capacity);
+          const cap = capacity.capacity;
+          x.subscribe(data => {
+            return data;
+          });
+          setTimeout(() => 'a' , 0);
+          EntryComponent.array.push(cap);
+          EntryComponent.index++;
+          return EntryComponent.array[i];
+        }
+      }
+    }*/
   }
 
-  getMonday(): Date {
-    const date = new Date();
-    while (date.getDay() !== 1) {
-      date.setDate(date.getDate() - 1);
-    }
-    return date;
-  }
-
-  get staticWeeks() {
+  getWeeks(): Date[] {
     return EntryComponent.weeks;
   }
 
-  yo(ay: string) {
-    if (!isNullOrUndefined(this.timerSubscription)) {
-      this.timerSubscription.unsubscribe();
+  setWeeks(weeks) {
+    EntryComponent.weeks = weeks;
+  }
+
+  initialize(week: Date) {
+    this.entryService.updateResourceManagement(this.entry, week, null).subscribe();
+  }
+
+  yo(ay: string, week: Date) {
+    console.log(EntryComponent.array);
+    if (!isNaN(Number(ay))) {
+      if (!isNullOrUndefined(this.timerSubscription) && week === this.lastWeek) {
+        this.timerSubscription.unsubscribe();
+      }
+      this.lastWeek = week;
+      const timer = Observable.timer(5000);
+      this.timerSubscription = timer.subscribe(t => {
+        console.log(ay);
+        this.entryService.updateResourceManagement(this.entry, week, Number(ay)).subscribe(
+          data => {
+
+          });
+      });
     }
-    const timer = Observable.timer(10000);
-    this.timerSubscription = timer.subscribe(t => {
-      console.log(ay);
-    });
   }
 
 }

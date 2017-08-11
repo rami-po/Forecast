@@ -109,8 +109,6 @@ router.get('/week/:date*', function (req, res, next) {
     console.log(req.params.id + ' ' + req.query.person);
 });
 
-module.exports = router;
-
 /*
  * ENTRY ROUTES
  */
@@ -130,3 +128,41 @@ router.get('/entry', function (req, res, next) {
     }
   });
 });
+
+router.post('/entry', function(req, res, next) {
+  SQL.createEntry(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+/*
+ * CAPACITY ROUTES
+ */
+
+router.get('/capacity', function (req, res, next) {
+  SQL.getCapacities(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+module.exports = router;

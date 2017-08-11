@@ -1,0 +1,21 @@
+<div class="entry">
+  <div class="flex-container">
+    <div class="name-container">
+      <div class="name">
+        <p class="test">{{name}}</p>
+      </div>
+      <div class="name">
+        <p class="test">{{client}}</p>
+      </div>
+      <div class="name">
+        <p class="test">{{project}}</p>
+      </div>
+    </div>
+
+    <div class="row-container">
+      <ul *ngFor="let week of weeks" class="row">
+        <p class="week">{{week | date: 'MM/dd/yyyy'}}</p>
+      </ul>
+    </div>
+  </div>
+</div>
