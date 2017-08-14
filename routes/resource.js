@@ -4,6 +4,7 @@
 var express = require('express');
 var router = express.Router();
 
+var tools = require('./serverTools/tools');
 var SQL = require('./serverTools/SQL');
 
 /*
@@ -157,9 +158,30 @@ router.get('/capacity', function (req, res, next) {
         err: err
       });
     } else {
+      var totalCapacities = {};
+      for (var i = 0; i < result.length; i++) {
+        tools.convertDate(result[i].week_of, function (date) {
+          if (totalCapacities[date] == null) {
+            totalCapacities[date] = 0;
+          }
+          totalCapacities[date] += result[i].capacity;
+
+        });
+      }
+
+      var JSONArray = [];
+      for (week in totalCapacities) {
+        var data = {
+          week: week,
+          capacity: totalCapacities[week]
+        };
+        JSONArray.push(data);
+      }
+
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result,
+        totalCapacities: JSONArray
       });
     }
   });

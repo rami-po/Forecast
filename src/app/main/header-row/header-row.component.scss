@@ -3,7 +3,7 @@
   width: 100%;
   margin-bottom: 14px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -11,6 +11,9 @@
 }
 
 .name {
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
   position: relative;
   width: 33%;
   margin-right: 10px;
@@ -42,9 +45,11 @@
 }
 
 .week {
+  font-weight: bold;
+  border: 2px;
   height: 50px;
   text-align: center;
-  width: 74.2px;
+  width: 75px;
   font-size: 15px;
   display: flex;
   align-items: center;

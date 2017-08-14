@@ -6,6 +6,8 @@ import {Entry} from './entry/entry.model';
 import {MainService} from './main.service';
 import {Observable} from 'rxjs/Observable';
 import {EntryComponent} from "./entry/entry.component";
+import {HeaderRowComponent} from "./header-row/header-row.component";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-main',
@@ -15,15 +17,12 @@ import {EntryComponent} from "./entry/entry.component";
 })
 
 export class MainComponent implements OnInit {
-  static test = [];
-  entries = [];
-  capacity = [];
-  weeks = [];
-  numberOfWeeks = 20;
-
+  public entries = [];
+  private numberOfWeeks = 20;
 
   constructor(
-    private mainService: MainService
+    private mainService: MainService,
+    private datePipe: DatePipe
   ) { }
 
   ngOnInit() {
@@ -31,20 +30,19 @@ export class MainComponent implements OnInit {
     const monday = this.getMonday();
     for (let i = 0; i < this.numberOfWeeks; i++) {
       const date = new Date(monday.toDateString());
-      EntryComponent.weeks.push(date);
+      EntryComponent.weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
       monday.setDate(monday.getDate() + 7);
     }
 
     this.mainService.getEntries().subscribe(
       data => {
         this.entries = data.result;
-        MainComponent.test = data.result;
       });
 
-    this.mainService.getCapacities().subscribe(
+    this.mainService.getResources().subscribe(
       data => {
-        console.log(data.result);
-        EntryComponent.capacity = data.result;
+        EntryComponent.resources = data.result;
+        HeaderRowComponent.totalCapacities = data.totalCapacities;
       });
   }
 
@@ -60,4 +58,5 @@ export class MainComponent implements OnInit {
     }
     return date;
   }
+
 }

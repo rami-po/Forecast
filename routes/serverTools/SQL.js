@@ -3,6 +3,7 @@
  */
 var mysql = require('mysql');
 var sqlSecret = require('./secrets/sql_secret.json');
+var tools = require('./tools');
 
 var connection = mysql.createConnection({
   host: sqlSecret.HOST,
@@ -102,6 +103,14 @@ exports.getEntries = function(req, callback) {
 };
 
 exports.getCapacities = function(req, callback) {
+
+  var monday;
+  tools.getMonday(function (date) {
+    tools.convertDate(date, function(convertedDate) {
+      monday = convertedDate;
+    });
+  });
+
   connection.query(
     'SELECT c.id AS client_id, ' +
     'p.id AS project_id, ' +
@@ -115,7 +124,8 @@ exports.getCapacities = function(req, callback) {
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
     'AND r.capacity IS NOT NULL ' +
-    'ORDER BY CONVERT(r.week_of, datetime), c.id, e.id ASC', function (err, result) {
+    'AND r.week_of >= \'' + monday + '\' ' +
+    'ORDER BY p.id, e.id, c.id, r.week_of ASC', function (err, result) {
       callback(err, result);
     });
 };

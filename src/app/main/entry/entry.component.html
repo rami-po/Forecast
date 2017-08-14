@@ -13,12 +13,12 @@
     </div>
 
     <div class="row-container">
-      <ul *ngFor="let week of getWeeks()" class="row">
+      <div *ngFor="let week of getWeeks()" class="row">
         <!-- <div class="week" (click)="test(weeks.indexOf(week))" [ngClass]="{green: !enabled, white: enabled && id > weeks.indexOf(week)}"> -->
-        <input class="week" maxlength="2" (input)="yo($event.target.value, week)" value="{{getCapacity(week)}}">
+        <input id='test' class="week" maxlength="2" (input)="type($event.target.value, week)" [value]="getCapacity(week)">
         <!-- <p class="week" *ngIf="entry.firstName === 'Name'">{{week | date: 'MM/dd/yyyy'}}</p> -->
         <!-- </div> -->
-      </ul>
+      </div>
     </div>
   </div>
 </div>

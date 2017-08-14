@@ -40,7 +40,7 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getCapacities() {
+  getResources() {
     return this.http.get('http://localhost:3000/resource/capacity')
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));

@@ -14,7 +14,7 @@
 
     <div class="row-container">
       <ul *ngFor="let week of weeks" class="row">
-        <p class="week">{{week | date: 'MM/dd/yyyy'}}</p>
+        <p mdTooltip="{{getTotalCapacity(week)}}" [mdTooltipPosition]="'below'" class="week">{{week | date: 'MM/dd/yyyy'}}</p>
       </ul>
     </div>
   </div>
