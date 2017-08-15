@@ -1,13 +1,14 @@
 /**
  * Created by Rami Khadder on 8/7/2017.
  */
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {Entry} from './entry/entry.model';
 import {MainService} from './main.service';
 import {Observable} from 'rxjs/Observable';
 import {EntryComponent} from "./entry/entry.component";
 import {HeaderRowComponent} from "./header-row/header-row.component";
 import {DatePipe} from "@angular/common";
+import {GridViewComponent} from "./grid-view/grid-view.component";
 
 @Component({
   selector: 'app-main',
@@ -17,8 +18,12 @@ import {DatePipe} from "@angular/common";
 })
 
 export class MainComponent implements OnInit {
+  public static numberOfWeeks = 20;
+  public static scroll;
   public entries = [];
   private numberOfWeeks = 20;
+  private side;
+  private header;
 
   constructor(
     private mainService: MainService,
@@ -26,11 +31,15 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+   this.side = document.getElementById('side');
+   this.header = document.getElementById('header');
+   //this.side.style.marginTop = this.header.style.height;
 
     const monday = this.getMonday();
     for (let i = 0; i < this.numberOfWeeks; i++) {
       const date = new Date(monday.toDateString());
       EntryComponent.weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
+      GridViewComponent.weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
       monday.setDate(monday.getDate() + 7);
     }
 
@@ -57,6 +66,11 @@ export class MainComponent implements OnInit {
       date.setDate(date.getDate() - 1);
     }
     return date;
+  }
+
+  @HostListener('window:scroll', ['$event']) onScrollEvent($event) {
+    this.side.scrollTop = $event.currentTarget.scrollY;
+    this.header.scrollLeft = $event.currentTarget.scrollX;
   }
 
 }

@@ -1,0 +1,44 @@
+.side-list {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: left;
+  justify-content: center;
+  height: 100%;
+}
+
+.title-container {
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: inherit;
+  flex-direction: column;
+  align-content: inherit;
+}
+
+.name-container {
+  position: relative;
+  width: 60vh;
+  background-color: white;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: inherit;
+  flex-direction: column;
+  align-content: inherit;
+}
+
+.name-row {
+  margin-bottom: 40px;
+  display: inherit;
+  flex-direction: row;
+  align-content: inherit;
+}
+
+.name {
+   text-align: center;
+   font-size: 15px;
+   position: relative;
+   width: 33%;
+   margin-right: 10px;
+ }

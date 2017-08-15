@@ -1,4 +1,9 @@
+.entry {
+  background-color: white;
+}
+
 .flex-container {
+  background-color: white;
   height: 50px;
   width: 100%;
   margin-bottom: 14px;
@@ -24,17 +29,19 @@
 }
 
 .name-container {
+  background-color: white;
   position: relative;
   display: inherit;
   width: 60vh;
 }
 
 .row-container {
-  flex: 1;
-  overflow-x: auto;
-  left: 20vh;
-  margin-left: 50vh;
-  position: absolute;
+  background-color: white;
+  margin-left: 60vh;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+  position: fixed;
   display: flex;
   align-items: center;
 }
@@ -58,10 +65,3 @@
   border-color: gray;
 }
 
-.green {
-  background-color: greenyellow;
-}
-
-.white {
-  background-color: white;
-}

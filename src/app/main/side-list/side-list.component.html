@@ -1,3 +1,20 @@
-<p>
-  side-list works!
-</p>
+<div class="side-list">
+  <!--
+  <div class="title-container">
+    <div class="name-row">
+      <p class="name">Name</p>
+      <p class="name">Client</p>
+      <p class="name">Project</p>
+    </div>
+  </div>
+  -->
+
+  <div id="side" class="name-container">
+    <div class="name-row" *ngFor="let entry of entry">
+      <p class="name">{{entry.first_name}} {{entry.last_name}}</p>
+      <p class="name">{{entry.client_name}}</p>
+      <p class="name">{{entry.project_name}}</p>
+    </div>
+  </div>
+
+</div>

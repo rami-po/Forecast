@@ -1,5 +1,5 @@
 <div class="wrapper" [style.grid-template-rows]="row">
-  <div *ngFor="let test of tests">
-    {{test.first_name}}
-  </div>
+    <div class="box" *ngFor="let week of getWeeks()">
+      <input class="week" maxlength="2" [value]="getCapacity(week)">
+    </div>
 </div>

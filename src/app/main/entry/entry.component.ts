@@ -26,7 +26,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   private lastWeek: Date;
   private timerSubscription;
 
-
   constructor(
     private entryService: EntryService
   ) { }

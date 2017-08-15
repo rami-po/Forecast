@@ -1,24 +1,5 @@
-<div class="entry">
-  <div class="flex-container">
-    <div class="name-container">
-      <div class="name">
-        <p class="test">{{entry.firstName}} {{entry.lastName}}</p>
-      </div>
-      <div class="name">
-        <p class="test">{{entry.clientName}}</p>
-      </div>
-      <div class="name">
-        <p class="test">{{entry.projectName}}</p>
-      </div>
-    </div>
-
-    <div class="row-container">
-      <div *ngFor="let week of getWeeks()" class="row">
-        <!-- <div class="week" (click)="test(weeks.indexOf(week))" [ngClass]="{green: !enabled, white: enabled && id > weeks.indexOf(week)}"> -->
-        <input id='test' class="week" maxlength="2" (input)="type($event.target.value, week)" [value]="getCapacity(week)">
-        <!-- <p class="week" *ngIf="entry.firstName === 'Name'">{{week | date: 'MM/dd/yyyy'}}</p> -->
-        <!-- </div> -->
-      </div>
-    </div>
+<div class="row-container">
+  <div *ngFor="let week of getWeeks()" class="row">
+    <input class="week" maxlength="2" (input)="type($event.target.value, week)" [value]="getCapacity(week)">
   </div>
 </div>
