@@ -7,31 +7,10 @@ app-grid-view {
 }
 
 .entry-container {
-  margin-top: 12vh;
-  top: 0;
-  margin-left: 60vh;
+  margin-left: 400px;
+  margin-top: 37px;
   height: 100%;
   width: 100%;
   overflow-x: visible;
   overflow-y: visible;
-}
-
-.header {
-  background-color: white;
-  position: fixed;
-  padding-right: 50px;
-  flex-wrap: wrap;
-  flex-direction: row;
-  display: flex;
-  justify-content: left;
-}
-
-.side-list-container {
-  margin-top: 14vh;
-  left: 0;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  overflow-y: hidden;
 }

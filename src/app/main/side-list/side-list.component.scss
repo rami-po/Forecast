@@ -1,4 +1,5 @@
 .side-list {
+  width: 408px;
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -9,36 +10,57 @@
 }
 
 .title-container {
+  background-color: white;
+  width: 408px;
   top: 0;
   left: 0;
   position: fixed;
-  display: inherit;
+  display: flex;
   flex-direction: column;
   align-content: inherit;
 }
 
 .name-container {
-  position: relative;
-  width: 60vh;
+  margin-top: 48px;
+  width: 408px;
   background-color: white;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
   overflow-x: hidden;
   overflow-y: hidden;
-  display: inherit;
+  display: flex;
   flex-direction: column;
-  align-content: inherit;
+  align-content: center;
 }
 
 .name-row {
-  margin-bottom: 40px;
-  display: inherit;
+  margin-bottom: 64px;
+  list-style-type:none;
+  padding: 0;
+  display: flex;
   flex-direction: row;
-  align-content: inherit;
+}
+
+.title {
+  text-align: center;
+  font-size: 15px;
+  position: relative;
+  width: 33%;
+  margin-right: 10px;
 }
 
 .name {
-   text-align: center;
-   font-size: 15px;
-   position: relative;
-   width: 33%;
-   margin-right: 10px;
- }
+  width: 33%;
+  font-weight: bold;
+  border: 2px;
+  height: 50px;
+  text-align: center;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-style: solid;
+  border-color: white;
+}

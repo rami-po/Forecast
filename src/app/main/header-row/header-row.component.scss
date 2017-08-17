@@ -1,46 +1,12 @@
-.entry {
-  background-color: white;
-}
-
-.flex-container {
-  background-color: white;
-  height: 50px;
-  width: 100%;
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding-right: 30px;
-}
-
-.name {
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  position: relative;
-  width: 33%;
-  margin-right: 10px;
-}
-
-.test {
-  position: relative;
-}
-
-.name-container {
-  background-color: white;
-  position: relative;
-  display: inherit;
-  width: 60vh;
-}
-
 .row-container {
+  margin-left: 408px;
   background-color: white;
-  margin-left: 60vh;
+  height: 64px;
+  top: 0;
   left: 0;
   right: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
   position: fixed;
   display: flex;
   align-items: center;
@@ -64,4 +30,3 @@
   border-style: solid;
   border-color: gray;
 }
-

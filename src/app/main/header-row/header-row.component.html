@@ -1,21 +1,5 @@
-<div class="entry">
-  <div class="flex-container">
-    <div class="name-container">
-      <div class="name">
-        <p class="test">{{name}}</p>
-      </div>
-      <div class="name">
-        <p class="test">{{client}}</p>
-      </div>
-      <div class="name">
-        <p class="test">{{project}}</p>
-      </div>
-    </div>
-
-    <div id="header" class="row-container">
-      <ul *ngFor="let week of weeks" class="row">
-        <p mdTooltip="{{getTotalCapacity(week)}}" [mdTooltipPosition]="'below'" class="week">{{week | date: 'MM/dd/yyyy'}}</p>
-      </ul>
-    </div>
+<div id="header" class="row-container">
+    <ul *ngFor="let week of weeks" class="row">
+      <p mdTooltip="{{getTotalCapacity(week)}}" [mdTooltipPosition]="'below'" class="week">{{week | date: 'MM/dd/yyyy'}}</p>
+    </ul>
   </div>
-</div>
