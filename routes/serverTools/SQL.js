@@ -87,22 +87,34 @@ exports.getDates = function (req) {
 };
 
 exports.getEntries = function(req, callback) {
+  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
+  const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
+  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
+
   connection.query(
     'SELECT c.id AS client_id, c.name AS client_name, ' +
     'p.id AS project_id, p.name AS project_name, ' +
     'e.id AS employee_id, e.first_name, e.last_name ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN assignments a ON a.project_id = p.id ' +
+    'LEFT OUTER JOIN assignments a ON p.id = a.project_id ' +
     'LEFT OUTER JOIN employees e ON e.id = a.user_id ' +
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
+    'AND p.id = ' + projectId + ' ' +
+    'AND c.id = ' + clientId + ' ' +
+    'AND e.id = ' + employeeId + ' ' +
     'ORDER BY p.id, e.id, c.id ASC', function (err, result) {
       callback(err, result);
     });
 };
 
-exports.getCapacities = function(req, callback) {
+exports.getData = function(req, callback) {
+  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'p.id');
+  const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'e.id');
+  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'c.id');
+
+  console.log(projectId);
 
   var monday;
   tools.getMonday(function (date) {
@@ -120,14 +132,41 @@ exports.getCapacities = function(req, callback) {
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
     'LEFT OUTER JOIN assignments a ON a.project_id = p.id ' +
     'LEFT OUTER JOIN employees e ON e.id = a.user_id ' +
-    'LEFT OUTER JOIN resourceManagement r ON r.client_id = c.id AND r.project_id = p.id AND r.employee_id = e.id ' +
+    'LEFT OUTER JOIN resourceManagement r ON  r.client_id = c.id AND r.project_id = p.id AND r.employee_id = e.id ' +
     'WHERE a.deactivated = 0 ' +
+    'AND p.id = ' + projectId + ' ' +
+    'AND c.id = ' + clientId + ' ' +
+    'AND e.id = ' + employeeId + ' ' +
+    'AND e.is_active = 1 ' +
     'AND p.active = 1 ' +
     'AND r.capacity IS NOT NULL ' +
     'AND r.week_of >= \'' + monday + '\' ' +
     'ORDER BY p.id, e.id, c.id, r.week_of ASC', function (err, result) {
       callback(err, result);
     });
+};
+
+exports.getMembers = function(req, callback) {
+  connection.query("SELECT e.id, e.first_name, e.last_name, a.is_project_manager " +
+    "FROM employees e " +
+    "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.params.id + " AND e.id = a.user_id " +
+    "WHERE a.deactivated = 0 " +
+    "AND e.is_active = 1", function (err, result) {
+    callback(err, result);
+  })
+};
+
+exports.getTimeEntries = function(req, callback) {
+  const id = (req.params.id !== undefined ? req.params.id : 't.id');
+  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
+  const userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+
+  connection.query('SELECT * FROM timeEntries t ' +
+    'WHERE t.id = ' + id + ' ' +
+    'AND t.project_id = ' + projectId + ' ' +
+    'AND t.user_id = ' + userId, function (err, result) {
+    callback(err, result);
+  })
 };
 
 /*

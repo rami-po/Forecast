@@ -1,3 +1,14 @@
-<p>
-  project works!
-</p>
+
+<div *ngIf="dataIsReady" class="chart">
+  <canvas baseChart  width="1000" height="400"
+          [datasets]="lineChartData"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [chartType]="lineChartType"
+          [colors]="lineChartColors"
+          [legend]="false">
+  </canvas>
+</div>
+<!--
+<app-main [params]="params" class="main"></app-main>
+-->

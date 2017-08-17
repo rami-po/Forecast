@@ -1,5 +1,5 @@
 <div class="wrapper">
   <div *ngFor="let project of projects">
-    <button class="box" color="primary">{{project.name}}</button>
+    <button class="box" (click)="goToProjectView(project)" color="primary">{{project.name}}</button>
   </div>
 </div>

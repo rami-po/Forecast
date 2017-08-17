@@ -1,5 +1,6 @@
 <div class="row-container">
   <div *ngFor="let week of getWeeks()" class="row">
     <input class="week" maxlength="2" (input)="type($event.target.value, week)" [value]="getCapacity(week)">
+
   </div>
 </div>

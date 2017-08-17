@@ -5,10 +5,17 @@ import { Injectable } from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
+import {DatePipe} from '@angular/common';
 
 @Injectable()
 export class MainService {
-  constructor(private http: Http) { }
+
+  public static NUMBER_OF_WEEKS = 20;
+
+  constructor(
+    private http: Http,
+    private datePipe: DatePipe
+  ) { }
 
   getProjects() {
     return this.http.get('http://localhost:3000/resource/project')
@@ -34,15 +41,34 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getEntries() {
-    return this.http.get('http://localhost:3000/resource/entry')
+  getEntries(params) {
+    return this.http.get('http://localhost:3000/resource/entry' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getResources() {
-    return this.http.get('http://localhost:3000/resource/capacity')
+  getResources(params) {
+    return this.http.get('http://localhost:3000/resource/data' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
+
+  getMonday(): Date {
+    const date = new Date();
+    while (date.getDay() !== 1) {
+      date.setDate(date.getDate() - 1);
+    }
+    return date;
+  }
+
+  getWeeks(monday): string[] {
+    const weeks = [];
+    for (let i = 0; i < MainService.NUMBER_OF_WEEKS; i++) {
+      const date = new Date(monday.toDateString());
+      weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
+      monday.setDate(monday.getDate() + 7);
+    }
+    return weeks;
+  }
+
 }

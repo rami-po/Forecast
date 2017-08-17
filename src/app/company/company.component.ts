@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {CompanyService} from "./company.service";
+import {NavigationExtras, Router} from "@angular/router";
 
 @Component({
   selector: 'app-company',
@@ -12,7 +13,8 @@ export class CompanyComponent implements OnInit {
   public projects = [];
 
   constructor(
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -22,6 +24,13 @@ export class CompanyComponent implements OnInit {
         this.projects = data.result;
       }
     );
+  }
+
+  goToProjectView(project) {
+    const navigationExtras: NavigationExtras = {
+      queryParams: { 'id': project.id}
+    };
+    this.router.navigate(['project'], navigationExtras);
   }
 
 }

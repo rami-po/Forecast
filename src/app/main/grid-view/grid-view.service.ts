@@ -11,7 +11,7 @@ export class GridViewService {
   constructor(private http: Http) { }
 
   getResources() {
-    return this.http.get('http://localhost:3000/resource/capacity')
+    return this.http.get('http://localhost:3000/resource/data')
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }

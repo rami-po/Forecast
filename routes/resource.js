@@ -33,6 +33,26 @@ router.get('/person/:id', function (req, res, next) {
 });
 
 /*
+ * MEMBER ROUTES
+ */
+
+router.get('/member/:id', function (req, res, next) {
+  SQL.getMembers(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+/*
  * PROJECT ROUTES
  */
 
@@ -150,8 +170,8 @@ router.post('/entry', function(req, res, next) {
  * CAPACITY ROUTES
  */
 
-router.get('/capacity', function (req, res, next) {
-  SQL.getCapacities(req, function (err, result) {
+router.get('/data', function (req, res, next) {
+  SQL.getData(req, function (err, result) {
     if (err){
       return res.status(500).json({
         message: 'Error!',
@@ -182,6 +202,42 @@ router.get('/capacity', function (req, res, next) {
         message: 'Success!',
         result: result,
         totalCapacities: JSONArray
+      });
+    }
+  });
+});
+
+/*
+ * TIME ROUTES
+ */
+
+router.get('/time', function (req, res, next) {
+  SQL.getTimeEntries(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.get('/time/:id', function (req, res, next) {
+  SQL.getTimeEntries(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
       });
     }
   });

@@ -19,15 +19,17 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 })
 export class EntryComponent implements OnInit, OnDestroy {
 
-  private static index = 0;
+  @Input() public static resources;
   @Input() public static weeks = [];
-  @Input() public static resources: any;
+  private static index = 0;
+  private lastWeek;
+  public timerSubscription;
   @Input() public entry: Entry;
-  private lastWeek: Date;
-  private timerSubscription;
+
+
 
   constructor(
-    private entryService: EntryService
+    public entryService: EntryService
   ) { }
 
   ngOnInit() {
@@ -40,14 +42,22 @@ export class EntryComponent implements OnInit, OnDestroy {
     }
   }
 
-  getCapacity(week: Date): string {
+  getWeeks(): Date[] {
+    return EntryComponent.weeks;
+  }
+
+  static setWeeks(weeks) {
+    EntryComponent.weeks = weeks;
+  }
+
+  public getCapacity(week: Date): string {
     if (!isNullOrUndefined(EntryComponent.resources)) {
       const resource = EntryComponent.resources[EntryComponent.index];
       if (!isNullOrUndefined(resource)) {
         if (resource.employee_id === this.entry.employeeId &&
-        resource.client_id === this.entry.clientId &&
-        resource.project_id === this.entry.projectId &&
-        resource.week_of.substring(0, 10) === week) {
+          resource.client_id === this.entry.clientId &&
+          resource.project_id === this.entry.projectId &&
+          resource.week_of.substring(0, 10) === week) {
           EntryComponent.index++;
           if (EntryComponent.index === EntryComponent.resources.length) {
             EntryComponent.index = 0;
@@ -59,22 +69,17 @@ export class EntryComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  getWeeks(): Date[] {
-    return EntryComponent.weeks;
-  }
-
-  setWeeks(weeks) {
-    EntryComponent.weeks = weeks;
-  }
-
   type(value: string, week) {
+    console.log('sending...');
     if (!isNaN(Number(value))) {
       if (!isNullOrUndefined(this.timerSubscription) && week === this.lastWeek) {
+        console.log('changed...');
         this.timerSubscription.unsubscribe();
       }
       this.lastWeek = week;
       const timer = Observable.timer(2000);
       this.timerSubscription = timer.subscribe(t => {
+        console.log('sent');
         this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe();
       });
     }

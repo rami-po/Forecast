@@ -1,14 +1,16 @@
 /**
  * Created by Rami Khadder on 8/9/2017.
  */
-import { Injectable } from '@angular/core';
+import {Injectable, Input} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {Entry} from './entry.model';
+import {isNullOrUndefined} from "util";
 
 @Injectable()
 export class EntryService {
+
   constructor(private http: Http) { }
 
   updateResourceManagement(entry: Entry, weekOf: string, capacity: number) {
