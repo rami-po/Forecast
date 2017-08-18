@@ -114,14 +114,14 @@ exports.getData = function(req, callback) {
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'e.id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'c.id');
 
-  console.log(projectId);
-
   var monday;
   tools.getMonday(function (date) {
     tools.convertDate(date, function(convertedDate) {
       monday = convertedDate;
     });
   });
+
+  const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
   connection.query(
     'SELECT c.id AS client_id, ' +
@@ -140,8 +140,9 @@ exports.getData = function(req, callback) {
     'AND e.is_active = 1 ' +
     'AND p.active = 1 ' +
     'AND r.capacity IS NOT NULL ' +
-    'AND r.week_of >= \'' + monday + '\' ' +
+    active +
     'ORDER BY p.id, e.id, c.id, r.week_of ASC', function (err, result) {
+      console.log(result);
       callback(err, result);
     });
 };

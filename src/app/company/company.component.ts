@@ -11,6 +11,7 @@ import {NavigationExtras, Router} from "@angular/router";
 export class CompanyComponent implements OnInit {
 
   public projects = [];
+  public isDataReady = false;
 
   constructor(
     private companyService: CompanyService,
@@ -22,6 +23,7 @@ export class CompanyComponent implements OnInit {
       data => {
         console.log(data);
         this.projects = data.result;
+        this.isDataReady = true;
       }
     );
   }

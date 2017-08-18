@@ -1,5 +1,5 @@
 
-<div *ngIf="true" class="chart">
+<div class="chart">
   <canvas baseChart  width="1000" height="400"
           [datasets]="this.projectService.lineChartData"
           [labels]="this.projectService.lineChartLabels"
@@ -10,4 +10,4 @@
   </canvas>
 </div>
 
-<app-main [params]="params"></app-main>
+<app-main *ngIf="tableEnabled" [params]="params"></app-main>

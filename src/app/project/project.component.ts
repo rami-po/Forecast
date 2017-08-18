@@ -1,8 +1,8 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectService} from './project.service';
 import {MainService} from '../main/main.service';
-import {isNullOrUndefined} from "util";
+import {isNullOrUndefined, isUndefined} from "util";
 import {DatePipe} from '@angular/common';
 import {BaseChartDirective} from "ng2-charts";
 
@@ -15,6 +15,8 @@ import {BaseChartDirective} from "ng2-charts";
 })
 export class ProjectComponent implements OnInit {
 
+  @Input() public projectId;
+  @Input() public tableEnabled = true;
   public members = [];
   public params;
 
@@ -74,20 +76,27 @@ export class ProjectComponent implements OnInit {
 
   ngOnInit() {
 
-    const marginTop = '600px';
-    const title = document.getElementById('title');
-    const side = document.getElementById('side');
-    const table = document.getElementById('table');
-    const header = document.getElementById('header');
-    header.style.marginTop = marginTop;
-    title.style.marginTop = marginTop;
-    side.style.marginTop = marginTop;
-    table.style.marginTop = '237px';
+    if (this.tableEnabled) {
+      const marginTop = '600px';
+      const title = document.getElementById('title');
+      const side = document.getElementById('side');
+      const table = document.getElementById('table');
+      const header = document.getElementById('header');
+      header.style.marginTop = marginTop;
+      title.style.marginTop = marginTop;
+      side.style.marginTop = marginTop;
+      table.style.marginTop = '237px';
+    }
 
     this.route.queryParams.subscribe(
       params => {
 
-        this.params = '?projectId=' + params.id;
+        if (!isUndefined(params.id)) {
+          this.params = '?projectId=' + params.id;
+        } else {
+          console.log(this.params);
+          this.params = '?projectId=' + this.projectId;
+        }
 
         const monday = this.mainService.getMonday(new Date());
         this.projectService.weeks = this.mainService.getWeeks(monday);

@@ -16,6 +16,7 @@ export class HeaderRowComponent implements OnInit {
   @Input() public client: string;
   @Input() public project: string;
   @Input() public weeks: Date[];
+  @Input() public isMain = true;
 
   constructor() { }
 

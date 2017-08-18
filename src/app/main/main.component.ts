@@ -43,7 +43,9 @@ export class MainComponent implements OnInit {
         this.entries = data.result;
       });
 
-    this.mainService.getResources(this.params).subscribe(
+    const activeTag = (this.params === '' ? '?' : '&');
+
+    this.mainService.getResources(this.params + activeTag + 'active=1').subscribe(
       data => {
         EntryComponent.resources = data.result;
         HeaderRowComponent.totalCapacities = data.totalCapacities;
