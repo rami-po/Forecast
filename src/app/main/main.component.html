@@ -1,14 +1,10 @@
+
+
 <app-header-row class="header" [name]="'Name'" [client]="'Client'" [project]="'Project'"></app-header-row>
+<app-side-list [entry]='entries'></app-side-list>
 
-<div class="side-list-container">
-  <app-side-list [entry]='entries'></app-side-list>
-</div>
-
-
-<div class="entry-container">
+<div id="table" class="entry-container">
   <div *ngFor="let entry of entries">
     <app-entry [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name, entry.client_id, entry.project_name, entry.project_id, null, null)'></app-entry>
   </div>
 </div>
-
-

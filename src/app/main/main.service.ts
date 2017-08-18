@@ -53,8 +53,8 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getMonday(): Date {
-    const date = new Date();
+  getMonday(d): Date {
+    const date = new Date(d);
     while (date.getDay() !== 1) {
       date.setDate(date.getDate() - 1);
     }

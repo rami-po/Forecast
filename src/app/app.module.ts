@@ -17,6 +17,8 @@ import {ChartsModule} from 'ng2-charts';
 
 import 'hammerjs';
 import 'chartjs-plugin-zoom';
+import {ProjectService} from "./project/project.service";
+import {MainService} from "./main/main.service";
 
 @NgModule({
   declarations: [
@@ -38,7 +40,7 @@ import 'chartjs-plugin-zoom';
     ChartsModule,
     routing],
   bootstrap: [AppComponent],
-  providers: [DatePipe]
+  providers: [DatePipe, ProjectService, MainService]
 })
 export class AppModule {
 

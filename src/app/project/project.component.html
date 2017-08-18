@@ -1,8 +1,8 @@
 
-<div *ngIf="dataIsReady" class="chart">
+<div *ngIf="true" class="chart">
   <canvas baseChart  width="1000" height="400"
-          [datasets]="lineChartData"
-          [labels]="lineChartLabels"
+          [datasets]="this.projectService.lineChartData"
+          [labels]="this.projectService.lineChartLabels"
           [options]="lineChartOptions"
           [chartType]="lineChartType"
           [colors]="lineChartColors"
@@ -10,7 +10,4 @@
   </canvas>
 </div>
 
-<
-<!--
-app-main [params]="params" class="main"></app-main>
--->
+<app-main [params]="params"></app-main>

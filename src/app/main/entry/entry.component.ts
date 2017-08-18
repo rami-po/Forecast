@@ -3,13 +3,16 @@
  */
 import {
   AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, Input, OnDestroy,
-  OnInit
+  OnInit, ViewChild
 } from '@angular/core';
 import {Entry} from './entry.model';
 import {isNullOrUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {EntryService} from './entry.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {ProjectComponent} from "../../project/project.component";
+import {ProjectService} from "../../project/project.service";
+import {BaseChartDirective} from "ng2-charts";
 
 @Component({
   selector: 'app-entry',
@@ -27,9 +30,9 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public entry: Entry;
 
 
-
   constructor(
-    public entryService: EntryService
+    public entryService: EntryService,
+    public projectService: ProjectService
   ) { }
 
   ngOnInit() {
@@ -80,8 +83,14 @@ export class EntryComponent implements OnInit, OnDestroy {
       const timer = Observable.timer(2000);
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
-        this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe();
+        this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
+          data => {
+            this.projectService.updateGraph(week);
+          }
+        );
       });
+    } else {
+      console.log('not a number...');
     }
   }
 

@@ -33,7 +33,7 @@ export class MainComponent implements OnInit {
    this.side = document.getElementById('side');
    this.header = document.getElementById('header');
 
-    const monday = this.mainService.getMonday();
+    const monday = this.mainService.getMonday(new Date());
     const weeks = this.mainService.getWeeks(monday);
     EntryComponent.setWeeks(weeks);
     GridViewComponent.weeks = weeks;
