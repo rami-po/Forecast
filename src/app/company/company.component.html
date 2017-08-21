@@ -1,5 +1,6 @@
-<div *ngIf="isDataReady" class="wrapper">
+<div *ngIf="isDataReady && isViewReady" class="wrapper">
   <div *ngFor="let project of projects">
     <button class="box" (click)="goToProjectView(project)" color="primary">{{project.name}}</button>
   </div>
 </div>
+

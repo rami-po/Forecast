@@ -45,6 +45,7 @@ export class MainComponent implements OnInit {
 
     const activeTag = (this.params === '' ? '?' : '&');
 
+    console.log(this.params + activeTag + 'active=1');
     this.mainService.getResources(this.params + activeTag + 'active=1').subscribe(
       data => {
         EntryComponent.resources = data.result;

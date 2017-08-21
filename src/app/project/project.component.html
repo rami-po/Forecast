@@ -1,6 +1,6 @@
 
-<div class="chart">
-  <canvas baseChart  width="1000" height="400"
+<div class="chart" id="graph">
+  <canvas baseChart
           [datasets]="this.projectService.lineChartData"
           [labels]="this.projectService.lineChartLabels"
           [options]="lineChartOptions"

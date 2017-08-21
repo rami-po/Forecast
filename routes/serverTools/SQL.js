@@ -165,7 +165,8 @@ exports.getTimeEntries = function(req, callback) {
   connection.query('SELECT * FROM timeEntries t ' +
     'WHERE t.id = ' + id + ' ' +
     'AND t.project_id = ' + projectId + ' ' +
-    'AND t.user_id = ' + userId, function (err, result) {
+    'AND t.user_id = ' + userId + ' ' +
+    'ORDER BY t.spent_at ASC', function (err, result) {
     callback(err, result);
   })
 };

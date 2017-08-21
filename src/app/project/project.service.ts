@@ -84,6 +84,9 @@ export class ProjectService {
           data => {
             // Cycles through the list now that all the capacities have been pooled, and pushes them to graph arrays
             let l = 0;
+
+            console.log(totalCapacities);
+
             for (const week in totalCapacities) {
               const forecastCapacity = data.totalCapacities[l];
               totalCap += totalCapacities[week];
@@ -91,7 +94,7 @@ export class ProjectService {
               actualData.push(totalCap);
               // Checks to see if date is a non-active forecast date
               if (!isNullOrUndefined(forecastCapacity)) {
-                switch (forecastCapacity.week) {
+                switch (this.datePipe.transform(forecastCapacity.week, 'MM-dd-yyyy')) {
                   case week:
                     const forecastTotalCap = totalCap - totalCapacities[week] + forecastCapacity.capacity;
                     forecastData.push(forecastTotalCap);
@@ -100,16 +103,21 @@ export class ProjectService {
 
                   default:
                     forecastData.push(totalCap);
+                    break;
                 }
+              } else {
+                forecastData.push(totalCap);
               }
               breakPointData.push(3800);
             }
+
 
             // Combines all the actual dates with the forecasted dates
             for (let i = 0; i < this.weeks.length; i++) {
               // this.lineChartLabels.push(this.datePipe.transform(this.weeks[i], 'MM-dd-yyyy'));
               labels.push(this.datePipe.transform(this.weeks[i], 'MM-dd-yyyy'));
             }
+
 
             // Cycles through the dates and checks for missing Monday's and adds them if found
             for (let i = 0; i < labels.length - 1; i++) {
@@ -127,7 +135,6 @@ export class ProjectService {
             // Adds forecasted data to graph arrays
             this.mainService.getResources(this.params + '&active=1').subscribe(
               data => {
-                console.log(data);
                 for (let i = 0; i < this.weeks.length; i++) {
                   const capacity = data.totalCapacities[i];
                   if (!isNullOrUndefined(capacity) && capacity.week === this.weeks[i]) {
@@ -144,6 +151,7 @@ export class ProjectService {
                 this.lineChartData[2].data = breakPointData;
               }
             );
+
           }
         );
       }

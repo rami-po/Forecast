@@ -1,8 +1,8 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectService} from './project.service';
 import {MainService} from '../main/main.service';
-import {isNullOrUndefined, isUndefined} from "util";
+import {isNull, isNullOrUndefined, isUndefined} from "util";
 import {DatePipe} from '@angular/common';
 import {BaseChartDirective} from "ng2-charts";
 
@@ -13,17 +13,22 @@ import {BaseChartDirective} from "ng2-charts";
   styleUrls: ['./project.component.scss'],
   providers: [MainService]
 })
-export class ProjectComponent implements OnInit {
+export class ProjectComponent implements OnInit, AfterViewInit {
 
   @Input() public projectId;
   @Input() public tableEnabled = true;
   public members = [];
   public params;
+  private axes: boolean;
 
   public lineChartOptions: any = {
     responsive: true,
     scales: {
+      xAxes: [{
+        display: true
+      }],
       yAxes: [{
+        display: true,
         ticks: {
           beginAtZero: true
         }
@@ -76,25 +81,12 @@ export class ProjectComponent implements OnInit {
 
   ngOnInit() {
 
-    if (this.tableEnabled) {
-      const marginTop = '600px';
-      const title = document.getElementById('title');
-      const side = document.getElementById('side');
-      const table = document.getElementById('table');
-      const header = document.getElementById('header');
-      header.style.marginTop = marginTop;
-      title.style.marginTop = marginTop;
-      side.style.marginTop = marginTop;
-      table.style.marginTop = '237px';
-    }
-
     this.route.queryParams.subscribe(
       params => {
 
         if (!isUndefined(params.id)) {
           this.params = '?projectId=' + params.id;
         } else {
-          console.log(this.params);
           this.params = '?projectId=' + this.projectId;
         }
 
@@ -104,12 +96,29 @@ export class ProjectComponent implements OnInit {
 
         this.projectService.initializeGraph();
 
-        this.projectService.getMembers('/' + params.id).subscribe(
-          data => {
-            this.members = data.result;
-          }
-        );
       }
     );
+  }
+
+  ngAfterViewInit() {
+    if (this.tableEnabled) {
+      const marginTop = '550px';
+      const title = document.getElementById('title');
+      const side = document.getElementById('side');
+      const table = document.getElementById('table');
+      const header = document.getElementById('header');
+      header.style.marginTop = marginTop;
+      title.style.marginTop = marginTop;
+      side.style.marginTop = marginTop;
+      table.style.marginTop = '187px';
+    } else {
+      const graph = document.getElementById('graph');
+      graph.style.width = '200px';
+      const optionsCopy = JSON.parse(JSON.stringify(this.lineChartOptions));
+      optionsCopy.scales.yAxes[0].display = false;
+      optionsCopy.scales.xAxes[0].display = false;
+      this.lineChartOptions = optionsCopy;
+    }
+
   }
 }

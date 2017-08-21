@@ -11,7 +11,7 @@ import {MainComponent} from "../main.component";
 export class HeaderRowComponent implements OnInit {
 
   @Input() public static totalCapacities: any;
-  private static index = 0;
+  private index = 0;
   @Input() public name: string;
   @Input() public client: string;
   @Input() public project: string;
@@ -22,17 +22,14 @@ export class HeaderRowComponent implements OnInit {
 
   ngOnInit() {
     this.weeks = EntryComponent.weeks;
+    this.index = 0;
   }
 
-  getTotalCapacity(week) {
+  getTotalCapacity(week, i) {
     if (!isNullOrUndefined(HeaderRowComponent.totalCapacities)) {
-      const totalCap = HeaderRowComponent.totalCapacities[HeaderRowComponent.index];
+      const totalCap = HeaderRowComponent.totalCapacities[i];
       if (!isNullOrUndefined(totalCap)) {
         if (totalCap.week === week) {
-          HeaderRowComponent.index++;
-          if (HeaderRowComponent.index === HeaderRowComponent.totalCapacities.length) {
-            HeaderRowComponent.index = 0;
-          }
           return totalCap.capacity;
         }
       }
