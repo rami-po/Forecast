@@ -66,58 +66,33 @@ export class ProjectService {
     const breakPointData = [];
 
     this.getTimeEntries(this.params).subscribe(
-      data => {
+      dataTE => {
 
         // Takes all the separate dates and pools them in their respective Monday's
         const totalCapacities = [];
-        for (let i = 0; i < data.result.length; i++) {
-          const date = this.datePipe.transform(data.result[i].spent_at, 'MM-dd-yyyy');
+        const fcTotalCapacities = [];
+        for (let i = 0; i < dataTE.result.length; i++) {
+          const date = this.datePipe.transform(dataTE.result[i].spent_at, 'MM-dd-yyyy');
           const monday = this.datePipe.transform(this.mainService.getMonday(date), 'MM-dd-yyyy');
           if (totalCapacities[monday] == null) {
             totalCapacities[monday] = 0;
           }
-          totalCapacities[monday] += data.result[i].hours;
+          totalCapacities[monday] += dataTE.result[i].hours;
         }
 
-        let totalCap = 0;
+        let actualCap = 0;
+        let forecastCap = 0;
         this.mainService.getResources(this.params).subscribe(
-          data => {
-            // Cycles through the list now that all the capacities have been pooled, and pushes them to graph arrays
-            let l = 0;
-
-            console.log(totalCapacities);
+          dataTC => {
 
             for (const week in totalCapacities) {
-              const forecastCapacity = data.totalCapacities[l];
-              totalCap += totalCapacities[week];
               labels.push(week);
-              actualData.push(totalCap);
-              // Checks to see if date is a non-active forecast date
-              if (!isNullOrUndefined(forecastCapacity)) {
-                switch (this.datePipe.transform(forecastCapacity.week, 'MM-dd-yyyy')) {
-                  case week:
-                    const forecastTotalCap = totalCap - totalCapacities[week] + forecastCapacity.capacity;
-                    forecastData.push(forecastTotalCap);
-                    l++;
-                    break;
-
-                  default:
-                    forecastData.push(totalCap);
-                    break;
-                }
-              } else {
-                forecastData.push(totalCap);
-              }
-              breakPointData.push(3800);
             }
-
 
             // Combines all the actual dates with the forecasted dates
             for (let i = 0; i < this.weeks.length; i++) {
-              // this.lineChartLabels.push(this.datePipe.transform(this.weeks[i], 'MM-dd-yyyy'));
               labels.push(this.datePipe.transform(this.weeks[i], 'MM-dd-yyyy'));
             }
-
 
             // Cycles through the dates and checks for missing Monday's and adds them if found
             for (let i = 0; i < labels.length - 1; i++) {
@@ -126,25 +101,36 @@ export class ProjectService {
               const secondDate = new Date(labels[i + 1]);
               if (firstDate.toDateString() !== secondDate.toDateString()) {
                 labels.splice(i + 1, 0, this.datePipe.transform(firstDate, 'MM-dd-yyyy'));
-                actualData.splice(i + 1, 0, actualData[i]);
-                forecastData.splice(i + 1, 0, actualData[i]);
-                breakPointData.splice(i + 1, 0, 3800);
               }
+            }
+
+            for (let i = 0; i < dataTC.totalCapacities.length; i++) {
+              fcTotalCapacities[this.datePipe.transform(dataTC.totalCapacities[i].week, 'MM-dd-yyyy')] = dataTC.totalCapacities[i].capacity;
             }
 
             // Adds forecasted data to graph arrays
             this.mainService.getResources(this.params + '&active=1').subscribe(
-              data => {
+              dataR => {
+
+                console.log(dataR);
+                for (let i = 0; labels[i] < this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy'); i++) {
+                  actualCap += (!isNullOrUndefined(totalCapacities[labels[i]]) ? totalCapacities[labels[i]] : 0);
+                  forecastCap = (!isNullOrUndefined(fcTotalCapacities[labels[i]]) ? fcTotalCapacities[labels[i]] + forecastCap : actualCap);
+                  actualData.push(actualCap);
+                  forecastData.push(forecastCap);
+                  breakPointData.push(3800);
+                }
                 for (let i = 0; i < this.weeks.length; i++) {
-                  const capacity = data.totalCapacities[i];
+                  const capacity = dataR.totalCapacities[i];
                   if (!isNullOrUndefined(capacity) && capacity.week === this.weeks[i]) {
-                    forecastData.push(capacity.capacity + totalCap);
-                    totalCap += capacity.capacity;
+                    forecastCap += capacity.capacity;
+                    forecastData.push(forecastCap);
                   } else {
-                    forecastData.push(totalCap);
+                    forecastData.push(forecastCap);
                   }
                   breakPointData.push(3800);
                 }
+
                 this.lineChartLabels = labels;
                 this.lineChartData[0].data = actualData;
                 this.lineChartData[1].data = forecastData;
