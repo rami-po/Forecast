@@ -2,6 +2,7 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {CompanyService} from "./company.service";
 import {NavigationExtras, Router} from "@angular/router";
 import {isNull} from "util";
+import {MainService} from "../main/main.service";
 
 @Component({
   selector: 'app-company',
@@ -9,36 +10,24 @@ import {isNull} from "util";
   styleUrls: ['./company.component.scss'],
   providers: [CompanyService]
 })
-export class CompanyComponent implements OnInit, AfterViewInit {
+export class CompanyComponent implements OnInit {
 
   public projects = [];
   public isDataReady = false;
-  public isViewReady = false;
 
   constructor(
-    private companyService: CompanyService,
+    private mainService: MainService,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.companyService.getProjects().subscribe(
+    this.mainService.getProjects('?active=1').subscribe(
       data => {
         data.result.splice(0, 1); // removes Internal
         this.isDataReady = true;
         this.projects = data.result;
       }
     );
-  }
-
-  ngAfterViewInit() {
-    console.log('!!!!');
-    this.isViewReady = true;
-    const graph = document.getElementById('graph');
-    if (!isNull(graph)) {
-      console.log('boidsafsadf');
-      graph.style.width = '200px';
-    }
-
   }
 
   goToProjectView(project) {

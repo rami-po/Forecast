@@ -17,8 +17,8 @@ export class MainService {
     private datePipe: DatePipe
   ) { }
 
-  getProjects() {
-    return this.http.get('http://localhost:3000/resource/project')
+  getProjects(param) {
+    return this.http.get('http://localhost:3000/resource/project' + param)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }

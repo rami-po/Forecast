@@ -9,7 +9,7 @@ import {GridViewComponent} from './main/grid-view/grid-view.component';
 import {EntryComponent} from './main/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import { HeaderRowComponent } from './main/header-row/header-row.component';
-import {MdButtonModule, MdTooltipModule} from '@angular/material';
+import {MdButtonModule, MdToolbarModule, MdTooltipModule} from '@angular/material';
 import {DatePipe} from '@angular/common';
 import { ProjectComponent } from './project/project.component';
 import { CompanyComponent } from './company/company.component';
@@ -19,6 +19,8 @@ import 'hammerjs';
 import 'chartjs-plugin-zoom';
 import {ProjectService} from "./project/project.service";
 import {MainService} from "./main/main.service";
+import { GraphComponent } from './project/graph/graph.component';
+import {GraphService} from "./project/graph/graph.service";
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import {MainService} from "./main/main.service";
     EntryComponent,
     HeaderRowComponent,
     ProjectComponent,
-    CompanyComponent
+    CompanyComponent,
+    GraphComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -37,10 +40,11 @@ import {MainService} from "./main/main.service";
     HttpModule,
     MdTooltipModule,
     MdButtonModule,
+    MdToolbarModule,
     ChartsModule,
     routing],
   bootstrap: [AppComponent],
-  providers: [DatePipe, ProjectService, MainService]
+  providers: [DatePipe, GraphService, MainService]
 })
 export class AppModule {
 

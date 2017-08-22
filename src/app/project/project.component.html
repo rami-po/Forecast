@@ -1,13 +1,7 @@
+<md-toolbar color="primary">
+  <span>{{projectName}}</span>
+</md-toolbar>
 
-<div class="chart" id="graph">
-  <canvas baseChart
-          [datasets]="this.projectService.lineChartData"
-          [labels]="this.projectService.lineChartLabels"
-          [options]="lineChartOptions"
-          [chartType]="lineChartType"
-          [colors]="lineChartColors"
-          [legend]="false">
-  </canvas>
-</div>
+<app-graph [params]="params"></app-graph>
 
 <app-main *ngIf="tableEnabled" [params]="params"></app-main>

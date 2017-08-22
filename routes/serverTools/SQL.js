@@ -32,29 +32,18 @@ exports.getPeople = function (req, callback) {
 };
 
 exports.getProjects = function (req, callback) {
-  if (req.params != null && req.params.length > 0){
-    var query = 'SELECT * FROM projects WHERE project_id=\'' + req.params.id + '\'';
-    if (req.query != null && req.query.length > 0) {
-      if (req.query.person != null) {
-        query += ' AND person_id=\'' + req.query.person.id + '\'';
-      }
 
-      if (req.query.updated_since != null) {
-        query += ' AND week_of > \'' + req.query.updated_since + '\'';
-      }
+  const id = (req.params.id !== undefined ? req.params.id : 'p.id');
+  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
+  const active = (req.query.active !== undefined ? req.query.active : 'p.active');
 
-      if (JSON.stringify(req.route.path).indexOf('entries') > -1 && req.query.from != null && req.query.to != null) {
-        query += 'AND week_of BETWEEN \'' + req.query.from + '\' AND \'' + req.query.to + '\'';
-      }
-    }
-    connection.query(query, function (err, result) {
-      callback(err, result);
-    })
-  } else {
-    connection.query('SELECT * FROM projects WHERE active=1', function (err, result) {
-      callback(err, result);
-    });
-  }
+  connection.query('SELECT * FROM projects p ' +
+    'WHERE p.id = ' + id + ' ' +
+    'AND p.client_id = ' + clientId + ' ' +
+    'AND p.active = ' + active, function (err, result) {
+    callback(err, result);
+  });
+
 };
 
 exports.getClients = function (req, callback) {

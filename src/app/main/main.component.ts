@@ -13,7 +13,6 @@ import {GridViewComponent} from './grid-view/grid-view.component';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  providers: [MainService],
   styleUrls: ['./main.component.scss']
 })
 

@@ -73,8 +73,19 @@ router.get('/project', function (req, res, next) {
 });
 
 router.get('/project/:id*', function (req, res, next) {
-    console.log(req.params.id + ' ' + req.query.person);
-    console.log(req.query);
+  SQL.getProjects(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
 });
 
 router.get('/project/:id/entries*', function (req, res, next) {

@@ -13,6 +13,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {ProjectComponent} from "../../project/project.component";
 import {ProjectService} from "../../project/project.service";
 import {BaseChartDirective} from "ng2-charts";
+import {GraphService} from "../../project/graph/graph.service";
 
 @Component({
   selector: 'app-entry',
@@ -32,7 +33,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   constructor(
     public entryService: EntryService,
-    public projectService: ProjectService
+    public graphService: GraphService
   ) { }
 
   ngOnInit() {
@@ -85,7 +86,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         console.log('sent');
         this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
           data => {
-            this.projectService.updateGraph(week);
+            this.graphService.updateGraph(week);
           }
         );
       });

@@ -8,7 +8,8 @@ app-grid-view {
 
 .entry-container {
   margin-left: 400px;
-  margin-top: 37px;
+  //previously 37px when app.component.css has 50px padding
+  margin-top: 64px;
   height: 100%;
   width: 100%;
   overflow-x: visible;
