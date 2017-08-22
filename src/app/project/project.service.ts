@@ -112,7 +112,7 @@ export class ProjectService {
             this.mainService.getResources(this.params + '&active=1').subscribe(
               dataR => {
 
-                for (let i = 0; labels[i] < this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy'); i++) {
+                for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
                   actualCap += (!isNullOrUndefined(totalCapacities[labels[i]]) ? totalCapacities[labels[i]] : 0);
                   forecastCap += (!isNullOrUndefined(totalCapacities[labels[i]]) ? totalCapacities[labels[i]] : 0);
                   forecastCap = (!isNullOrUndefined(fcTotalCapacities[labels[i]]) ? fcTotalCapacities[labels[i]] + forecastCap : forecastCap);
