@@ -48,7 +48,7 @@ export class MainComponent implements OnInit {
       table.style.marginLeft = '15%';
       this.header.style.marginLeft = '15%';
       this.side.style.width = '15%';
-      this.side.style.height = '55vh';
+      this.side.style.height = '45vh';
       forecast.style.height = '60vh';
       title.style.width = '15%';
     }
