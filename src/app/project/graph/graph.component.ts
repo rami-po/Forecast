@@ -9,7 +9,7 @@ import {GraphService} from './graph.service';
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss']
 })
-export class GraphComponent implements OnInit, AfterViewInit {
+export class GraphComponent implements OnInit {
 
   @Input() public projectId;
   @Input() public tableEnabled = true;
@@ -81,26 +81,5 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.graphService.initializeGraph();
   }
 
-  ngAfterViewInit() {
-    if (this.tableEnabled) {
-      const graph = document.getElementById('graph');
-      graph.style.width = '1000px';
-      const marginTop = '550px';
-      const title = document.getElementById('title');
-      const side = document.getElementById('side');
-      const table = document.getElementById('table');
-      const header = document.getElementById('header');
-      header.style.marginTop = marginTop;
-      title.style.marginTop = marginTop;
-      side.style.marginTop = marginTop;
-      table.style.marginTop = '187px';
-    } else {
-      const optionsCopy = JSON.parse(JSON.stringify(this.lineChartOptions));
-      optionsCopy.scales.yAxes[0].display = false;
-      optionsCopy.scales.xAxes[0].display = false;
-      this.lineChartOptions = optionsCopy;
-    }
-
-  }
 
 }

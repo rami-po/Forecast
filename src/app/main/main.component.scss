@@ -1,18 +1,62 @@
-app-grid-view {
-  width: 75%;
-}
-
-.table {
-  overflow-x: visible;
-}
 
 .entry-container {
-  margin-left: 400px;
-  //previously 37px when app.component.css has 50px padding
   margin-top: 64px;
-  height: 100%;
-  width: 100%;
-  overflow-x: visible;
-  overflow-y: visible;
+  margin-left: 25%;
+  height: 90vh;
+  width: 75%;
+  overflow: scroll;
 }
 
+.header-row-container {
+  margin-left: 25%;
+  background-color: white;
+  top: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.side-list-container {
+  margin-top: 64px;
+  background-color: white;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  width: 25%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.forecast-wrapper {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.title-container {
+  width: 25%;
+  height: 64px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.title-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.title {
+  border: 2px solid white;
+  height: 50px;
+  padding: 5px;
+  text-align: center;
+  font-weight: bolder;
+  font-size: 25px;
+  position: relative;
+  width: 33%;
+  margin-right: 10px;
+}

@@ -1,10 +1,25 @@
+<div id="forecast" class="forecast-wrapper">
 
-
-<app-header-row class="header" [name]="'Name'" [client]="'Client'" [project]="'Project'"></app-header-row>
-<app-side-list [entry]='entries'></app-side-list>
-
-<div id="table" class="entry-container">
-  <div *ngFor="let entry of entries">
-    <app-entry [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name, entry.client_id, entry.project_name, entry.project_id, null, null)'></app-entry>
+  <div id="title" class="title-container">
+    <div class="title-row">
+      <div class="title">Name</div>
+      <div class="title">Client</div>
+      <div *ngIf="hasProject" class="title">Project</div>
+    </div>
   </div>
+
+  <div id="header" class="header-row-container">
+    <app-header-row class="header"></app-header-row>
+  </div>
+
+  <div id="side" class="side-list-container">
+    <app-side-list [hasProject]="hasProject" [entry]='entries'></app-side-list>
+  </div>
+
+  <div id="table" class="entry-container" (scroll)="onScroll($event)">
+    <div *ngFor="let entry of entries">
+      <app-entry [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name, entry.client_id, entry.project_name, entry.project_id, null, null)'></app-entry>
+    </div>
+  </div>
+
 </div>

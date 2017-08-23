@@ -1,32 +1,16 @@
 .row-container {
-  margin-left: 408px;
-  background-color: white;
-  height: 64px;
-  top: 0;
-  left: 0;
-  right: 0;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  position: fixed;
   display: flex;
-  align-items: center;
-}
-
-.row {
-  list-style-type:none;
-  padding: 0;
+  flex-direction: row;
 }
 
 .week {
-  font-weight: bold;
-  border: 2px;
   height: 50px;
+  font-weight: bold;
+  border: 2px solid gray;
   text-align: center;
   width: 75px;
   font-size: 15px;
   display: flex;
   align-items: center;
   padding: 5px;
-  border-style: solid;
-  border-color: gray;
 }

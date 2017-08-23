@@ -28,8 +28,19 @@ router.get('/person', function (req, res, next) {
 });
 
 router.get('/person/:id', function (req, res, next) {
-    //console.log(req);
-    console.log(req.params.id);
+  SQL.getPeople(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
 });
 
 /*

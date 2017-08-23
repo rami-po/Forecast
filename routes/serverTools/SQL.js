@@ -22,13 +22,16 @@ exports.get = function(req) {
 };
 
 exports.getPeople = function (req, callback) {
-  if (req.params.id != null && req.params.length > 0){
-    connection.query('SELECT * FROM employees WHERE employee_id=' + req.params.id);
-  } else {
-    connection.query('SELECT * FROM employees WHERE is_active=1', function (err, result) {
-      callback(err, result)
-    });
-  }
+  const id = (req.params.id !== undefined ? req.params.id : 'e.id');
+  const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
+  const isActive = (req.query.isactive ? req.query.isactive : 'e.is_active');
+
+  connection.query('SELECT * FROM employees e ' +
+    'WHERE e.id = ' + id + ' ' +
+    'AND e.is_contractor = ' + isContractor + ' ' +
+    'AND e.is_active = ' + isActive, function (err, result) {
+    callback(err, result);
+  })
 };
 
 exports.getProjects = function (req, callback) {

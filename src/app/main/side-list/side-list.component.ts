@@ -9,6 +9,8 @@ import {MainComponent} from "../main.component";
 })
 export class SideListComponent implements OnInit {
 
+  @Input() public hasProject = true;
+
   constructor() { }
 
   @Input() public entry: Entry;

@@ -2,6 +2,8 @@
   <span>{{projectName}}</span>
 </md-toolbar>
 
-<app-graph [params]="params"></app-graph>
+<div class="graph-wrapper">
+  <app-graph [params]="params"></app-graph>
+</div>
 
-<app-main *ngIf="tableEnabled" [params]="params"></app-main>
+<app-main [params]="params"></app-main>

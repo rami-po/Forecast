@@ -22,6 +22,7 @@ export class MainComponent implements OnInit {
   private side;
   private header;
   @Input() private params = '';
+  public hasProject = true;
 
   constructor(
     private mainService: MainService,
@@ -36,6 +37,21 @@ export class MainComponent implements OnInit {
     const weeks = this.mainService.getWeeks(monday);
     EntryComponent.setWeeks(weeks);
     GridViewComponent.weeks = weeks;
+
+    if (this.params !== '') {
+      this.hasProject = false;
+      const table = document.getElementById('table');
+      const forecast = document.getElementById('forecast');
+      const title = document.getElementById('title');
+      table.style.height = '50vh';
+      table.style.width = '85%';
+      table.style.marginLeft = '15%';
+      this.header.style.marginLeft = '15%';
+      this.side.style.width = '15%';
+      this.side.style.height = '55vh';
+      forecast.style.height = '60vh';
+      title.style.width = '15%';
+    }
 
     this.mainService.getEntries(this.params).subscribe(
       data => {
@@ -59,9 +75,9 @@ export class MainComponent implements OnInit {
     return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity);
   }
 
-  @HostListener('window:scroll', ['$event']) onScrollEvent($event) {
-    this.side.scrollTop = $event.currentTarget.scrollY;
-    this.header.scrollLeft = $event.currentTarget.scrollX;
+  onScroll($event) {
+    this.side.scrollTop = $event.srcElement.scrollTop;
+    this.header.scrollLeft = $event.srcElement.scrollLeft;
   }
 
 }

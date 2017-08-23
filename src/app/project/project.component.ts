@@ -47,16 +47,16 @@ export class ProjectComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     if (this.tableEnabled) {
       const graph = document.getElementById('graph');
-      graph.style.width = '1000px';
-      const marginTop = '600px';
-      const title = document.getElementById('title');
-      const side = document.getElementById('side');
-      const table = document.getElementById('table');
-      const header = document.getElementById('header');
-      header.style.marginTop = marginTop;
-      title.style.marginTop = marginTop;
-      side.style.marginTop = marginTop;
-      table.style.marginTop = '187px';
+      // graph.style.width = '1000px';
+      // const marginTop = '600px';
+      // const title = document.getElementById('title');
+      // const side = document.getElementById('side');
+      // const table = document.getElementById('table');
+      // const header = document.getElementById('header');
+      // header.style.marginTop = marginTop;
+      // title.style.marginTop = marginTop;
+      // side.style.marginTop = marginTop;
+      // table.style.marginTop = '187px';
     }
   }
 }

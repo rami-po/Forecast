@@ -6,6 +6,7 @@ import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {DatePipe} from '@angular/common';
+import {isUndefined} from "util";
 
 @Injectable()
 export class MainService {
@@ -48,6 +49,7 @@ export class MainService {
   }
 
   getResources(params) {
+    params = (!isUndefined(params) ? params : '?active=1');
     return this.http.get('http://localhost:3000/resource/data' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
