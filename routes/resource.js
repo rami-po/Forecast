@@ -124,6 +124,22 @@ router.get('/client', function (req, res, next) {
   });
 });
 
+router.get('/client/:id*', function (req, res, next) {
+  SQL.getClients(req, function (err, result) {
+    if (err){
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 /*
  * ASSIGNMENT ROUTES
  */
@@ -219,6 +235,10 @@ router.get('/data', function (req, res, next) {
         };
         JSONArray.push(data);
       }
+
+      JSONArray.sort(function(a, b) {
+        return new Date(a.week) - new Date(b.week);
+      });
 
       return res.status(200).json({
         message: 'Success!',

@@ -70,7 +70,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         }
       }
     }
-    return '';
+    return '0';
   }
 
   type(value: string, week) {

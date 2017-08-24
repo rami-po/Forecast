@@ -2,9 +2,9 @@
 
   <div id="title" class="title-container">
     <div class="title-row">
-      <div class="title">Name</div>
-      <div class="title">Client</div>
-      <div *ngIf="hasProject" class="title">Project</div>
+      <div id="name" class="title">Name</div>
+      <div *ngIf="!hasProject" class="title">Client</div>
+      <div *ngIf="!hasProject" class="title">Project</div>
     </div>
   </div>
 

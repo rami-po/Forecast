@@ -1,12 +1,10 @@
 /**
  * Created by Rami Khadder on 8/7/2017.
  */
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Entry} from './entry/entry.model';
 import {MainService} from './main.service';
-import {Observable} from 'rxjs/Observable';
 import {EntryComponent} from './entry/entry.component';
-import {HeaderRowComponent} from './header-row/header-row.component';
 import {DatePipe} from '@angular/common';
 import {GridViewComponent} from './grid-view/grid-view.component';
 
@@ -21,8 +19,10 @@ export class MainComponent implements OnInit {
   public entries = [];
   private side;
   private header;
+  private table;
+  private forecast;
   @Input() private params = '';
-  public hasProject = true;
+  public hasProject = false;
 
   constructor(
     private mainService: MainService,
@@ -38,24 +38,36 @@ export class MainComponent implements OnInit {
     EntryComponent.setWeeks(weeks);
     GridViewComponent.weeks = weeks;
 
+    // if it isn't the main route
     if (this.params !== '') {
-      this.hasProject = false;
-      const table = document.getElementById('table');
-      const forecast = document.getElementById('forecast');
+      this.hasProject = true;
+      this.table = document.getElementById('table');
+      this.forecast = document.getElementById('forecast');
       const title = document.getElementById('title');
-      table.style.height = '50vh';
-      table.style.width = '85%';
-      table.style.marginLeft = '15%';
+      const name = document.getElementById('name');
+      this.table.style.height = '50vh';
+      this.table.style.width = '85%';
+      this.table.style.marginLeft = '15%';
       this.header.style.marginLeft = '15%';
       this.side.style.width = '15%';
       this.side.style.height = '45vh';
-      forecast.style.height = '60vh';
+      this.forecast.style.height = '60vh';
       title.style.width = '15%';
+      name.style.width = '100%';
     }
 
     this.mainService.getEntries(this.params).subscribe(
       data => {
         this.entries = data.result;
+        if (this.entries.length <= 5 && this.hasProject) {
+          console.log(this.entries.length);
+          const pixels = this.entries.length * 70.5;
+          console.log(pixels);
+          this.table.style.height = pixels + 'px';
+          this.table.style.overflowY = 'hidden';
+          this.header.style.marginRight = '0px';
+          this.forecast.style.height = Number(pixels + 64) + 'px';
+        }
       });
 
     const activeTag = (this.params === '' ? '?' : '&');
@@ -64,7 +76,8 @@ export class MainComponent implements OnInit {
     this.mainService.getResources(this.params + activeTag + 'active=1').subscribe(
       data => {
         EntryComponent.resources = data.result;
-        HeaderRowComponent.totalCapacities = data.totalCapacities;
+        // HeaderRowComponent.totalCapacities = data.totalCapacities;
+        console.log(data.totalCapacities);
       });
   }
 

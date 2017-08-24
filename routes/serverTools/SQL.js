@@ -17,7 +17,7 @@ var connection = mysql.createConnection({
  * GET METHODS
  */
 
-exports.get = function(req) {
+exports.get = function (req) {
   connection.query('SELECT * FROM resourceManagement');
 };
 
@@ -50,15 +50,18 @@ exports.getProjects = function (req, callback) {
 };
 
 exports.getClients = function (req, callback) {
-  if (req.params != null && req.params.length > 0) {
-  } else {
-    connection.query('SELECT * FROM clients WHERE active=1', function (err, result) {
-      callback(err, result);
-    });
-  }
+  const id = (req.params.id !== undefined ? req.params.id : 'c.id');
+  const active = (req.query.active !== undefined ? req.query.active : 'c.active');
+
+  connection.query('SELECT * FROM clients c ' +
+    'WHERE c.id = ' + id + ' ' +
+    'AND c.active = ' + active, function (err, result) {
+    callback(err, result);
+  });
+
 };
 
-exports.getAssignments = function(req, callback) {
+exports.getAssignments = function (req, callback) {
   if (req.params != null && req.params.length > 0) {
   } else {
     connection.query('SELECT * FROM assignments WHERE deactivated=0', function (err, result) {
@@ -68,9 +71,9 @@ exports.getAssignments = function(req, callback) {
 };
 
 exports.getDates = function (req) {
-  if (req.params.id != null && req.params.length > 0){
+  if (req.params.id != null && req.params.length > 0) {
     var query = 'SELECT * FROM resourceManagement WHERE week_of=\'' + req.params.id + '\'';
-    if (req.query.person != null){
+    if (req.query.person != null) {
       query += ' AND person_id=\'' + req.query.person.id + '\'';
     }
   } else {
@@ -78,7 +81,7 @@ exports.getDates = function (req) {
   }
 };
 
-exports.getEntries = function(req, callback) {
+exports.getEntries = function (req, callback) {
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
@@ -101,14 +104,14 @@ exports.getEntries = function(req, callback) {
     });
 };
 
-exports.getData = function(req, callback) {
+exports.getData = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'p.id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'e.id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'c.id');
 
   var monday;
   tools.getMonday(function (date) {
-    tools.convertDate(date, function(convertedDate) {
+    tools.convertDate(date, function (convertedDate) {
       monday = convertedDate;
     });
   });
@@ -139,7 +142,7 @@ exports.getData = function(req, callback) {
     });
 };
 
-exports.getMembers = function(req, callback) {
+exports.getMembers = function (req, callback) {
   connection.query("SELECT e.id, e.first_name, e.last_name, a.is_project_manager " +
     "FROM employees e " +
     "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.params.id + " AND e.id = a.user_id " +
@@ -149,7 +152,7 @@ exports.getMembers = function(req, callback) {
   })
 };
 
-exports.getTimeEntries = function(req, callback) {
+exports.getTimeEntries = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 't.id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
   const userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');

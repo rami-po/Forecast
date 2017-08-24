@@ -1,22 +1,24 @@
 /**
  * Created by Rami Khadder on 8/9/2017.
  */
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {DatePipe} from '@angular/common';
 import {isUndefined} from "util";
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class MainService {
 
   public static NUMBER_OF_WEEKS = 20;
+  private test = new Subject<any>();
+  test$ = this.test.asObservable();
 
-  constructor(
-    private http: Http,
-    private datePipe: DatePipe
-  ) { }
+  constructor(private http: Http,
+              private datePipe: DatePipe) {
+  }
 
   getProjects(param) {
     return this.http.get('http://localhost:3000/resource/project' + param)
@@ -51,7 +53,10 @@ export class MainService {
   getResources(params) {
     params = (!isUndefined(params) ? params : '?active=1');
     return this.http.get('http://localhost:3000/resource/data' + params)
-      .map((response: Response) => response.json())
+      .map((response: Response) => {
+        this.test.next(response.json());
+        return response.json();
+      })
       .catch((error: Response) => Observable.throw(error.json()));
   }
 

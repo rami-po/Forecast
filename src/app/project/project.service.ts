@@ -5,9 +5,20 @@ import 'rxjs/Rx';
 import {DatePipe} from '@angular/common';
 import {MainService} from '../main/main.service';
 import {isNullOrUndefined} from 'util';
+import {MdDialog, MdDialogRef, MdDialogConfig} from "@angular/material";
+import {MilestonePromptComponent} from "./milestone-prompt/milestone-prompt.component";
 
 @Injectable()
 export class ProjectService {
-  constructor() { }
+  constructor(
+    private dialog: MdDialog
+  ) { }
+
+  openDialog(): Observable<boolean> {
+    let dialogRef: MdDialogRef<MilestonePromptComponent>;
+    dialogRef = this.dialog.open(MilestonePromptComponent);
+
+    return dialogRef.afterClosed();
+  }
 
 }

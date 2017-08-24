@@ -1,9 +1,17 @@
-<md-toolbar color="primary">
-  <span>{{projectName}}</span>
+<md-toolbar (click)="b()" color="primary">
+  <span>{{projectName}} <b>-</b> {{clientName}}</span>
 </md-toolbar>
 
-<div class="graph-wrapper">
+<div class="graph-data-wrapper">
   <app-graph [params]="params"></app-graph>
+  <div class="data-wrapper">
+    <p><b>Budget:</b> ${{budget}}</p>
+    <p><b>Internal Cost to Date:</b> ${{internalCost}}</p>
+    <p><b>Budget Spent:</b> ${{budgetSpent}}</p>
+    <p><b>Projected Profit:</b> ${{projectedProfit}}</p>
+    <p><b>Project Profit Margin:</b> {{projectedProfitMargin | number:'2.2-2'}}%</p>
+  </div>
 </div>
+
 
 <app-main [params]="params"></app-main>
