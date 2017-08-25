@@ -12,10 +12,6 @@ import {Subject} from "rxjs/Subject";
 @Injectable()
 export class MainService {
 
-
-  // 172.30.1.108 - EC2
-  // 127.0.0.1 - Local-host
-  public static ROUTING_BACKEND = '172.30.1.108' + ':3000';
   public static NUMBER_OF_WEEKS = 20;
   private test = new Subject<any>();
   test$ = this.test.asObservable();
@@ -25,50 +21,50 @@ export class MainService {
   }
 
   getProjects(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/project' + params)
+    return this.http.get('http://onboarding.productops.com/resource/project' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getEmployees(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/person' + params)
+    return this.http.get('http://onboarding.productops.com/resource/person' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getClients(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/client' + params)
+    return this.http.get('http://onboarding.productops.com/resource/client' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getAssignments() {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/assignment')
+    return this.http.get('http://onboarding.productops.com/resource/assignment')
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getEntries(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/entry' + params)
+    return this.http.get('http://onboarding.productops.com/resource/entry' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getMembers(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/member' + params)
+    return this.http.get('http://onboarding.productops.com/resource/member' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getTimeEntries(params) {
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/time' + params)
+    return this.http.get('http://onboarding.productops.com/resource/time' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getResources(params) {
     params = (!isUndefined(params) ? params : '?active=1');
-    return this.http.get('http://' + MainService.ROUTING_BACKEND + '/resource/data' + params)
+    return this.http.get('http://onboarding.productops.com/resource/data' + params)
       .map((response: Response) => {
         this.test.next(response.json());
         return response.json();

@@ -7,7 +7,6 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {Entry} from './entry.model';
 import {isNullOrUndefined} from "util";
-import {MainService} from "../main.service";
 
 @Injectable()
 export class EntryService {
@@ -20,7 +19,7 @@ export class EntryService {
     const body = JSON.stringify(entry);
     const headers = new Headers({'Content-Type': 'application/json'});
 
-    return this.http.post('http://' + MainService.ROUTING_BACKEND + '/resource/entry', body, {headers: headers})
+    return this.http.post('http://onboarding.productops.com/resource/entry', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
