@@ -24,6 +24,9 @@ export class MainComponent implements OnInit {
   @Input() private params = '';
   public hasProject = false;
 
+  public projects;
+  public clients;
+
   constructor(
     private mainService: MainService,
     private datePipe: DatePipe
@@ -56,6 +59,20 @@ export class MainComponent implements OnInit {
       name.style.width = '100%';
     }
 
+    this.mainService.getProjects('?active=1').subscribe(
+      data => {
+        console.log(data);
+        this.projects = data.result;
+      }
+    );
+
+    this.mainService.getClients('?active=1').subscribe(
+      data => {
+        console.log(data);
+        this.clients = data.result;
+      }
+    );
+
     this.mainService.getEntries(this.params).subscribe(
       data => {
         this.entries = data.result;
@@ -81,7 +98,21 @@ export class MainComponent implements OnInit {
       });
   }
 
+  updateEntries(entry, id) {
+    const idType = (entry === 'project' ? 'projectId' : 'clientId');
+    this.params = '?' + idType + '=' + id;
+    this.mainService.getEntries(this.params).subscribe(
+      data => {
+        this.entries = data.result;
+      }
+    );
 
+    this.mainService.getResources(this.params + '&active=1').subscribe(
+      data => {
+        EntryComponent.resources = data.result;
+      }
+    );
+  }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
            projectName: string, projectId: number, weekOf: string, capacity: number): Entry {

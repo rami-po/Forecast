@@ -20,8 +20,8 @@ export class MainService {
               private datePipe: DatePipe) {
   }
 
-  getProjects(param) {
-    return this.http.get('http://localhost:3000/resource/project' + param)
+  getProjects(params) {
+    return this.http.get('http://localhost:3000/resource/project' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -32,8 +32,8 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getClients() {
-    return this.http.get('http://localhost:3000/resource/client')
+  getClients(params) {
+    return this.http.get('http://localhost:3000/resource/client' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }

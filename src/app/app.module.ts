@@ -9,7 +9,7 @@ import {GridViewComponent} from './main/grid-view/grid-view.component';
 import {EntryComponent} from './main/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './main/header-row/header-row.component';
-import {MdButtonModule, MdDialogModule, MdToolbarModule, MdTooltipModule} from '@angular/material';
+import {MdButtonModule, MdDialogModule, MdMenuModule, MdToolbarModule, MdTooltipModule} from '@angular/material';
 import {DatePipe} from '@angular/common';
 import {ProjectComponent} from './project/project.component';
 import {CompanyComponent} from './company/company.component';
@@ -46,6 +46,7 @@ import {MilestonePromptComponent} from './project/milestone-prompt/milestone-pro
     MdButtonModule,
     MdToolbarModule,
     MdDialogModule,
+    MdMenuModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],

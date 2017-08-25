@@ -3,8 +3,18 @@
   <div id="title" class="title-container">
     <div class="title-row">
       <div id="name" class="title">Name</div>
-      <div *ngIf="!hasProject" class="title">Client</div>
-      <div *ngIf="!hasProject" class="title">Project</div>
+      <div *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title">Client</div>
+      <md-menu #client_menu="mdMenu">
+        <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id)">
+          <span>{{client.name}}</span>
+        </button>
+      </md-menu>
+      <div *ngIf="!hasProject" [mdMenuTriggerFor]="project_menu" class="title">Project</div>
+      <md-menu #project_menu="mdMenu">
+        <button *ngFor="let project of projects" md-menu-item (click)="updateEntries('project', project.id)">
+          <span>{{project.name}}</span>
+        </button>
+      </md-menu>
     </div>
   </div>
 
