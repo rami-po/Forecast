@@ -19,7 +19,7 @@ export class EntryService {
     const body = JSON.stringify(entry);
     const headers = new Headers({'Content-Type': 'application/json'});
 
-    return this.http.post('http://onboarding.productops.com/resource/entry', body, {headers: headers})
+    return this.http.post('http://onboarding.productops.com:3000/resource/entry', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
