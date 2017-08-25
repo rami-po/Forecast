@@ -24,17 +24,17 @@ export class MainComponent implements OnInit {
   @Input() private params = '';
   public hasProject = false;
 
+  public employees;
   public projects;
   public clients;
 
-  constructor(
-    private mainService: MainService,
-    private datePipe: DatePipe
-  ) { }
+  constructor(private mainService: MainService,
+              private datePipe: DatePipe) {
+  }
 
   ngOnInit() {
-   this.side = document.getElementById('side');
-   this.header = document.getElementById('header');
+    this.side = document.getElementById('side');
+    this.header = document.getElementById('header');
 
     const monday = this.mainService.getMonday(new Date());
     const weeks = this.mainService.getWeeks(monday);
@@ -59,22 +59,34 @@ export class MainComponent implements OnInit {
       name.style.width = '100%';
     }
 
+    // this.mainService.getEmployees('?active=1').subscribe(
+    //   data => {
+    //     this.employees = data.result;
+    //     for (const employee of this.employees) {
+    //       this.mainService.getEntries('?employeeid=' + employee.id).subscribe(
+    //         entries => {
+    //           console.log(entries.result);
+    //         }
+    //       );
+    //     }
+    //   }
+    // );
+
     this.mainService.getProjects('?active=1').subscribe(
       data => {
-        console.log(data);
         this.projects = data.result;
       }
     );
 
     this.mainService.getClients('?active=1').subscribe(
       data => {
-        console.log(data);
         this.clients = data.result;
       }
     );
 
     this.mainService.getEntries(this.params).subscribe(
       data => {
+        console.log(data);
         this.entries = data.result;
         if (this.entries.length <= 5 && this.hasProject) {
           console.log(this.entries.length);

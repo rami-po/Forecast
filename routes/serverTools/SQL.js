@@ -24,7 +24,7 @@ exports.get = function (req) {
 exports.getPeople = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 'e.id');
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
-  const isActive = (req.query.isactive ? req.query.isactive : 'e.is_active');
+  const isActive = (req.query.active ? req.query.active : 'e.is_active');
 
   connection.query('SELECT * FROM employees e ' +
     'WHERE e.id = ' + id + ' ' +

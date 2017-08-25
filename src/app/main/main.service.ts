@@ -26,8 +26,8 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getEmployees() {
-    return this.http.get('http://localhost:3000/resource/person')
+  getEmployees(params) {
+    return this.http.get('http://localhost:3000/resource/person' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
