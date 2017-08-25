@@ -31,18 +31,6 @@ export class GraphService {
               private mainService: MainService) {
   }
 
-  getMembers(params) {
-    return this.http.get('http://localhost:3000/resource/member' + params)
-      .map((response: Response) => response.json())
-      .catch((error: Response) => Observable.throw(error.json()));
-  }
-
-  getTimeEntries(params) {
-    return this.http.get('http://localhost:3000/resource/time' + params)
-      .map((response: Response) => response.json())
-      .catch((error: Response) => Observable.throw(error.json()));
-  }
-
   updateGraph(week) {
     this.mainService.getResources(this.params).subscribe(
       data => {
@@ -75,7 +63,7 @@ export class GraphService {
     const forecastData = [];
     const breakPointData = [];
 
-    this.getTimeEntries(this.params).subscribe(
+    this.mainService.getTimeEntries(this.params).subscribe(
       timeEntries => {
 
         // Takes all the separate dates and pools them in their respective Monday's
