@@ -13,9 +13,10 @@ export class EntryService {
 
   constructor(private http: Http) { }
 
-  updateResourceManagement(entry: Entry, weekOf: string, capacity: number) {
+  updateResourceManagement(entry: Entry, weekOf: string, capacity: number, boxNumber: number) {
     entry.weekOf = weekOf;
     entry.capacity = capacity;
+    entry.boxNumber = boxNumber;
     const body = JSON.stringify(entry);
     const headers = new Headers({'Content-Type': 'application/json'});
 

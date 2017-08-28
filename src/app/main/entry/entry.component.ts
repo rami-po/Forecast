@@ -14,6 +14,7 @@ import {ProjectComponent} from "../../project/project.component";
 import {ProjectService} from "../../project/project.service";
 import {BaseChartDirective} from "ng2-charts";
 import {GraphService} from "../../project/graph/graph.service";
+import {MainService} from "../main.service";
 
 @Component({
   selector: 'app-entry',
@@ -23,12 +24,12 @@ import {GraphService} from "../../project/graph/graph.service";
 })
 export class EntryComponent implements OnInit, OnDestroy {
 
-  @Input() public static resources;
   @Input() public static weeks = [];
-  private static index = 0;
   private lastWeek;
   public timerSubscription;
   @Input() public entry: Entry;
+  @Input() public data;
+  @Input() public row;
 
 
   constructor(
@@ -37,7 +38,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
   }
 
   ngOnDestroy() {
@@ -54,26 +54,23 @@ export class EntryComponent implements OnInit, OnDestroy {
     EntryComponent.weeks = weeks;
   }
 
-  public getCapacity(week: Date): string {
-    if (!isNullOrUndefined(EntryComponent.resources)) {
-      const resource = EntryComponent.resources[EntryComponent.index];
-      if (!isNullOrUndefined(resource)) {
-        if (resource.employee_id === this.entry.employeeId &&
-          resource.client_id === this.entry.clientId &&
-          resource.project_id === this.entry.projectId &&
-          resource.week_of.substring(0, 10) === week) {
-          EntryComponent.index++;
-          if (EntryComponent.index === EntryComponent.resources.length) {
-            EntryComponent.index = 0;
-          }
-          return resource.capacity;
-        }
-      }
+  public getCapacity(index): string {
+    if (!isNullOrUndefined(this.data) && !isNullOrUndefined(this.data[index])) {
+      return this.data[index];
     }
+
     return '0';
   }
 
-  type(value: string, week) {
+  public getTotal(index): string {
+    if (!isNullOrUndefined(this.data) && !isNullOrUndefined(this.data[index])) {
+      return this.data[index].capacity;
+    }
+
+    return '0';
+  }
+
+  type(value: string, week, columnNumber) {
     console.log('sending...');
     if (!isNaN(Number(value))) {
       if (!isNullOrUndefined(this.timerSubscription) && week === this.lastWeek) {
@@ -84,7 +81,8 @@ export class EntryComponent implements OnInit, OnDestroy {
       const timer = Observable.timer(2000);
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
-        this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
+        const boxNumber = columnNumber + (this.row * MainService.NUMBER_OF_WEEKS);
+        this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
           data => {
             this.graphService.updateGraph(week);
           }
@@ -93,6 +91,10 @@ export class EntryComponent implements OnInit, OnDestroy {
     } else {
       console.log('not a number...');
     }
+  }
+
+  check(entry): boolean {
+    return !isNullOrUndefined(entry);
   }
 
 }

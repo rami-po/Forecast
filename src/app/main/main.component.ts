@@ -7,6 +7,7 @@ import {MainService} from './main.service';
 import {EntryComponent} from './entry/entry.component';
 import {DatePipe} from '@angular/common';
 import {GridViewComponent} from './grid-view/grid-view.component';
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-main',
@@ -17,12 +18,14 @@ import {GridViewComponent} from './grid-view/grid-view.component';
 export class MainComponent implements OnInit {
   public static numberOfWeeks = 20;
   public entries = [];
+  public rollUps = [];
   private side;
   private header;
   private table;
   private forecast;
   @Input() private params = '';
   public hasProject = false;
+  public row = -1;
 
   public employees;
   public projects;
@@ -59,18 +62,7 @@ export class MainComponent implements OnInit {
       name.style.width = '100%';
     }
 
-    // this.mainService.getEmployees('?active=1').subscribe(
-    //   data => {
-    //     this.employees = data.result;
-    //     for (const employee of this.employees) {
-    //       this.mainService.getEntries('?employeeid=' + employee.id).subscribe(
-    //         entries => {
-    //           console.log(entries.result);
-    //         }
-    //       );
-    //     }
-    //   }
-    // );
+    this.getRollUps('');
 
     this.mainService.getProjects('?active=1').subscribe(
       data => {
@@ -86,7 +78,6 @@ export class MainComponent implements OnInit {
 
     this.mainService.getEntries(this.params).subscribe(
       data => {
-        console.log(data);
         this.entries = data.result;
         if (this.entries.length <= 5 && this.hasProject) {
           console.log(this.entries.length);
@@ -101,34 +92,73 @@ export class MainComponent implements OnInit {
 
     const activeTag = (this.params === '' ? '?' : '&');
 
-    console.log(this.params + activeTag + 'active=1');
     this.mainService.getResources(this.params + activeTag + 'active=1').subscribe(
       data => {
-        EntryComponent.resources = data.result;
         // HeaderRowComponent.totalCapacities = data.totalCapacities;
-        console.log(data.totalCapacities);
+        console.log(data.result);
       });
+  }
+
+  getRollUps(params) {
+    this.rollUps.length = 0;
+    this.mainService.getEmployees('?active=1').subscribe(
+      data => {
+        this.employees = data.result;
+        for (let i = 0; i < this.employees.length; i++) {
+          this.employees[i].opened = false;
+        }
+        for (const employee of this.employees) {
+          this.mainService.getEntries('?employeeid=' + employee.id + params).subscribe(
+            entries => {
+              if (entries.result.length > 0) {
+                this.rollUps.push(entries.result);
+              }
+            }
+          );
+        }
+        this.mainService.rollUps.next(this.rollUps);
+        console.log('Roll ups:');
+        console.log(this.rollUps);
+      }
+    );
   }
 
   updateEntries(entry, id) {
     const idType = (entry === 'project' ? 'projectId' : 'clientId');
+    this.params = '&' + idType + '=' + id;
+
+    this.getRollUps(this.params);
+
     this.params = '?' + idType + '=' + id;
-    this.mainService.getEntries(this.params).subscribe(
-      data => {
-        this.entries = data.result;
-      }
-    );
+
+    // this.mainService.getEntries(this.params).subscribe(
+    //   data => {
+    //     this.entries = data.result;
+    //   }
+    // );
 
     this.mainService.getResources(this.params + '&active=1').subscribe(
       data => {
-        EntryComponent.resources = data.result;
+        // EntryComponent.resources = data.result;
       }
     );
   }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
-           projectName: string, projectId: number, weekOf: string, capacity: number): Entry {
-    return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity);
+           projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {
+    return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity, boxNumber);
+  }
+
+  getRow(row, x) {
+    console.log('row: ' + row + ', x: ' + x);
+    return this.row++;
+  }
+
+  getLength(array) {
+    if (!isNullOrUndefined(array)) {
+      return array.length;
+    }
+    return 0;
   }
 
   onScroll($event) {

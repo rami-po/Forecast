@@ -16,6 +16,9 @@ export class MainService {
   private test = new Subject<any>();
   test$ = this.test.asObservable();
 
+  public rollUps = new Subject<any>();
+  rollUps$ = this.rollUps.asObservable();
+
   constructor(private http: Http,
               private datePipe: DatePipe) {
   }

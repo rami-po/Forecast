@@ -24,6 +24,7 @@ import {GraphComponent} from './project/graph/graph.component';
 import {GraphService} from './project/graph/graph.service';
 import {ChartModule} from 'angular2-chartjs';
 import {MilestonePromptComponent} from './project/milestone-prompt/milestone-prompt.component';
+import { RollUpComponent } from './main/roll-up/roll-up.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {MilestonePromptComponent} from './project/milestone-prompt/milestone-pro
     ProjectComponent,
     CompanyComponent,
     GraphComponent,
-    MilestonePromptComponent
+    MilestonePromptComponent,
+    RollUpComponent
   ],
   imports: [
     BrowserModule,

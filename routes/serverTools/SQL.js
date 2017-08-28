@@ -29,7 +29,8 @@ exports.getPeople = function (req, callback) {
   connection.query('SELECT * FROM employees e ' +
     'WHERE e.id = ' + id + ' ' +
     'AND e.is_contractor = ' + isContractor + ' ' +
-    'AND e.is_active = ' + isActive, function (err, result) {
+    'AND e.is_active = ' + isActive + ' ' +
+    'ORDER BY e.id ASC', function (err, result) {
     callback(err, result);
   })
 };
@@ -99,7 +100,7 @@ exports.getEntries = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY p.id, e.id, c.id ASC', function (err, result) {
+    'ORDER BY e.id ASC', function (err, result) {
       callback(err, result);
     });
 };
@@ -136,8 +137,7 @@ exports.getData = function (req, callback) {
     'AND p.active = 1 ' +
     'AND r.capacity IS NOT NULL ' +
     active +
-    'ORDER BY p.id, e.id, c.id, r.week_of ASC', function (err, result) {
-      console.log(result);
+    'ORDER BY r.box_number ASC', function (err, result) {
       callback(err, result);
     });
 };
@@ -171,11 +171,13 @@ exports.getTimeEntries = function (req, callback) {
  */
 
 exports.createEntry = function (req, callback) {
+  console.log(req.body);
   connection.query('INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, ' +
-    'capacity) VALUES (\'' + req.body.clientId + '\', \'' + req.body.projectId + '\', \'' +
+    'capacity, box_number) VALUES (\'' + req.body.clientId + '\', \'' + req.body.projectId + '\', \'' +
     req.body.employeeId + '\', \'' + req.body.weekOf + '\', \'' +
-    req.body.capacity + '\') ' +
-    'ON DUPLICATE KEY UPDATE capacity=\'' + req.body.capacity + '\'', function (err, result) {
-    callback(err, result);
-  });
+    req.body.capacity + '\', \'' + req.body.boxNumber + '\') ' +
+    'ON DUPLICATE KEY UPDATE capacity=\'' + req.body.capacity + '\', box_number=\'' + req.body.boxNumber + '\'',
+    function (err, result) {
+      callback(err, result);
+    });
 };
