@@ -13,11 +13,17 @@ import {Subject} from "rxjs/Subject";
 export class MainService {
 
   public static NUMBER_OF_WEEKS = 20;
-  private test = new Subject<any>();
-  test$ = this.test.asObservable();
+  private resources = new Subject<any>();
+  resources$ = this.resources.asObservable();
 
   public rollUps = new Subject<any>();
   rollUps$ = this.rollUps.asObservable();
+
+  public clients = new Subject<any>();
+  clients$ = this.clients.asObservable();
+
+  public projects = new Subject<any>();
+  projects$ = this.clients.asObservable();
 
   constructor(private http: Http,
               private datePipe: DatePipe) {
@@ -25,7 +31,10 @@ export class MainService {
 
   getProjects(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/project' + params)
-      .map((response: Response) => response.json())
+      .map((response: Response) => {
+        this.projects.next(response.json());
+        return response.json();
+      })
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
@@ -37,7 +46,10 @@ export class MainService {
 
   getClients(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/client' + params)
-      .map((response: Response) => response.json())
+      .map((response: Response) => {
+        this.clients.next(response.json());
+        return response.json();
+      })
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
@@ -69,7 +81,7 @@ export class MainService {
     params = (!isUndefined(params) ? params : '?active=1');
     return this.http.get('http://onboarding.productops.com:3000/resource/data' + params)
       .map((response: Response) => {
-        this.test.next(response.json());
+        this.resources.next(response.json());
         return response.json();
       })
       .catch((error: Response) => Observable.throw(error.json()));

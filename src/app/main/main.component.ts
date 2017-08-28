@@ -75,28 +75,6 @@ export class MainComponent implements OnInit {
         this.clients = data.result;
       }
     );
-
-    this.mainService.getEntries(this.params).subscribe(
-      data => {
-        this.entries = data.result;
-        if (this.entries.length <= 5 && this.hasProject) {
-          console.log(this.entries.length);
-          const pixels = this.entries.length * 70.5;
-          console.log(pixels);
-          this.table.style.height = pixels + 'px';
-          this.table.style.overflowY = 'hidden';
-          this.header.style.marginRight = '0px';
-          this.forecast.style.height = Number(pixels + 64) + 'px';
-        }
-      });
-
-    const activeTag = (this.params === '' ? '?' : '&');
-
-    this.mainService.getResources(this.params + activeTag + 'active=1').subscribe(
-      data => {
-        // HeaderRowComponent.totalCapacities = data.totalCapacities;
-        console.log(data.result);
-      });
   }
 
   getRollUps(params) {
@@ -128,6 +106,18 @@ export class MainComponent implements OnInit {
     this.params = '&' + idType + '=' + id;
 
     this.getRollUps(this.params);
+
+    this.mainService.getProjects('?active=1').subscribe(
+      data => {
+        this.projects = data.result;
+      }
+    );
+
+    this.mainService.getClients('?active=1').subscribe(
+      data => {
+        this.clients = data.result;
+      }
+    );
 
     this.params = '?' + idType + '=' + id;
 

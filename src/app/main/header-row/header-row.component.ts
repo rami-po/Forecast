@@ -28,7 +28,7 @@ export class HeaderRowComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.weeks = EntryComponent.weeks;
     this.index = 0;
-    this.subscriptions.push(this.mainService.test$.subscribe(
+    this.subscriptions.push(this.mainService.resources$.subscribe(
       data => {
        this.totalCapacities = data.totalCapacities;
       }
