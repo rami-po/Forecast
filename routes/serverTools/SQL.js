@@ -26,7 +26,7 @@ exports.getPeople = function (req, callback) {
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
   const isActive = (req.query.active ? req.query.active : 'e.is_active');
   const projectJoin = (req.query.projectid ? "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.query.projectid + " AND e.id = a.user_id " : '');
-  const clientJoin = (req.query.projectid ? "RIGHT OUTER JOIN projects p ON p.client_id = " + req.query.clientid + "" : '');
+  const clientJoin = (req.query.clientid ? "RIGHT OUTER JOIN projects p ON p.client_id = " + req.query.clientid + "" : '');
   const isDeactivated = (req.query.projectid ? "AND a.deactivated = 0 " : '');
 
   connection.query('SELECT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, e.telephone, e.is_active, e.default_hourly_rate, ' +
