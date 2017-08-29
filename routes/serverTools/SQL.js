@@ -51,7 +51,8 @@ exports.getProjects = function (req, callback) {
   connection.query('SELECT * FROM projects p ' +
     'WHERE p.id = ' + id + ' ' +
     'AND p.client_id = ' + clientId + ' ' +
-    'AND p.active = ' + active, function (err, result) {
+    'AND p.active = ' + active + ' ' +
+    'ORDER BY p.name', function (err, result) {
     callback(err, result);
   });
 
@@ -63,7 +64,8 @@ exports.getClients = function (req, callback) {
 
   connection.query('SELECT * FROM clients c ' +
     'WHERE c.id = ' + id + ' ' +
-    'AND c.active = ' + active, function (err, result) {
+    'AND c.active = ' + active + ' ' +
+    'ORDER BY c.name', function (err, result) {
     callback(err, result);
   });
 
@@ -108,7 +110,7 @@ exports.getEntries = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY e.id ASC', function (err, result) {
+    'ORDER BY e.id, c.name, p.name ASC', function (err, result) {
       callback(err, result);
     });
 };

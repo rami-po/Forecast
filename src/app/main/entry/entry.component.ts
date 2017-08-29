@@ -118,7 +118,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   isRed(index) {
     const difference = this.getDifference(index);
     // return (difference > 20 || difference < -20);
-    return difference < 0
+    return difference < 0;
   }
 
   type(value: string, week, columnNumber) {
