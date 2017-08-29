@@ -16,25 +16,32 @@
 
 .week-red {
   @extend .week;
-  background-color: red;
+  background-color: #E57373;
+  color: white;
 }
 
-.week_orange {
+
+.week-orange {
   @extend .week;
-  background-color: orange;
+  background-color: #FFB74D;
+  color: white;
 }
+
 
 .week-yellow {
   @extend .week;
-  background-color: yellow;
+  background-color: #FFEB3B;
+  color: white;
 }
 
 .week-lime {
   @extend .week;
-  background-color: lightgreen;
+  background-color: #DCE775;
+  color: white;
 }
 
 .week-green {
   @extend .week;
-  background-color: green;
+  background-color: #81C784;
+  color: white;
 }
