@@ -89,7 +89,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   getDifference(index): any {
     const employeeCap = this.employeeCapacity / 3600;
     if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
-      // console.log(this.totalCapacities[index].capacity - employeeCap);
       return this.totalCapacities[index].capacity - employeeCap;
     }
     return 0 - employeeCap;
@@ -107,7 +106,8 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   isYellow(index) {
     const difference = this.getDifference(index);
-    return ((difference <= 10 && difference > 5) || (difference >= -10 && difference < -5));
+    // return ((difference <= 10 && difference > 5) || (difference >= -10 && difference < -5));
+    return difference > 0;
   }
 
   isOrange(index) {
@@ -117,7 +117,8 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   isRed(index) {
     const difference = this.getDifference(index);
-    return (difference > 20 || difference < -20);
+    // return (difference > 20 || difference < -20);
+    return difference < 0
   }
 
   type(value: string, week, columnNumber) {
