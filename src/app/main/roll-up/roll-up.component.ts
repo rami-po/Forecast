@@ -2,42 +2,61 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Entry} from "../entry/entry.model";
 import {MainService} from "../main.service";
 import {DatePipe} from "@angular/common";
+import {Subject} from "rxjs/Subject";
+import {RollUpService} from "./roll-up.service";
+import {isUndefined} from "util";
 
 @Component({
   selector: 'app-roll-up',
   templateUrl: './roll-up.component.html',
-  styleUrls: ['./roll-up.component.scss']
+  styleUrls: ['./roll-up.component.scss'],
+  providers: [RollUpService]
 })
 export class RollUpComponent implements OnInit {
 
   @Input() public employee;
   @Input() public data;
   @Input() public row;
+  @Input() public params;
 
   public entries = [];
   public totalCapacities;
 
-  constructor(
-    private mainService: MainService,
-    private datePipe: DatePipe
-  ) { }
+  private lastProjectId = '';
+  private employeeFlag;
+
+  constructor(private mainService: MainService,
+              private datePipe: DatePipe,
+              private rollUpService: RollUpService) {
+  }
 
   ngOnInit() {
+    console.log('?????')
     this.mainService.getResources('?employeeId=' + this.employee.id).subscribe(
-      data => {
-        this.totalCapacities = data.totalCapacities;
-        const monday = this.datePipe.transform(this.mainService.getMonday(new Date()), 'yyyy-MM-dd');
-        let index = -1;
-        for (let i = 0; i < data.result.length; i++) {
-          if (data.result[i].week_of.substring(0, 10) === monday) {
-           this.entries.push([]);
-           index++;
+      resources => {
+        this.rollUpService.allCapacities.length = 0;
+        this.rollUpService.allCapacities.push(this.totalCapacities);
+        this.totalCapacities = resources.totalCapacities;
+        this.mainService.getResources('?employeeId=' + this.employee.id + this.params).subscribe(
+          data => {
+            if (!isUndefined(this.data)) {
+              this.entries.length = 0;
+              for (let row = 0; row < this.data.length; row++) {
+                this.entries.push([]);
+                for (let i = 0; i < data.result.length; i++) {
+                  if (this.data[row].project_id === data.result[i].project_id) {
+                    this.entries[row].push({
+                      week: data.result[i].week_of.substring(0, 10),
+                      capacity: data.result[i].capacity
+                    });
+                  }
+                }
+              }
+            }
           }
-          this.entries[index].push(data.result[i].capacity);
-        }
+        );
       }
     );
-
   }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,

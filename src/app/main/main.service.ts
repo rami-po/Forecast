@@ -25,6 +25,9 @@ export class MainService {
   public projects = new Subject<any>();
   projects$ = this.clients.asObservable();
 
+  public employees = new Subject<any>();
+  employees$ = this.employees.asObservable();
+
   constructor(private http: Http,
               private datePipe: DatePipe) {
   }

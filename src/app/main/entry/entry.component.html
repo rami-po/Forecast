@@ -1,5 +1,13 @@
 <div class="row-container">
   <div *ngFor="let week of getWeeks(), let i = index" class="row">
-    <input class="week" maxlength="2" (input)="type($event.target.value, week, i)" [value]="check(entry) ? getCapacity(i) : getTotal(i)" [disabled]="!check(entry)">
+    <input
+      class="week"
+      [class.week_red]="isRed(i)"
+      [class.week_orange]="isOrange(i)"
+      [class.week_yellow]="isYellow(i)"
+      [class.week_lime]="isLime(i)"
+      [class.week_green]="isGreen(i)"
+      maxlength="2" (input)="type($event.target.value, week, i)" [value]="check(entry) ? getCapacity(week, i) : getTotal(week, i)"
+      [disabled]="!check(entry)">
   </div>
 </div>

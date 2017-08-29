@@ -13,3 +13,28 @@
   align-items: center;
   padding: 5px;
 }
+
+.week-red {
+  @extend .week;
+  background-color: red;
+}
+
+.week_orange {
+  @extend .week;
+  background-color: orange;
+}
+
+.week-yellow {
+  @extend .week;
+  background-color: yellow;
+}
+
+.week-lime {
+  @extend .week;
+  background-color: lightgreen;
+}
+
+.week-green {
+  @extend .week;
+  background-color: green;
+}

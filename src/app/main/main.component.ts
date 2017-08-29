@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
   private header;
   private table;
   private forecast;
-  @Input() private params = '';
+  @Input() public params = '';
   public hasProject = false;
   public row = -1;
 
@@ -67,19 +67,21 @@ export class MainComponent implements OnInit {
     this.mainService.getProjects('?active=1').subscribe(
       data => {
         this.projects = data.result;
+        this.projects.splice(0, 0, {id: '', name: 'All'});
       }
     );
 
     this.mainService.getClients('?active=1').subscribe(
       data => {
         this.clients = data.result;
+        this.clients.splice(0, 0, {id: '', name: 'All'});
       }
     );
   }
 
   getRollUps(params) {
     this.rollUps.length = 0;
-    this.mainService.getEmployees('?active=1').subscribe(
+    this.mainService.getEmployees('?active=1' + params).subscribe(
       data => {
         this.employees = data.result;
         for (let i = 0; i < this.employees.length; i++) {
@@ -97,58 +99,41 @@ export class MainComponent implements OnInit {
         this.mainService.rollUps.next(this.rollUps);
         console.log('Roll ups:');
         console.log(this.rollUps);
+        console.log('------------');
       }
     );
+
   }
 
   updateEntries(entry, id) {
-    const idType = (entry === 'project' ? 'projectId' : 'clientId');
-    this.params = '&' + idType + '=' + id;
+    if (id !== '') {
+      const idType = (entry === 'project' ? 'projectId' : 'clientId');
+      this.params = '&' + idType + '=' + id;
+    } else {
+      this.params = '';
+    }
 
     this.getRollUps(this.params);
 
     this.mainService.getProjects('?active=1').subscribe(
       data => {
         this.projects = data.result;
+        this.projects.splice(0, 0, {id: '', name: 'All'});
       }
     );
 
     this.mainService.getClients('?active=1').subscribe(
       data => {
         this.clients = data.result;
+        this.clients.splice(0, 0, {id: '', name: 'All'});
       }
     );
 
-    this.params = '?' + idType + '=' + id;
-
-    // this.mainService.getEntries(this.params).subscribe(
-    //   data => {
-    //     this.entries = data.result;
-    //   }
-    // );
-
-    this.mainService.getResources(this.params + '&active=1').subscribe(
-      data => {
-        // EntryComponent.resources = data.result;
-      }
-    );
   }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
            projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {
     return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity, boxNumber);
-  }
-
-  getRow(row, x) {
-    console.log('row: ' + row + ', x: ' + x);
-    return this.row++;
-  }
-
-  getLength(array) {
-    if (!isNullOrUndefined(array)) {
-      return array.length;
-    }
-    return 0;
   }
 
   onScroll($event) {

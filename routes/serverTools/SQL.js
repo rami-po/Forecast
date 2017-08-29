@@ -25,11 +25,17 @@ exports.getPeople = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 'e.id');
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
   const isActive = (req.query.active ? req.query.active : 'e.is_active');
+  const projectJoin = (req.query.projectid ? "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.query.projectid + " AND e.id = a.user_id " : '');
+  const clientJoin = (req.query.projectid ? "RIGHT OUTER JOIN assignments a ON a.client_id = " + req.query.clientid + " AND e.id = a.user_id " : '');
+  const isDeactivated = (req.query.projectid || req.query.clientid ? "AND a.deactivated = 0 " : '');
 
-  connection.query('SELECT * FROM employees e ' +
+  connection.query('SELECT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, e.telephone, e.is_active, e.default_hourly_rate, ' +
+    'e.department, e.updated_at, e.cost_rate, e.capacity FROM employees e ' +
+    projectJoin +
     'WHERE e.id = ' + id + ' ' +
     'AND e.is_contractor = ' + isContractor + ' ' +
     'AND e.is_active = ' + isActive + ' ' +
+    isDeactivated +
     'ORDER BY e.id ASC', function (err, result) {
     callback(err, result);
   })
@@ -143,7 +149,7 @@ exports.getData = function (req, callback) {
 };
 
 exports.getMembers = function (req, callback) {
-  connection.query("SELECT e.id, e.first_name, e.last_name, a.is_project_manager " +
+  connection.query("SELECT e.id, e.first_name, e.last_name, e.capacity, a.is_project_manager " +
     "FROM employees e " +
     "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.params.id + " AND e.id = a.user_id " +
     "WHERE a.deactivated = 0 " +
