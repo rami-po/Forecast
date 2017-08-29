@@ -47,6 +47,14 @@ export class MainService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  putEmployees(employee) {
+    const body = JSON.stringify(employee);
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.put('http://onboarding.productops.com:3000/resource/person', body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getClients(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/client' + params)
       .map((response: Response) => {

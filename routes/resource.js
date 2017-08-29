@@ -6,6 +6,7 @@ var router = express.Router();
 
 var tools = require('./serverTools/tools');
 var SQL = require('./serverTools/SQL');
+var harvest = require('./serverTools/harvest');
 
 /*
  * PERSON ROUTES
@@ -38,6 +39,31 @@ router.get('/person/:id', function (req, res, next) {
       return res.status(200).json({
         message: 'Success!',
         result: result
+      });
+    }
+  });
+});
+
+router.put('/person', function (req, res, next) {
+  harvest.updateCapacity(req, function(status, result) {
+    if (status === 200) {
+      SQL.updateCapacity(req, function (err, result) {
+        if (err){
+          return res.status(500).json({
+            message: 'Error!',
+            err: err
+          });
+        } else {
+          return res.status(200).json({
+            message: 'Success!',
+            result: result
+          });
+        }
+      });
+    } else {
+      return res.status(status).json({
+        message: 'Error!',
+        err: result
       });
     }
   });

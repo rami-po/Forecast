@@ -192,3 +192,9 @@ exports.createEntry = function (req, callback) {
       callback(err, result);
     });
 };
+
+exports.updateCapacity = function (req, callback) {
+  connection.query('UPDATE employees SET capacity = ' + req.body.capacity + ' WHERE id = ' + req.body.id, function (err, result) {
+    callback(err, result);
+  });
+};
