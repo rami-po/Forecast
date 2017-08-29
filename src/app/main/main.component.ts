@@ -92,6 +92,9 @@ export class MainComponent implements OnInit {
             entries => {
               if (entries.result.length > 0) {
                 this.rollUps.push(entries.result);
+              } else {
+                const index = this.employees.indexOf(employee);
+                this.employees.splice(index, 1);
               }
             }
           );
