@@ -2,7 +2,6 @@
   <div *ngFor="let week of getWeeks(), let i = index" class="row">
     <input
       class="week"
-      [class.week-green]="isGreen(i)"
       [class.week-yellow]="isYellow(i)"
       [class.week-red]="isRed(i)"
       maxlength="2" (input)="type($event.target.value, week, i)" [value]="check(entry) ? getCapacity(week, i) : getTotal(week, i)"
