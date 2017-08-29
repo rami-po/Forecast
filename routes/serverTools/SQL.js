@@ -37,7 +37,7 @@ exports.getPeople = function (req, callback) {
     'AND e.is_contractor = ' + isContractor + ' ' +
     'AND e.is_active = ' + isActive + ' ' +
     isDeactivated +
-    'ORDER BY e.id ASC', function (err, result) {
+    'ORDER BY e.last_name ASC', function (err, result) {
     callback(err, result);
   })
 
