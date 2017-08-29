@@ -111,7 +111,7 @@ exports.getEntries = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY e.id, c.name, p.name ASC', function (err, result) {
+    'ORDER BY e.last_name, c.name, p.name ASC', function (err, result) {
       callback(err, result);
     });
 };
