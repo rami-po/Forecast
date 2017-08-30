@@ -19,6 +19,7 @@ export class ClientListComponent implements OnInit {
 
     this.mainService.getEmployees('?active=1&clientId=' + this.client.id).subscribe(
       data => {
+        console.log(this.client);
         this.employees = data.result;
       }
     );
