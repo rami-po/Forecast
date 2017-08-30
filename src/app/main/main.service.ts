@@ -17,6 +17,9 @@ export class MainService {
   public resources = new Subject<any>();
   resources$ = this.resources.asObservable();
 
+  public filteredResources = new Subject<any>();
+  filteredResources$ = this.filteredResources.asObservable();
+
   public rollUps = new Subject<any>();
   rollUps$ = this.rollUps.asObservable();
 

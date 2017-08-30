@@ -30,6 +30,13 @@ export class CapacityRowComponent implements OnInit {
         this.totalCapacities = data.totalCapacities;
       }
     ));
+
+    this.subscriptions.push(this.mainService.filteredResources$.subscribe(
+      data => {
+        console.log(data.totalCapacities);
+        this.filteredCapacities = data.totalCapacities;
+      }
+    ));
   }
 
   getTotalCapacity(week, index) {
@@ -38,6 +45,19 @@ export class CapacityRowComponent implements OnInit {
         this.totalCapacities.splice(index, 0, {week: week, capacity: 0});
       }
       return this.totalCapacities[index].capacity;
+    }
+    return '0';
+  }
+
+  getFilteredCapacity(week, index) {
+    if (!isUndefined(this.filteredCapacities) && !isUndefined(this.filteredCapacities[index])) {
+      if (this.filteredCapacities[index].capacity === this.totalCapacities[index].capacity) {
+        return '0';
+      }
+      if (this.filteredCapacities[index].week !== week) {
+        this.filteredCapacities.splice(index, 0, {week: week, capacity: 0});
+      }
+      return this.filteredCapacities[index].capacity;
     }
     return '0';
   }

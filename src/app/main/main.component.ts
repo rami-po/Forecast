@@ -109,8 +109,16 @@ export class MainComponent implements OnInit {
         console.log('Roll ups:');
         console.log(this.rollUps);
         console.log('------------');
+        this.mainService.getResources('?' + params.substring(1)).subscribe(
+          resources => {
+            this.mainService.filteredResources.next(resources);
+          }
+        );
       }
     );
+
+
+
 
   }
 

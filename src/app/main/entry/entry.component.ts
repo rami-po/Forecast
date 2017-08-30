@@ -36,6 +36,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public row;
   @Input() public totalCapacities;
   @Input() public employeeCapacity;
+  @Input() private params;
 
   constructor(public entryService: EntryService,
               public graphService: GraphService,
@@ -140,6 +141,13 @@ export class EntryComponent implements OnInit, OnDestroy {
                 this.mainService.resources.next(data);
               }
             );
+            console.log(this.params);
+            this.mainService.getResources('?' + this.params.substring(1)).subscribe(
+              data => {
+                this.mainService.filteredResources.next(data);
+              }
+            );
+
             // this.graphService.updateGraph(week);
             this.mainService.getResources('?employeeId=' + this.entry.employeeId).subscribe(
               resources => {
