@@ -24,9 +24,10 @@ import {GraphComponent} from './project/graph/graph.component';
 import {GraphService} from './project/graph/graph.service';
 import {ChartModule} from 'angular2-chartjs';
 import {MilestonePromptComponent} from './project/milestone-prompt/milestone-prompt.component';
-import { RollUpComponent } from './main/roll-up/roll-up.component';
-import { BobComponent } from './bob/bob.component';
-import { ClientListComponent } from './bob/client-list/client-list.component';
+import {RollUpComponent} from './main/roll-up/roll-up.component';
+import {BobComponent} from './bob/bob.component';
+import {ClientListComponent} from './bob/client-list/client-list.component';
+import {CapacityRowComponent} from './main/capacity-row/capacity-row.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { ClientListComponent } from './bob/client-list/client-list.component';
     MilestonePromptComponent,
     RollUpComponent,
     BobComponent,
-    ClientListComponent
+    ClientListComponent,
+    CapacityRowComponent
   ],
   imports: [
     BrowserModule,

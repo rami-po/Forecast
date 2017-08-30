@@ -1,0 +1,15 @@
+.row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.week {
+  border: 1px solid gray;
+  height: 50px;
+  text-align: center;
+  width: 75px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}

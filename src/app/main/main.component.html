@@ -22,8 +22,12 @@
     </div>
   </div>
 
+  <div id="capacity-header" class="capacity-row-container">
+    <app-capacity-row [weeks]="weeks" class="header"></app-capacity-row>
+  </div>
+
   <div id="header" class="header-row-container">
-    <app-header-row class="header"></app-header-row>
+    <app-header-row [weeks]="weeks" class="header"></app-header-row>
   </div>
 
   <div id="side" class="side-list-container">

@@ -85,7 +85,6 @@ export class EntryComponent implements OnInit, OnDestroy {
     return '0';
   }
 
-
   getDifference(index): any {
     const employeeCap = this.employeeCapacity / 3600;
     if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
@@ -132,9 +131,15 @@ export class EntryComponent implements OnInit, OnDestroy {
       const timer = Observable.timer(2000);
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
+
         const boxNumber = columnNumber + (this.row * MainService.NUMBER_OF_WEEKS);
         this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
           callback => {
+            this.mainService.getResources('').subscribe(
+              data => {
+                this.mainService.resources.next(data);
+              }
+            );
             // this.graphService.updateGraph(week);
             this.mainService.getResources('?employeeId=' + this.entry.employeeId).subscribe(
               resources => {
