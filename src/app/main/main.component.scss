@@ -1,6 +1,8 @@
+$title_height: 62px;
+
 
 .entry-container {
-  margin-top: 64px;
+  margin-top: $title_height;
   margin-left: 25%;
   height: 90vh;
   width: 75%;
@@ -19,7 +21,7 @@
 }
 
 .side-list-container {
-  margin-top: 64px;
+  margin-top: $title_height;
   background-color: white;
   top: 0;
   bottom: 0;
@@ -37,12 +39,13 @@
 
 .title-container {
   width: 25%;
-  height: 64px;
+  height: $title_height;
   position: absolute;
   left: 0;
   top: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .title-row {
@@ -51,13 +54,18 @@
 }
 
 .title {
-  border: 2px solid white;
+  border: 1px solid white;
   height: 50px;
   padding: 5px;
   text-align: center;
   font-weight: bolder;
-  font-size: 25px;
+  font-size: 15px;
   position: relative;
   width: 33%;
   margin-right: 10px;
+}
+
+.title-pointer {
+  @extend .title;
+  cursor: pointer;
 }

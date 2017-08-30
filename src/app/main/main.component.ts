@@ -31,6 +31,9 @@ export class MainComponent implements OnInit {
   public projects;
   public clients;
 
+  public projectName = 'All Projects';
+  public clientName = 'All Clients';
+
   constructor(private mainService: MainService,
               private datePipe: DatePipe) {
   }
@@ -108,12 +111,23 @@ export class MainComponent implements OnInit {
 
   }
 
-  updateEntries(entry, id) {
+  updateEntries(entry, id, name) {
     if (id !== '') {
-      const idType = (entry === 'project' ? 'projectId' : 'clientId');
-      this.params = '&' + idType + '=' + id;
+      if (entry === 'project') {
+        this.params = '&projectId=' + id;
+        this.projectName = name;
+        this.clientName = 'All Clients';
+      } else {
+        this.params = '&clientId=' + id;
+        this.clientName = name;
+        this.projectName = 'All Projects';
+      }
+      // const idType = (entry === 'project' ? 'projectId' : 'clientId');
+      // this.params = '&' + idType + '=' + id;
     } else {
       this.params = '';
+      this.projectName = 'All Projects';
+      this.clientName = 'All Clients';
     }
 
     this.getRollUps(this.params);
