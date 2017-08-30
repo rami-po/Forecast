@@ -5,6 +5,7 @@ import {GridViewComponent} from './main/grid-view/grid-view.component';
 import {SideListComponent} from './main/side-list/side-list.component';
 import {CompanyComponent} from './company/company.component';
 import {ProjectComponent} from './project/project.component';
+import {BobComponent} from "./bob/bob.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -38,6 +39,10 @@ const APP_ROUTES: Routes = [
   {
     path: 'project',
     component: ProjectComponent
+  },
+  {
+    path: 'bob',
+    component: BobComponent
   }
 ];
 

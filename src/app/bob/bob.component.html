@@ -1,0 +1,7 @@
+<md-toolbar color="primary">
+  <span>Bob's View</span>
+</md-toolbar>
+
+<div class="lists-view">
+  <app-client-list *ngFor="let client of clients" [client]="client"></app-client-list>
+</div>
