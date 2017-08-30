@@ -59,4 +59,5 @@ export class SideListComponent implements OnInit {
   updateState(employee) {
     employee.opened = !employee.opened;
   }
+
 }
