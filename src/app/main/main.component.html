@@ -3,15 +3,19 @@
   <div id="title" class="title-container">
     <div class="title-row">
       <div id="name" class="title">Name</div>
-      <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">{{clientName}}</div>
+      <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">{{clientName}}
+      </div>
       <md-menu #client_menu="mdMenu">
         <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id, client.name)">
           <span>{{client.name}}</span>
         </button>
       </md-menu>
-      <div id="project_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="project_menu" class="title-pointer">{{projectName}}</div>
+      <div id="project_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="project_menu" class="title-pointer">
+        {{projectName}}
+      </div>
       <md-menu #project_menu="mdMenu">
-        <button *ngFor="let project of projects" md-menu-item (click)="updateEntries('project', project.id, project.name)">
+        <button *ngFor="let project of projects" md-menu-item
+                (click)="updateEntries('project', project.id, project.name)">
           <span>{{project.name}}</span>
         </button>
       </md-menu>
@@ -22,15 +26,13 @@
     <app-header-row class="header"></app-header-row>
   </div>
 
-  <div class="test">
-    <div id="side" class="side-list-container">
-      <app-side-list [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
-    </div>
+  <div id="side" class="side-list-container">
+    <app-side-list [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
+  </div>
 
-    <div id="table" class="entry-container" (scroll)="onScroll($event)">
-      <div *ngFor="let employee of employees, let i = index">
-        <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
-      </div>
+  <div id="table" class="entry-container" (scroll)="onScroll($event)">
+    <div *ngFor="let employee of employees, let i = index">
+      <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
     </div>
   </div>
 
