@@ -122,8 +122,6 @@ export class MainComponent implements OnInit {
         this.clientName = name;
         this.projectName = 'All Projects';
       }
-      // const idType = (entry === 'project' ? 'projectId' : 'clientId');
-      // this.params = '&' + idType + '=' + id;
     } else {
       this.params = '';
       this.projectName = 'All Projects';
@@ -131,20 +129,6 @@ export class MainComponent implements OnInit {
     }
 
     this.getRollUps(this.params);
-
-    this.mainService.getProjects('?active=1').subscribe(
-      data => {
-        this.projects = data.result;
-        this.projects.splice(0, 0, {id: '', name: 'All'});
-      }
-    );
-
-    this.mainService.getClients('?active=1').subscribe(
-      data => {
-        this.clients = data.result;
-        this.clients.splice(0, 0, {id: '', name: 'All'});
-      }
-    );
 
   }
 
