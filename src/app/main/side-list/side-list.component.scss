@@ -16,21 +16,18 @@
   text-align: center;
   position: relative;
   width: 33%;
-  border: 2px solid white;
+  border: 1px solid white;
   height: 50px;
   font-size: 15px;
   padding: 5px;
 }
 
+.user_name {
+  @extend .name;
+  cursor: pointer;
+}
+
 .name2 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  position: relative;
+  @extend .name;
   width: 100%;
-  border: 2px solid white;
-  height: 50px;
-  font-size: 15px;
-  padding: 5px;
 }
