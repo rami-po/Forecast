@@ -119,6 +119,7 @@ export class MainComponent implements OnInit {
         this.clientName = 'All Clients';
       } else {
         this.params = '&clientId=' + id;
+        console.log(this.params);
         this.clientName = name;
         this.projectName = 'All Projects';
       }
