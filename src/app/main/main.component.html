@@ -22,15 +22,16 @@
     <app-header-row class="header"></app-header-row>
   </div>
 
-  <div id="side" class="side-list-container">
-    <app-side-list [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
-  </div>
+  <div class="test">
+    <div id="side" class="side-list-container">
+      <app-side-list [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
+    </div>
 
-  <div id="table" class="entry-container" (scroll)="onScroll($event)">
-    <div *ngFor="let employee of employees, let i = index">
-      <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
+    <div id="table" class="entry-container" (scroll)="onScroll($event)">
+      <div *ngFor="let employee of employees, let i = index">
+        <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
+      </div>
     </div>
   </div>
-
 
 </div>

@@ -154,8 +154,8 @@ export class MainComponent implements OnInit {
   }
 
   onScroll($event) {
-    this.side.scrollTop = $event.srcElement.scrollTop;
-    this.header.scrollLeft = $event.srcElement.scrollLeft;
+    // this.side.scrollTop = $event.srcElement.scrollTop;
+    // this.header.scrollLeft = $event.srcElement.scrollLeft;
   }
 
 }

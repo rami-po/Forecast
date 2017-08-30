@@ -22,6 +22,19 @@
   padding: 5px;
 }
 
+.capacity {
+  @extend .name;
+}
+
+.capacity:focus {
+  padding: 4px;
+  border: 2px solid limegreen;
+}
+
+input:focus {
+  outline-color: limegreen;
+}
+
 .user_name {
   @extend .name;
   cursor: pointer;

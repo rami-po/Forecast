@@ -2,7 +2,7 @@
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
       <div class="user_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
-      <input maxlength="2" class="name" (input)="type($event.target.value, employee)" [value]="employee.capacity/3600">
+      <input maxlength="2" onclick="select()" class="capacity" (input)="type($event.target.value, employee)" [value]="employee.capacity/3600">
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
