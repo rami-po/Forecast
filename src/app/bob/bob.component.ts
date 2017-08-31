@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MainService} from "../main/main.service";
+import {ForecastService} from '../forecast/forecast.service';
 
 @Component({
   selector: 'app-bob',
@@ -10,7 +10,7 @@ export class BobComponent implements OnInit {
 
   public clients;
 
-  constructor(private mainService: MainService) {
+  constructor(private mainService: ForecastService) {
   }
 
   ngOnInit() {

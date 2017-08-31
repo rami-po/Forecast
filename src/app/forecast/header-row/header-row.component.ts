@@ -1,8 +1,8 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {isNullOrUndefined} from 'util';
 import {EntryComponent} from '../entry/entry.component';
-import {MainComponent} from "../main.component";
-import {MainService} from "../main.service";
+import {ForecastComponent} from "../forecast.component";
+import {ForecastService} from "../forecast.service";
 import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
@@ -22,7 +22,7 @@ export class HeaderRowComponent implements OnInit, OnDestroy {
   private subscriptions = [];
 
   constructor(
-    private mainService: MainService
+    private mainService: ForecastService
   ) { }
 
   ngOnInit() {

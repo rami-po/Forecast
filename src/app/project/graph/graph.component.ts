@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MainService} from '../../main/main.service';
+import {ForecastService} from '../../forecast/forecast.service';
 import {ActivatedRoute} from '@angular/router';
 import {GraphService} from './graph.service';
 // import 'chartjs-plugin-zoom';
@@ -7,7 +7,7 @@ import 'chartjs-plugin-annotation';
 import {ChartComponent} from 'angular2-chartjs';
 import {MdDialog} from '@angular/material';
 import {MilestonePromptComponent} from '../milestone-prompt/milestone-prompt.component';
-import {ProjectService} from "../project.service";
+import {ProjectService} from '../project.service';
 
 @Component({
   selector: 'app-graph',
@@ -134,7 +134,7 @@ export class GraphComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
               public graphService: GraphService,
               private projectService: ProjectService,
-              private mainService: MainService,
+              private mainService: ForecastService,
               private dialog: MdDialog) {
   }
 

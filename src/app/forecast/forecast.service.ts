@@ -11,7 +11,7 @@ import {isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
 
 @Injectable()
-export class MainService {
+export class ForecastService {
 
   public static NUMBER_OF_WEEKS = 20;
 
@@ -110,7 +110,7 @@ export class MainService {
 
   getWeeks(monday): string[] {
     const weeks = [];
-    for (let i = 0; i < MainService.NUMBER_OF_WEEKS; i++) {
+    for (let i = 0; i < ForecastService.NUMBER_OF_WEEKS; i++) {
       const date = new Date(monday.toDateString());
       weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
       monday.setDate(monday.getDate() + 7);

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {MainService} from "../main.service";
-import {isUndefined} from "util";
+import {ForecastService} from '../forecast.service';
+import {isUndefined} from 'util';
 
 @Component({
   selector: 'app-capacity-row',
@@ -14,7 +14,7 @@ export class CapacityRowComponent implements OnInit {
   public filteredCapacities;
   private subscriptions = [];
 
-  constructor(private mainService: MainService) {
+  constructor(private mainService: ForecastService) {
   }
 
   ngOnInit() {

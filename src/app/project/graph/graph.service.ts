@@ -6,9 +6,9 @@ import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {DatePipe} from '@angular/common';
-import {MainService} from '../../main/main.service';
+import {ForecastService} from '../../forecast/forecast.service';
 import {isNullOrUndefined} from 'util';
-import {Subject} from "rxjs/Subject";
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class GraphService {
@@ -28,7 +28,7 @@ export class GraphService {
 
   constructor(private http: Http,
               private datePipe: DatePipe,
-              private mainService: MainService) {
+              private mainService: ForecastService) {
   }
 
   updateGraph(week) {

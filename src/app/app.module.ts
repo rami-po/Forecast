@@ -3,12 +3,12 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
-import {SideListComponent} from './main/side-list/side-list.component';
-import {MainComponent} from './main/main.component';
-import {GridViewComponent} from './main/grid-view/grid-view.component';
-import {EntryComponent} from './main/entry/entry.component';
+import {SideListComponent} from './forecast/side-list/side-list.component';
+import {ForecastComponent} from './forecast/forecast.component';
+import {GridViewComponent} from './forecast/grid-view/grid-view.component';
+import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
-import {HeaderRowComponent} from './main/header-row/header-row.component';
+import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
   MdButtonModule, MdDialogModule, MdMenuModule, MdProgressSpinnerModule, MdToolbarModule,
   MdTooltipModule
@@ -22,20 +22,20 @@ import 'hammerjs';
 // import 'chartjs-plugin-zoom';
 import 'chartjs-plugin-annotation';
 import {ProjectService} from './project/project.service';
-import {MainService} from './main/main.service';
+import {ForecastService} from './forecast/forecast.service';
 import {GraphComponent} from './project/graph/graph.component';
 import {GraphService} from './project/graph/graph.service';
 import {ChartModule} from 'angular2-chartjs';
 import {MilestonePromptComponent} from './project/milestone-prompt/milestone-prompt.component';
-import {RollUpComponent} from './main/roll-up/roll-up.component';
+import {RollUpComponent} from './forecast/roll-up/roll-up.component';
 import {BobComponent} from './bob/bob.component';
 import {ClientListComponent} from './bob/client-list/client-list.component';
-import {CapacityRowComponent} from './main/capacity-row/capacity-row.component';
+import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent,
+    ForecastComponent,
     GridViewComponent,
     SideListComponent,
     EntryComponent,
@@ -65,7 +65,7 @@ import {CapacityRowComponent} from './main/capacity-row/capacity-row.component';
   entryComponents: [
     MilestonePromptComponent
   ],
-  providers: [DatePipe, GraphService, MainService]
+  providers: [DatePipe, GraphService, ForecastService]
 })
 export class AppModule {
 

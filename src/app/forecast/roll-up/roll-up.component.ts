@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Entry} from "../entry/entry.model";
-import {MainService} from "../main.service";
+import {ForecastService} from "../forecast.service";
 import {DatePipe} from "@angular/common";
 import {Subject} from "rxjs/Subject";
 import {RollUpService} from "./roll-up.service";
@@ -24,7 +24,7 @@ export class RollUpComponent implements OnInit {
 
   public isDataAvailable = false;
 
-  constructor(private mainService: MainService,
+  constructor(private mainService: ForecastService,
               private rollUpService: RollUpService) {
   }
 

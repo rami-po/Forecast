@@ -3,19 +3,19 @@
  */
 import {Component, Input, OnInit} from '@angular/core';
 import {Entry} from './entry/entry.model';
-import {MainService} from './main.service';
+import {ForecastService} from './forecast.service';
 import {EntryComponent} from './entry/entry.component';
 import {DatePipe} from '@angular/common';
 import {GridViewComponent} from './grid-view/grid-view.component';
-import {isNullOrUndefined} from "util";
+import {isNullOrUndefined} from 'util';
 
 @Component({
-  selector: 'app-main',
-  templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  selector: 'app-forecast',
+  templateUrl: './forecast.component.html',
+  styleUrls: ['./forecast.component.scss']
 })
 
-export class MainComponent implements OnInit {
+export class ForecastComponent implements OnInit {
   public weeks;
   public rollUps = [];
   private side;
@@ -38,7 +38,7 @@ export class MainComponent implements OnInit {
   public isProjectDataAvailable = false;
   public mode = 'indeterminate';
 
-  constructor(private mainService: MainService,
+  constructor(private mainService: ForecastService,
               private datePipe: DatePipe) {
   }
 

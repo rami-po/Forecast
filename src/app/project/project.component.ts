@@ -1,11 +1,11 @@
 import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectService} from './project.service';
-import {MainService} from '../main/main.service';
+import {ForecastService} from '../forecast/forecast.service';
 import {isUndefined} from 'util';
-import {GraphService} from "./graph/graph.service";
-import {MilestonePromptComponent} from "./milestone-prompt/milestone-prompt.component";
-import {MdDialog} from "@angular/material";
+import {GraphService} from './graph/graph.service';
+import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
+import {MdDialog} from '@angular/material';
 
 
 @Component({
@@ -30,7 +30,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions = [];
 
   constructor(private route: ActivatedRoute,
-              private mainService: MainService,
+              private mainService: ForecastService,
               public graphService: GraphService,
               private dialog: MdDialog) {
   }

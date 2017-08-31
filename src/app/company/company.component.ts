@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {CompanyService} from "./company.service";
-import {NavigationExtras, Router} from "@angular/router";
-import {isNull} from "util";
-import {MainService} from "../main/main.service";
+import {CompanyService} from './company.service';
+import {NavigationExtras, Router} from '@angular/router';
+import {isNull} from 'util';
+import {ForecastService} from '../forecast/forecast.service';
 
 @Component({
   selector: 'app-company',
@@ -16,7 +16,7 @@ export class CompanyComponent implements OnInit {
   public isDataReady = false;
 
   constructor(
-    private mainService: MainService,
+    private mainService: ForecastService,
     private router: Router
   ) { }
 
