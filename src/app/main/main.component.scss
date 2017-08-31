@@ -1,9 +1,10 @@
 $title_height: 62px;
+$entry_side_height: 81.4vh;
 
 .entry-container {
   margin-top: $title_height * 2;
   margin-left: 25%;
-  height: 90vh;
+  height: $entry_side_height;
   width: 75%;
   overflow: scroll;
 }
@@ -31,7 +32,7 @@ $title_height: 62px;
   bottom: 0;
   position: absolute;
   width: 25%;
-  height: 90vh;
+  height: $entry_side_height;
   overflow: hidden;
 }
 
