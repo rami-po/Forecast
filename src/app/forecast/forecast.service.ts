@@ -5,12 +5,13 @@ import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
+import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
-import {isUndefined} from "util";
-import {Subject} from "rxjs/Subject";
+import {isUndefined} from 'util';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
-export class MainService {
+export class ForecastService {
 
   public static NUMBER_OF_WEEKS = 20;
 
@@ -31,6 +32,9 @@ export class MainService {
 
   public employees = new Subject<any>();
   employees$ = this.employees.asObservable();
+
+  public params = new Subject<any>();
+  params$ = this.params.asObservable().startWith('');
 
   constructor(private http: Http,
               private datePipe: DatePipe) {
@@ -109,7 +113,7 @@ export class MainService {
 
   getWeeks(monday): string[] {
     const weeks = [];
-    for (let i = 0; i < MainService.NUMBER_OF_WEEKS; i++) {
+    for (let i = 0; i < ForecastService.NUMBER_OF_WEEKS; i++) {
       const date = new Date(monday.toDateString());
       weeks.push(this.datePipe.transform(date, 'yyyy-MM-dd'));
       monday.setDate(monday.getDate() + 7);

@@ -1,9 +1,10 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {MainComponent} from "../main.component";
+import {ForecastComponent} from '../forecast.component';
 import { DomSanitizer } from '@angular/platform-browser';
-import {Entry} from "../entry/entry.model";
-import {isNullOrUndefined} from "util";
-import {GridViewService} from "./grid-view.service";
+import {Entry} from '../entry/entry.model';
+import {isNullOrUndefined} from 'util';
+import {GridViewService} from './grid-view.service';
+import {ForecastService} from '../forecast.service';
 
 @Component({
   selector: 'app-grid-view',
@@ -82,7 +83,7 @@ export class GridViewComponent implements OnInit, OnDestroy {
       data => {
         console.log(data.result);
         GridViewComponent.resources = data.result;
-        this.row = this.sanitizer.bypassSecurityTrustStyle('repeat(' + MainComponent.numberOfWeeks + ', 100px)');
+        this.row = this.sanitizer.bypassSecurityTrustStyle('repeat(' + ForecastService.NUMBER_OF_WEEKS + ', 100px)');
       }
     );
 

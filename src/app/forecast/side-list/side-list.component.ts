@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, HostListener, Input, OnInit} from '@angular/core';
-import {Entry} from "../entry/entry.model";
-import {MainComponent} from "../main.component";
-import {MainService} from "../main.service";
-import {EntryComponent} from "../entry/entry.component";
-import {isNullOrUndefined} from "util";
-import {Observable} from "rxjs/Observable";
+import {Entry} from '../entry/entry.model';
+import {ForecastComponent} from '../forecast.component';
+import {ForecastService} from '../forecast.service';
+import {EntryComponent} from '../entry/entry.component';
+import {isNullOrUndefined} from 'util';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-side-list',
@@ -20,16 +20,11 @@ export class SideListComponent implements OnInit {
   private lastEmployeeId;
   private timerSubscription;
 
-  constructor(private mainService: MainService) {
+  constructor(private mainService: ForecastService) {
   }
 
 
   ngOnInit() {
-    this.mainService.rollUps$.subscribe(
-      data => {
-        // this.entries = data;
-      }
-    );
   }
 
   type(value: string, employee) {

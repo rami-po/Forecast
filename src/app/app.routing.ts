@@ -1,12 +1,12 @@
 import {RouterModule, Routes} from '@angular/router';
-import {MainComponent} from './main/main.component';
-import {EntryComponent} from './main/entry/entry.component';
-import {GridViewComponent} from './main/grid-view/grid-view.component';
-import {SideListComponent} from './main/side-list/side-list.component';
+import {ForecastComponent} from './forecast/forecast.component';
+import {EntryComponent} from './forecast/entry/entry.component';
+import {GridViewComponent} from './forecast/grid-view/grid-view.component';
+import {SideListComponent} from './forecast/side-list/side-list.component';
 import {CompanyComponent} from './company/company.component';
 import {ProjectComponent} from './project/project.component';
-import {BobComponent} from "./bob/bob.component";
-import {CapacityRowComponent} from "./main/capacity-row/capacity-row.component";
+import {BobComponent} from './bob/bob.component';
+import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -18,8 +18,8 @@ const APP_ROUTES: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'main',
-    component: MainComponent
+    path: 'forecast',
+    component: ForecastComponent
   },
   {
     path: 'entry',
@@ -38,7 +38,7 @@ const APP_ROUTES: Routes = [
     component: CompanyComponent
   },
   {
-    path: 'project',
+    path: 'main',
     component: ProjectComponent
   },
   {

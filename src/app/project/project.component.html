@@ -1,8 +1,22 @@
-<md-toolbar (click)="b()" color="primary">
-  <span>{{projectName}} <b>-</b> {{clientName}}</span>
+<md-toolbar color="primary">
+  <span>Forecasting {{filterName}}</span>
+  <span class="spacer"></span>
+  <button md-raised-button [disabled]="isDisabled" color="accent" (click)="updateGraphView()">{{graphButton}}</button>
+  <button md-raised-button [mdMenuTriggerFor]="project_menu" color="accent">Projects</button>
+  <md-menu #project_menu="mdMenu">
+    <button *ngFor="let project of projects" md-menu-item (click)="updateEntries('project', project.id, project.name)">
+      <span>{{project.name}}</span>
+    </button>
+  </md-menu>
+  <button md-raised-button [mdMenuTriggerFor]="client_menu" color="accent">Clients</button>
+  <md-menu #client_menu="mdMenu">
+    <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id, client.name)">
+      <span>{{client.name}}</span>
+    </button>
+  </md-menu>
 </md-toolbar>
 
-<div class="graph-data-wrapper">
+<div *ngIf="isGraphShowing" class="graph-data-wrapper">
   <app-graph [params]="params"></app-graph>
   <div class="data-wrapper">
     <p><b>Budget:</b> ${{budget}}</p>
@@ -13,5 +27,6 @@
   </div>
 </div>
 
-
-<app-main [params]="params"></app-main>
+<div class="forecast-wrapper">
+  <app-forecast [height]="height" [forecastHeight]="forecastHeight"></app-forecast>
+</div>

@@ -11,14 +11,14 @@ import {isNullOrUndefined, isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {EntryService} from './entry.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {ProjectComponent} from "../../project/project.component";
-import {ProjectService} from "../../project/project.service";
-import {BaseChartDirective} from "ng2-charts";
-import {GraphService} from "../../project/graph/graph.service";
-import {MainService} from "../main.service";
-import {Subject} from "rxjs/Subject";
-import {RollUpComponent} from "../roll-up/roll-up.component";
-import {RollUpService} from "../roll-up/roll-up.service";
+import {ProjectComponent} from '../../project/project.component';
+import {ProjectService} from '../../project/project.service';
+import {BaseChartDirective} from 'ng2-charts';
+import {GraphService} from '../../project/graph/graph.service';
+import {ForecastService} from '../forecast.service';
+import {Subject} from 'rxjs/Subject';
+import {RollUpComponent} from '../roll-up/roll-up.component';
+import {RollUpService} from '../roll-up/roll-up.service';
 
 @Component({
   selector: 'app-entry',
@@ -40,7 +40,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   constructor(public entryService: EntryService,
               public graphService: GraphService,
-              private mainService: MainService,
+              private mainService: ForecastService,
               private rollUpComponent: RollUpComponent,
               private rollUpService: RollUpService) {
   }
@@ -133,7 +133,7 @@ export class EntryComponent implements OnInit, OnDestroy {
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
 
-        const boxNumber = columnNumber + (this.row * MainService.NUMBER_OF_WEEKS);
+        const boxNumber = columnNumber + (this.row * ForecastService.NUMBER_OF_WEEKS);
         this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
           callback => {
             this.mainService.getResources('').subscribe(
@@ -148,7 +148,7 @@ export class EntryComponent implements OnInit, OnDestroy {
               }
             );
 
-            // this.graphService.updateGraph(week);
+            this.graphService.updateGraph(week);
             this.mainService.getResources('?employeeId=' + this.entry.employeeId).subscribe(
               resources => {
                 this.rollUpComponent.totalCapacities = resources.totalCapacities;
