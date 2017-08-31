@@ -13,8 +13,12 @@ import {Subject} from "rxjs/Subject";
 export class MainService {
 
   public static NUMBER_OF_WEEKS = 20;
-  private resources = new Subject<any>();
+
+  public resources = new Subject<any>();
   resources$ = this.resources.asObservable();
+
+  public filteredResources = new Subject<any>();
+  filteredResources$ = this.filteredResources.asObservable();
 
   public rollUps = new Subject<any>();
   rollUps$ = this.rollUps.asObservable();
@@ -91,10 +95,7 @@ export class MainService {
   getResources(params) {
     params = (!isUndefined(params) ? params : '?active=1');
     return this.http.get('http://onboarding.productops.com:3000/resource/data' + params)
-      .map((response: Response) => {
-        this.resources.next(response.json());
-        return response.json();
-      })
+      .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 

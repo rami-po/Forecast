@@ -5,13 +5,37 @@ var mysql = require('mysql');
 var sqlSecret = require('./secrets/sql_secret.json');
 var tools = require('./tools');
 
-var connection = mysql.createConnection({
+var sql_config = {
   host: sqlSecret.HOST,
   port: sqlSecret.PORT,
   user: sqlSecret.MYSQL_USER,
   password: sqlSecret.MYSQL_PASS,
   database: sqlSecret.DATABASE
-});
+};
+
+var connection;
+
+function handleDisconnect() {
+  connection = mysql.createConnection(sql_config);
+
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+}
+
+handleDisconnect();
 
 /*
  * GET METHODS
@@ -45,26 +69,6 @@ exports.getPeople = function (req, callback) {
     'ORDER BY e.last_name ASC', function (err, result) {
       callback(err, result);
     });
-
-
-  // const id = (req.params.id !== undefined ? req.params.id : 'e.id');
-  // const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
-  // const isActive = (req.query.active ? req.query.active : 'e.is_active');
-  // const projectJoin = (req.query.projectid ? "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.query.projectid + " AND e.id = a.user_id " : '');
-  // const clientJoin = (req.query.clientid ? "RIGHT OUTER JOIN assignments a ON e.id = a.user_id RIGHT OUTER JOIN projects p ON p.client_id = " + req.query.clientid + " AND a.project_id = p.id " : '');
-  // const isDeactivated = (req.query.projectid || req.query.clientid ? "AND a.deactivated = 0 " : '');
-  //
-  // connection.query('SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, e.telephone, e.is_active, e.default_hourly_rate, ' +
-  //   'e.department, e.updated_at, e.cost_rate, e.capacity FROM employees e ' +
-  //   projectJoin +
-  //   clientJoin +
-  //   'WHERE e.id = ' + id + ' ' +
-  //   'AND e.is_contractor = ' + isContractor + ' ' +
-  //   'AND e.is_active = ' + isActive + ' ' +
-  //   isDeactivated +
-  //   'ORDER BY e.last_name ASC', function (err, result) {
-  //   callback(err, result);
-  // })
 
 };
 

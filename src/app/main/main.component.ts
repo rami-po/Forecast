@@ -17,10 +17,12 @@ import {isNullOrUndefined} from "util";
 
 export class MainComponent implements OnInit {
   public static numberOfWeeks = 20;
+  public weeks;
   public entries = [];
   public rollUps = [];
   private side;
   private header;
+  private capacityHeader;
   private table;
   private forecast;
   @Input() public params = '';
@@ -41,11 +43,12 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.side = document.getElementById('side');
     this.header = document.getElementById('header');
+    this.capacityHeader = document.getElementById('capacity-header');
 
     const monday = this.mainService.getMonday(new Date());
-    const weeks = this.mainService.getWeeks(monday);
-    EntryComponent.setWeeks(weeks);
-    GridViewComponent.weeks = weeks;
+    this.weeks = this.mainService.getWeeks(monday);
+    EntryComponent.setWeeks(this.weeks);
+    GridViewComponent.weeks = this.weeks;
 
     // if it isn't the main route
     if (this.params !== '') {
@@ -106,8 +109,16 @@ export class MainComponent implements OnInit {
         console.log('Roll ups:');
         console.log(this.rollUps);
         console.log('------------');
+        this.mainService.getResources('?' + params.substring(1)).subscribe(
+          resources => {
+            this.mainService.filteredResources.next(resources);
+          }
+        );
       }
     );
+
+
+
 
   }
 
@@ -141,6 +152,7 @@ export class MainComponent implements OnInit {
   onScroll($event) {
     this.side.scrollTop = $event.srcElement.scrollTop;
     this.header.scrollLeft = $event.srcElement.scrollLeft;
+    this.capacityHeader.scrollLeft = $event.srcElement.scrollLeft;
   }
 
 }

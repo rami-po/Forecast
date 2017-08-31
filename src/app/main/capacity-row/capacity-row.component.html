@@ -1,0 +1,5 @@
+<div class="row-container">
+  <div *ngFor="let week of weeks, let i = index" class="row">
+    <div class="week">Total: {{getTotalCapacity(week, i)}}<br>Filter: {{getFilteredCapacity(week, i)}}</div>
+  </div>
+</div>

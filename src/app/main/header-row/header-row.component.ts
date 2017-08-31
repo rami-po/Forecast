@@ -17,7 +17,7 @@ export class HeaderRowComponent implements OnInit, OnDestroy {
   @Input() public name: string;
   @Input() public client: string;
   @Input() public project: string;
-  @Input() public weeks: Date[];
+  @Input() public weeks;
   @Input() public isMain = true;
   private subscriptions = [];
 
@@ -26,13 +26,7 @@ export class HeaderRowComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.weeks = EntryComponent.weeks;
     this.index = 0;
-    this.subscriptions.push(this.mainService.resources$.subscribe(
-      data => {
-       this.totalCapacities = data.totalCapacities;
-      }
-    ));
   }
 
   ngOnDestroy() {
