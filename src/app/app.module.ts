@@ -9,7 +9,10 @@ import {GridViewComponent} from './main/grid-view/grid-view.component';
 import {EntryComponent} from './main/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './main/header-row/header-row.component';
-import {MdButtonModule, MdDialogModule, MdMenuModule, MdToolbarModule, MdTooltipModule} from '@angular/material';
+import {
+  MdButtonModule, MdDialogModule, MdMenuModule, MdProgressSpinnerModule, MdToolbarModule,
+  MdTooltipModule
+} from '@angular/material';
 import {DatePipe} from '@angular/common';
 import {ProjectComponent} from './project/project.component';
 import {CompanyComponent} from './company/company.component';
@@ -55,6 +58,7 @@ import {CapacityRowComponent} from './main/capacity-row/capacity-row.component';
     MdToolbarModule,
     MdDialogModule,
     MdMenuModule,
+    MdProgressSpinnerModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],

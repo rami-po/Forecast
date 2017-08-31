@@ -26,14 +26,12 @@ export class CapacityRowComponent implements OnInit {
 
     this.subscriptions.push(this.mainService.resources$.subscribe(
       data => {
-        console.log(data.totalCapacities);
         this.totalCapacities = data.totalCapacities;
       }
     ));
 
     this.subscriptions.push(this.mainService.filteredResources$.subscribe(
       data => {
-        console.log(data.totalCapacities);
         this.filteredCapacities = data.totalCapacities;
       }
     ));

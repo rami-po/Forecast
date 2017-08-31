@@ -16,9 +16,7 @@ import {isNullOrUndefined} from "util";
 })
 
 export class MainComponent implements OnInit {
-  public static numberOfWeeks = 20;
   public weeks;
-  public entries = [];
   public rollUps = [];
   private side;
   private header;
@@ -27,7 +25,6 @@ export class MainComponent implements OnInit {
   private forecast;
   @Input() public params = '';
   public hasProject = false;
-  public row = -1;
 
   public employees;
   public projects;
@@ -36,11 +33,17 @@ export class MainComponent implements OnInit {
   public projectName = 'All Projects';
   public clientName = 'All Clients';
 
+  public isDataAvailable = false;
+  public isClientDataAvailable = false;
+  public isProjectDataAvailable = false;
+  public mode = 'indeterminate';
+
   constructor(private mainService: MainService,
               private datePipe: DatePipe) {
   }
 
   ngOnInit() {
+
     this.side = document.getElementById('side');
     this.header = document.getElementById('header');
     this.capacityHeader = document.getElementById('capacity-header');
@@ -74,6 +77,7 @@ export class MainComponent implements OnInit {
       data => {
         this.projects = data.result;
         this.projects.splice(0, 0, {id: '', name: 'All'});
+        this.isProjectDataAvailable = true;
       }
     );
 
@@ -81,6 +85,7 @@ export class MainComponent implements OnInit {
       data => {
         this.clients = data.result;
         this.clients.splice(0, 0, {id: '', name: 'All'});
+        this.isClientDataAvailable = true;
       }
     );
   }
@@ -105,21 +110,15 @@ export class MainComponent implements OnInit {
             }
           );
         }
-        this.mainService.rollUps.next(this.rollUps);
-        console.log('Roll ups:');
-        console.log(this.rollUps);
-        console.log('------------');
         this.mainService.getResources('?' + params.substring(1)).subscribe(
           resources => {
             this.mainService.filteredResources.next(resources);
+            this.isDataAvailable = true;
+            this.mode = 'determinate';
           }
         );
       }
     );
-
-
-
-
   }
 
   updateEntries(entry, id, name) {
@@ -130,7 +129,6 @@ export class MainComponent implements OnInit {
         this.clientName = 'All Clients';
       } else {
         this.params = '&clientId=' + id;
-        console.log(this.params);
         this.clientName = name;
         this.projectName = 'All Projects';
       }

@@ -7,8 +7,6 @@ import 'rxjs/Rx';
 @Injectable()
 export class RollUpService {
 
-  public allCapacities = [];
-
   constructor() { }
 
 

@@ -76,3 +76,10 @@ $entry_side_height: 81.4vh;
   @extend .title;
   cursor: pointer;
 }
+
+.spinner {
+  z-index: 99999999;
+  left: 123vh;
+  top: 50vh;
+  position: fixed;
+}

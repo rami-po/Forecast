@@ -25,11 +25,6 @@ export class SideListComponent implements OnInit {
 
 
   ngOnInit() {
-    this.mainService.rollUps$.subscribe(
-      data => {
-        // this.entries = data;
-      }
-    );
   }
 
   type(value: string, employee) {

@@ -5,9 +5,10 @@ import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
+import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
-import {isUndefined} from "util";
-import {Subject} from "rxjs/Subject";
+import {isUndefined} from 'util';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class MainService {

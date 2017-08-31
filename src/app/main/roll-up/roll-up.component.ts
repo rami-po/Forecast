@@ -22,37 +22,31 @@ export class RollUpComponent implements OnInit {
   public entries = [];
   public totalCapacities;
 
-  private lastProjectId = '';
-  private employeeFlag;
+  public isDataAvailable = false;
 
   constructor(private mainService: MainService,
-              private datePipe: DatePipe,
               private rollUpService: RollUpService) {
   }
 
   ngOnInit() {
-    console.log('?????')
     this.mainService.getResources('?employeeId=' + this.employee.id).subscribe(
       resources => {
-        this.rollUpService.allCapacities.length = 0;
-        this.rollUpService.allCapacities.push(this.totalCapacities);
         this.totalCapacities = resources.totalCapacities;
         this.mainService.getResources('?employeeId=' + this.employee.id + this.params).subscribe(
           data => {
-            if (!isUndefined(this.data)) {
-              this.entries.length = 0;
-              for (let row = 0; row < this.data.length; row++) {
-                this.entries.push([]);
-                for (let i = 0; i < data.result.length; i++) {
-                  if (this.data[row].project_id === data.result[i].project_id) {
-                    this.entries[row].push({
-                      week: data.result[i].week_of.substring(0, 10),
-                      capacity: data.result[i].capacity
-                    });
-                  }
+            this.entries.length = 0;
+            for (let row = 0; row < this.data.length; row++) {
+              this.entries.push([]);
+              for (let i = 0; i < data.result.length; i++) {
+                if (this.data[row].project_id === data.result[i].project_id) {
+                  this.entries[row].push({
+                    week: data.result[i].week_of.substring(0, 10),
+                    capacity: data.result[i].capacity
+                  });
                 }
               }
             }
+            this.isDataAvailable = true;
           }
         );
       }
