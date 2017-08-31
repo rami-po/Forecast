@@ -18,7 +18,7 @@ const APP_ROUTES: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'main',
+    path: 'forecast',
     component: ForecastComponent
   },
   {
@@ -38,7 +38,7 @@ const APP_ROUTES: Routes = [
     component: CompanyComponent
   },
   {
-    path: 'project',
+    path: 'main',
     component: ProjectComponent
   },
   {

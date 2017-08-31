@@ -28,17 +28,20 @@ export class GraphService {
 
   constructor(private http: Http,
               private datePipe: DatePipe,
-              private mainService: ForecastService) {
+              private forecastService: ForecastService) {
   }
 
   updateGraph(week) {
-    this.mainService.getResources(this.params).subscribe(
+    this.forecastService.getResources('?' + this.params).subscribe(
       data => {
         for (let i = 0; i < data.totalCapacities.length; i++) {
           if (data.totalCapacities[i].week === week) {
             const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM-dd-yyyy'));
+            console.log(index);
             const dataClone = JSON.parse(JSON.stringify(this.localLineChartData));
-            const newCap = data.totalCapacities[i].capacity + dataClone[1].data[index - 1] - dataClone[1].data[index];
+            console.log(dataClone[1].data);
+            const before = (index !== 0 ? dataClone[1].data[index - 1] : 0)
+            const newCap = data.totalCapacities[i].capacity + before - dataClone[1].data[index];
             for (let j = index; j < dataClone[1].data.length; j++) {
               dataClone[1].data[j] += newCap;
             }
@@ -51,7 +54,7 @@ export class GraphService {
     );
   }
 
-  initializeGraph() {
+  initializeGraph(params) {
 
     const labels = [];
     const allData = [
@@ -63,33 +66,40 @@ export class GraphService {
     const forecastData = [];
     const breakPointData = [];
 
-    this.mainService.getTimeEntries(this.params).subscribe(
+    this.forecastService.getTimeEntries('?' + params).subscribe(
       timeEntries => {
 
+        console.log('a');
+
+        //this loops needs to be optimized
         // Takes all the separate dates and pools them in their respective Monday's
         const totalCapacities = [];
         const fcTotalCapacities = [];
         for (let i = 0; i < timeEntries.result.length; i++) {
           const date = this.datePipe.transform(timeEntries.result[i].spent_at, 'MM-dd-yyyy');
-          const monday = this.datePipe.transform(this.mainService.getMonday(date), 'MM-dd-yyyy');
+          const monday = this.datePipe.transform(this.forecastService.getMonday(date), 'MM-dd-yyyy');
           if (totalCapacities[monday] == null) {
             totalCapacities[monday] = 0;
           }
           totalCapacities[monday] += timeEntries.result[i].hours;
         }
 
+        console.log('b');
+
         let actualCap = 0;
         let forecastCap = 0;
-        this.mainService.getProjects('/' + this.params.substring(11)).subscribe(
+        this.forecastService.getProjects('/' + params.substring(11)).subscribe(
           project => {
             this.budget = project.result[0].cost_budget;
             // REMOVE THIS!!
             this.budget = 3800;
-            this.mainService.getResources(this.params).subscribe(
+            this.forecastService.getResources('?' + params).subscribe(
               dataTC => {
                 for (const week in totalCapacities) {
                   labels.push(week);
                 }
+
+                console.log('c');
 
                 // Combines all the actual dates with the forecasted dates
                 for (let i = 0; i < this.weeks.length; i++) {
@@ -98,6 +108,8 @@ export class GraphService {
                     labels.push(week);
                   }
                 }
+
+                console.log('d');
 
                 // Cycles through the dates and checks for missing Monday's and adds them if found
                 for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
@@ -108,15 +120,18 @@ export class GraphService {
                   if (firstDate.toDateString() !== secondDate.toDateString()) {
                     labels.splice(i + 1, 0, this.datePipe.transform(firstDate, 'MM-dd-yyyy'));
                   }
-
                 }
+
+                console.log('e');
 
                 for (let i = 0; i < dataTC.totalCapacities.length; i++) {
                   fcTotalCapacities[this.datePipe.transform(dataTC.totalCapacities[i].week, 'MM-dd-yyyy')] = dataTC.totalCapacities[i].capacity;
                 }
 
+                console.log('f');
+
                 // Adds forecasted data to graph arrays
-                this.mainService.getResources(this.params + '&active=1').subscribe(
+                this.forecastService.getResources('?' + params + '&active=1').subscribe(
                   resources => {
 
                     for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
@@ -127,6 +142,8 @@ export class GraphService {
                       forecastData.push(forecastCap);
                       breakPointData.push(this.budget);
                     }
+
+                    console.log('g');
 
                     let index = 0;
                     for (let i = 0; i < this.weeks.length; i++) {
@@ -140,6 +157,8 @@ export class GraphService {
                       }
                       breakPointData.push(this.budget);
                     }
+
+                    console.log('h');
 
                     this.lineChartLabels.next(labels);
                     allData[0].data = actualData;

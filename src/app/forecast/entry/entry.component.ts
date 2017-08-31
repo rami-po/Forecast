@@ -148,7 +148,7 @@ export class EntryComponent implements OnInit, OnDestroy {
               }
             );
 
-            // this.graphService.updateGraph(week);
+            this.graphService.updateGraph(week);
             this.mainService.getResources('?employeeId=' + this.entry.employeeId).subscribe(
               resources => {
                 this.rollUpComponent.totalCapacities = resources.totalCapacities;

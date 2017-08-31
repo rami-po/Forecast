@@ -1,6 +1,6 @@
 <div id="forecast" class="forecast-wrapper">
 
-  <div *ngIf="isProjectDataAvailable && isClientDataAvailable" id="title" class="title-container">
+  <div *ngIf="false" id="title" class="title-container">
     <div class="title-row">
       <div id="name" class="title">Name</div>
       <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">{{clientName}}
@@ -35,9 +35,11 @@
   </div>
 
 
-  <div *ngIf="isDataAvailable" id="table" class="entry-container" (scroll)="onScroll($event)">
-    <div *ngFor="let employee of employees, let i = index">
-      <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
+  <div id="table" class="entry-container" (scroll)="onScroll($event)">
+    <div *ngIf="isDataAvailable">
+      <div *ngFor="let employee of employees, let i = index">
+        <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]" [row]="i"></app-roll-up>
+      </div>
     </div>
   </div>
 

@@ -26,7 +26,6 @@ export class GraphComponent implements OnInit, OnDestroy {
 
   generateDeadLine = (event, array) => {
     if (array.length > 0) {
-      debugger
       this.dialog.open(MilestonePromptComponent);
       this.options.annotation.annotations[0].value = this.data.labels[array[0]._index];
       this.chart.chart.update();
@@ -134,16 +133,17 @@ export class GraphComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
               public graphService: GraphService,
               private projectService: ProjectService,
-              private mainService: ForecastService,
+              private forecastService: ForecastService,
               private dialog: MdDialog) {
   }
 
   ngOnInit() {
-    const monday = this.mainService.getMonday(new Date());
-    this.graphService.weeks = this.mainService.getWeeks(monday);
+    const monday = this.forecastService.getMonday(new Date());
+    this.graphService.weeks = this.forecastService.getWeeks(monday);
+    console.log(this.graphService.weeks);
     this.graphService.params = this.params;
 
-    this.graphService.initializeGraph();
+    // this.graphService.initializeGraph(this.params);
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       data => {

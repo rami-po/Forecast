@@ -33,6 +33,9 @@ export class ForecastService {
   public employees = new Subject<any>();
   employees$ = this.employees.asObservable();
 
+  public params = new Subject<any>();
+  params$ = this.params.asObservable().startWith('');
+
   constructor(private http: Http,
               private datePipe: DatePipe) {
   }

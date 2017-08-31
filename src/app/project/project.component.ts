@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectService} from './project.service';
 import {ForecastService} from '../forecast/forecast.service';
@@ -18,9 +18,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() public projectId;
   @Input() public tableEnabled = true;
-  public params;
-  public projectName;
-  public clientName;
+  private lastParams = '';
+  public params = '';
   public budget;
   public internalCost;
   public budgetSpent;
@@ -29,63 +28,146 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   public remaining;
   private subscriptions = [];
 
+  public projects;
+  public clients;
+
+  public isDisabled = true;
+  public isGraphShowing = false;
+  public graphButton = 'Show Graph';
+  public filterName = '';
+
+  public height = '71.7vh';
+  public forecastHeight = '90.3vh';
+
   constructor(private route: ActivatedRoute,
-              private mainService: ForecastService,
+              private forecastService: ForecastService,
               public graphService: GraphService,
               private dialog: MdDialog) {
   }
 
-  b() {
-    this.dialog.open(MilestonePromptComponent);
-  }
-
   ngOnInit() {
 
-    // this.dialog.open(MilestonePromptComponent);
-
-    this.route.queryParams.subscribe(
-      params => {
-
-        if (!isUndefined(params.id)) {
-          this.projectId = params.id;
-          this.params = '?projectId=' + params.id;
-        } else {
-          this.params = '?projectId=' + this.projectId;
-        }
-
-        this.mainService.getProjects('/' + this.projectId).subscribe(
-          data => {
-            this.budget = data.result[0].budget;
-            this.projectName = data.result[0].name;
-            console.log(data.result);
-          }
-        );
-
-        this.mainService.getEntries('?projectId=' + this.projectId).subscribe(
-          data => {
-            this.clientName = data.result[0].client_name;
-          }
-        );
-
-        this.subscriptions.push(this.graphService.lineChartData$.subscribe(
-          lineChartData => {
-            this.budget = lineChartData[2].data[lineChartData[2].data.length - 1];
-            this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
-            this.budgetSpent = Number(this.budget) - Number(this.internalCost);
-            this.remaining = this.budget - this.budgetSpent;
-            const projectedInternalCost = Number(lineChartData[1].data[lineChartData[1].data.length - 1]);
-            this.projectedProfit = Number(this.budget) - projectedInternalCost;
-            this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
-          }
-        ));
-
+    this.forecastService.getProjects('?active=1').subscribe(
+      data => {
+        data.result.splice(0, 0, {id: '', name: 'All'});
+        this.forecastService.projects.next(data.result);
+        this.projects = data.result;
       }
     );
+
+    this.forecastService.getClients('?active=1').subscribe(
+      data => {
+        data.result.splice(0, 0, {id: '', name: 'All'});
+        this.forecastService.clients.next(data.result);
+        this.clients = data.result;
+      }
+    );
+
+    this.forecastService.params$.subscribe(
+      params => {
+        this.params = params;
+        if (this.params !== this.lastParams) {
+          this.lastParams = this.params;
+          if (this.isGraphShowing) {
+            this.graphService.initializeGraph(this.params);
+          }
+        }
+      }
+    );
+
+    this.subscriptions.push(this.graphService.lineChartData$.subscribe(
+      lineChartData => {
+        this.budget = lineChartData[2].data[lineChartData[2].data.length - 1];
+        this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
+        this.budgetSpent = Number(this.budget) - Number(this.internalCost);
+        this.remaining = this.budget - this.budgetSpent;
+        const projectedInternalCost = Number(lineChartData[1].data[lineChartData[1].data.length - 1]);
+        this.projectedProfit = Number(this.budget) - projectedInternalCost;
+        this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
+      }
+    ));
+
+
+    // this.route.queryParams.subscribe(
+    //   params => {
+    //
+    //     if (!isUndefined(params.id)) {
+    //       this.projectId = params.id;
+    //       this.params = '?projectId=' + params.id;
+    //     } else {
+    //       this.params = '?projectId=' + this.projectId;
+    //     }
+    //
+    //     this.forecastService.getProjects('/' + this.projectId).subscribe(
+    //       data => {
+    //         this.budget = data.result[0].budget;
+    //         this.projectName = data.result[0].name;
+    //         console.log(data.result);
+    //       }
+    //     );
+    //
+    //     this.forecastService.getEntries('?projectId=' + this.projectId).subscribe(
+    //       data => {
+    //         this.clientName = data.result[0].client_name;
+    //       }
+    //     );
+    //
+    //     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
+    //       lineChartData => {
+    //         this.budget = lineChartData[2].data[lineChartData[2].data.length - 1];
+    //         this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
+    //         this.budgetSpent = Number(this.budget) - Number(this.internalCost);
+    //         this.remaining = this.budget - this.budgetSpent;
+    //         const projectedInternalCost = Number(lineChartData[1].data[lineChartData[1].data.length - 1]);
+    //         this.projectedProfit = Number(this.budget) - projectedInternalCost;
+    //         this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
+    //       }
+    //     ));
+    //
+    //   }
+    // );
   }
 
   ngOnDestroy() {
     for (const subscription of this.subscriptions) {
       subscription.unsubscribe();
+    }
+  }
+
+  updateEntries(entry, id, name) {
+    let params = '';
+    if (id !== '') {
+      if (entry === 'project') {
+        params = '&projectId=' + id;
+        this.isDisabled = false;
+      } else {
+        params = '&clientId=' + id;
+        this.graphButton = 'Show Graph';
+        this.isGraphShowing = false;
+        this.isDisabled = true;
+      }
+      this.filterName = '- ' + name;
+    } else {
+      this.graphButton = 'Show Graph';
+      this.isGraphShowing = false;
+      this.isDisabled = true;
+      this.filterName = '';
+    }
+
+    this.forecastService.params.next(params);
+
+  }
+
+  updateGraphView() {
+    this.isGraphShowing = !this.isGraphShowing;
+    switch (this.isGraphShowing) {
+      case true:
+        this.graphService.initializeGraph(this.params);
+        this.graphButton = 'Hide Graph';
+        break;
+      case false:
+        this.graphButton = 'Show Graph';
+        break;
     }
   }
 
