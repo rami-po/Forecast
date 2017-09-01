@@ -10,49 +10,55 @@ input:focus {
   outline-color: limegreen;
 }
 
-.week {
-  border: 1px solid gray;
-  height: 50px;
+.capacity {
+  color: black;
+  font-family: Arial;
+  border: 1px solid rgba(224, 224, 224, .35);
+  height: 20px;
   text-align: center;
-  width: 75px;
+  width: 55px;
   font-size: 15px;
   display: flex;
   align-items: center;
   padding: 5px;
 }
 
-.week:focus {
+.capacity:focus {
   border: 2px solid limegreen;
   padding: 4px;
 }
 
 .week-red {
-  @extend .week;
-  background-color: #E57373;
-  color: white;
+  @extend .capacity;
+  background-color: #EF9A9A;
 }
 
 
 .week-orange {
-  @extend .week;
+  @extend .capacity;
   background-color: #FFB74D;
   color: white;
 }
 
 
 .week-yellow {
-  @extend .week;
-  background-color: #FFEB3B;
+  @extend .capacity;
+  background-color: #FFF59D;
 }
 
 .week-lime {
-  @extend .week;
+  @extend .capacity;
   background-color: #DCE775;
   color: white;
 }
 
 .week-green {
-  @extend .week;
+  @extend .capacity;
   background-color: #81C784;
   color: white;
+}
+
+.week-default {
+  @extend .capacity;
+  background-color: white;
 }

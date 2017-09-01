@@ -36,7 +36,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   public graphButton = 'Show Graph';
   public filterName = '';
 
-  public height = '71.7vh';
+  public height = '76.5vh';
   public forecastHeight = '90.3vh';
 
   constructor(private route: ActivatedRoute,

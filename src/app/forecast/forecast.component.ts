@@ -24,7 +24,7 @@ export class ForecastComponent implements OnInit {
   private table;
   private forecast;
   @Input() public params = '';
-  @Input() public height = '81.4vh';
+  @Input() public height = '85.9vh';
   @Input() public forecastHeight = '100vh';
   private lastParams;
   public hasProject = false;

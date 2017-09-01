@@ -3,12 +3,14 @@
   flex-direction: row;
 }
 
-.week {
-  height: 50px;
+.capacity {
+  color: black;
+  height: 20px;
   font-weight: bold;
-  border: 1px solid gray;
+  font-family: Arial;
+  border: 1px solid #e0e0e0;
   text-align: center;
-  width: 75px;
+  width: 55px;
   font-size: 15px;
   display: flex;
   align-items: center;

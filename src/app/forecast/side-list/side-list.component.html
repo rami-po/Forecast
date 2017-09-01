@@ -6,9 +6,8 @@
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
-        <div [ngClass]="(!hasProject) ? 'name' : 'name2'"></div>
-        <div *ngIf="!hasProject" class="name">{{entry.client_name}}</div>
-        <div *ngIf="!hasProject" class="name">{{entry.project_name}}</div>
+        <div *ngIf="!hasProject" class="project-client">{{entry.client_name}}</div>
+        <div *ngIf="!hasProject" class="project-client">{{entry.project_name}}</div>
       </div>
     </div>
   </div>
