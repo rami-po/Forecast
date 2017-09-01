@@ -52,7 +52,7 @@ export class RollUpComponent implements OnInit {
               }
             }
             this.isDataAvailable = true;
-            // this.refreshData();
+            this.refreshData();
           }
         );
       }
