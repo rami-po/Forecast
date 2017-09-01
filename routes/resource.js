@@ -14,7 +14,7 @@ var harvest = require('./serverTools/harvest');
 
 router.get('/person', function (req, res, next) {
   SQL.getPeople(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -30,7 +30,7 @@ router.get('/person', function (req, res, next) {
 
 router.get('/person/:id', function (req, res, next) {
   SQL.getPeople(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -45,10 +45,10 @@ router.get('/person/:id', function (req, res, next) {
 });
 
 router.put('/person', function (req, res, next) {
-  harvest.updateCapacity(req, function(status, result) {
+  harvest.updateCapacity(req, function (status, result) {
     if (status === 200) {
       SQL.updateCapacity(req, function (err, result) {
-        if (err){
+        if (err) {
           return res.status(500).json({
             message: 'Error!',
             err: err
@@ -75,7 +75,7 @@ router.put('/person', function (req, res, next) {
 
 router.get('/member/:id', function (req, res, next) {
   SQL.getMembers(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -95,7 +95,7 @@ router.get('/member/:id', function (req, res, next) {
 
 router.get('/project', function (req, res, next) {
   SQL.getProjects(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -111,7 +111,7 @@ router.get('/project', function (req, res, next) {
 
 router.get('/project/:id*', function (req, res, next) {
   SQL.getProjects(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -126,8 +126,8 @@ router.get('/project/:id*', function (req, res, next) {
 });
 
 router.get('/project/:id/entries*', function (req, res, next) {
-    console.log(req.params.id + ' ' + req.query.person);
-    console.log(req.query);
+  console.log(req.params.id + ' ' + req.query.person);
+  console.log(req.query);
 });
 
 /*
@@ -136,7 +136,7 @@ router.get('/project/:id/entries*', function (req, res, next) {
 
 router.get('/client', function (req, res, next) {
   SQL.getClients(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -152,7 +152,7 @@ router.get('/client', function (req, res, next) {
 
 router.get('/client/:id*', function (req, res, next) {
   SQL.getClients(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -172,7 +172,7 @@ router.get('/client/:id*', function (req, res, next) {
 
 router.get('/assignment', function (req, res, next) {
   SQL.getAssignments(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -191,7 +191,7 @@ router.get('/assignment', function (req, res, next) {
  */
 
 router.get('/week/:date*', function (req, res, next) {
-    console.log(req.params.id + ' ' + req.query.person);
+  console.log(req.params.id + ' ' + req.query.person);
 });
 
 /*
@@ -200,7 +200,7 @@ router.get('/week/:date*', function (req, res, next) {
 
 router.get('/entry', function (req, res, next) {
   SQL.getEntries(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -214,9 +214,9 @@ router.get('/entry', function (req, res, next) {
   });
 });
 
-router.post('/entry', function(req, res, next) {
+router.post('/entry', function (req, res, next) {
   SQL.createEntry(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -236,7 +236,7 @@ router.post('/entry', function(req, res, next) {
 
 router.get('/data', function (req, res, next) {
   SQL.getData(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -262,7 +262,7 @@ router.get('/data', function (req, res, next) {
         JSONArray.push(data);
       }
 
-      JSONArray.sort(function(a, b) {
+      JSONArray.sort(function (a, b) {
         return new Date(a.week) - new Date(b.week);
       });
 
@@ -281,7 +281,7 @@ router.get('/data', function (req, res, next) {
 
 router.get('/time', function (req, res, next) {
   SQL.getTimeEntries(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -297,7 +297,7 @@ router.get('/time', function (req, res, next) {
 
 router.get('/time/:id', function (req, res, next) {
   SQL.getTimeEntries(req, function (err, result) {
-    if (err){
+    if (err) {
       return res.status(500).json({
         message: 'Error!',
         err: err
@@ -310,5 +310,45 @@ router.get('/time/:id', function (req, res, next) {
     }
   });
 });
+
+/*
+ * ROLLUP ROUTES
+ */
+
+// router.get('/rollups', function (req, res, next) {
+//   let rollUps = [];
+//
+//   SQL.getPeople(req, (err, data) => {
+//     if (err) {
+//
+//     } else {
+//       const employees = data;
+//       for (let i = 0; i < employees.length; i++) {
+//         employees[i].opened = false;
+//       }
+//       for (const employee of employees) {
+//         req.query['employeeid'] = employee.id;
+//         SQL.getEntries(req, (err, entries) => {
+//           if (err) {
+//             console.log('reerer')
+//           } else {
+//             console.log('d')
+//             if (entries.length > 0) {
+//               console.log('e')
+//               rollUps.push(entries);
+//             } else {
+//               console.log('f')
+//               const index = employees.indexOf(employee);
+//               employees.splice(index, 1);
+//             }
+//           }
+//         });
+//       }
+//       console.log('gilbert');
+//       console.log(rollUps);
+//       console.log(employees);
+//     }
+//   });
+// });
 
 module.exports = router;

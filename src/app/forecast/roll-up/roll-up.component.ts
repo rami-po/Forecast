@@ -5,6 +5,7 @@ import {DatePipe} from "@angular/common";
 import {Subject} from "rxjs/Subject";
 import {RollUpService} from "./roll-up.service";
 import {isUndefined} from "util";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-roll-up',
@@ -29,6 +30,10 @@ export class RollUpComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getEntries();
+  }
+
+  getEntries() {
     this.mainService.getResources('?employeeId=' + this.employee.id).subscribe(
       resources => {
         this.totalCapacities = resources.totalCapacities;
@@ -47,8 +52,17 @@ export class RollUpComponent implements OnInit {
               }
             }
             this.isDataAvailable = true;
+            // this.refreshData();
           }
         );
+      }
+    );
+  }
+
+  private refreshData() {
+    Observable.timer(1000).first().subscribe(
+      () => {
+        this.getEntries();
       }
     );
   }

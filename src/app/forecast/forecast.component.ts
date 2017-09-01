@@ -8,6 +8,7 @@ import {EntryComponent} from './entry/entry.component';
 import {DatePipe} from '@angular/common';
 import {GridViewComponent} from './grid-view/grid-view.component';
 import {isNullOrUndefined} from 'util';
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-forecast',
@@ -122,32 +123,45 @@ export class ForecastComponent implements OnInit {
   }
 
   getRollUps(params) {
-    this.rollUps.length = 0;
+    const rollUps = [];
     this.forecastService.getEmployees('?active=1' + params).subscribe(
       data => {
-        this.employees = data.result;
-        for (let i = 0; i < this.employees.length; i++) {
-          this.employees[i].opened = false;
+        const employees = data.result;
+        for (let i = 0; i < employees.length; i++) {
+          employees[i].opened = false;
         }
-        for (const employee of this.employees) {
+        for (const employee of employees) {
           this.forecastService.getEntries('?employeeid=' + employee.id + params).subscribe(
             entries => {
               if (entries.result.length > 0) {
-                this.rollUps.push(entries.result);
+                rollUps.push(entries.result);
               } else {
-                const index = this.employees.indexOf(employee);
-                this.employees.splice(index, 1);
+                const index = employees.indexOf(employee);
+                employees.splice(index, 1);
               }
             }
           );
         }
+
+        this.employees = employees;
+        this.rollUps = rollUps;
+
         this.forecastService.getResources('?' + params.substring(1)).subscribe(
           resources => {
             this.forecastService.filteredResources.next(resources);
             this.isDataAvailable = true;
             this.mode = 'determinate';
+            // this.refreshData();
           }
         );
+      }
+    );
+  }
+
+  private refreshData() {
+    Observable.timer(1000).first().subscribe(
+      () => {
+        this.getRollUps(this.params);
       }
     );
   }
