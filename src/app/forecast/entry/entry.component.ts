@@ -121,6 +121,11 @@ export class EntryComponent implements OnInit, OnDestroy {
     return difference < 0;
   }
 
+  isDefault(index) {
+    const difference = this.getDifference(index);
+    return difference === 0;
+  }
+
   type(value: string, week, columnNumber) {
     console.log('sending...');
     if (!isNaN(Number(value))) {
@@ -141,7 +146,6 @@ export class EntryComponent implements OnInit, OnDestroy {
                 this.mainService.resources.next(data);
               }
             );
-            console.log(this.params);
             this.mainService.getResources('?' + this.params.substring(1)).subscribe(
               data => {
                 this.mainService.filteredResources.next(data);
@@ -160,7 +164,6 @@ export class EntryComponent implements OnInit, OnDestroy {
                         week: data.result[i].week_of.substring(0, 10),
                         capacity: data.result[i].capacity
                       });
-
                     }
                   }
                 );

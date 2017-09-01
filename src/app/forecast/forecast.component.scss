@@ -1,8 +1,8 @@
-$title_height: 62px;
+$title_height: 64px;
 $entry_side_height: 81.4vh;
 
 .entry-container {
-  margin-top: $title_height * 2;
+  margin-top: $title_height * 1.5;
   margin-left: 25%;
   height: $entry_side_height;
   width: 75%;
@@ -23,10 +23,11 @@ $entry_side_height: 81.4vh;
 .header-row-container {
   @extend .capacity-row-container;
   margin-top: $title_height;
+  margin-left: 25%;
 }
 
 .side-list-container {
-  margin-top: $title_height * 2;
+  margin-top: $title_height * 1.5;
   background-color: white;
   top: 0;
   bottom: 0;

@@ -1,9 +1,10 @@
 <div class="row-container">
   <div *ngFor="let week of getWeeks(), let i = index" class="row">
     <input
-      class="week"
+      class="capacity"
       [class.week-yellow]="isYellow(i)"
       [class.week-red]="isRed(i)"
+      [class.week-default]="isDefault(i)"
       maxlength="2" onclick="select()" (input)="type($event.target.value, week, i)" [value]="check(entry) ? getCapacity(week, i) : getTotal(week, i)"
       [disabled]="!check(entry)">
   </div>

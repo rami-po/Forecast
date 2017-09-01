@@ -71,7 +71,7 @@ export class GraphService {
 
         console.log('a');
 
-        //this loops needs to be optimized
+        // !!! this loops needs to be optimized !!!
         // Takes all the separate dates and pools them in their respective Monday's
         const totalCapacities = [];
         const fcTotalCapacities = [];

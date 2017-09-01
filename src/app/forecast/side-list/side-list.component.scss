@@ -9,21 +9,33 @@
   flex-direction: row;
 }
 
-.name {
+.project-client {
+  color: black;
+  font-family: Arial;
   display: flex;
+  position: relative;
+  width: 50%;
+  border: 1px solid white;
+  height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 15px;
+  padding: 5px;
+  margin-left: 15px;
+}
+
+.name {
+  @extend .project-client;
+  font-weight: bold;
   justify-content: center;
   align-items: center;
   text-align: center;
-  position: relative;
-  width: 33%;
-  border: 1px solid white;
-  height: 50px;
-  font-size: 15px;
-  padding: 5px;
 }
 
 .capacity {
   @extend .name;
+  font-weight: normal;
 }
 
 .capacity:focus {
