@@ -60,7 +60,7 @@ export class RollUpComponent implements OnInit {
   }
 
   private refreshData() {
-    Observable.timer(1000).first().subscribe(
+    Observable.timer(10000).first().subscribe(
       () => {
         this.getEntries();
       }
