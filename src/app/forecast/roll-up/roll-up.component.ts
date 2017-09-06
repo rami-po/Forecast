@@ -4,7 +4,7 @@ import {ForecastService} from "../forecast.service";
 import {DatePipe} from "@angular/common";
 import {Subject} from "rxjs/Subject";
 import {RollUpService} from "./roll-up.service";
-import {isUndefined} from "util";
+import {isNullOrUndefined, isUndefined} from "util";
 import {Observable} from "rxjs/Observable";
 
 @Component({
@@ -33,10 +33,24 @@ export class RollUpComponent implements OnInit {
     this.getEntries();
   }
 
+  getDifference(employeeCap, capacity) {
+    return capacity - employeeCap;
+  }
+
   getEntries() {
     this.mainService.getResources('?employeeId=' + this.employee.id + '&active=1').subscribe(
       resources => {
         this.totalCapacities = resources.totalCapacities;
+        for (let i = 0; i < this.totalCapacities.length; i++) {
+          const difference = this.getDifference(this.employee.capacity / 3600, this.totalCapacities[i].capacity);
+          if (difference === 0) {
+            (this.totalCapacities[i])['color'] = 'white';
+          } else if (difference > 0) {
+            (this.totalCapacities[i])['color'] = '#FFF59D';
+          } else if (difference < 0) {
+            (this.totalCapacities[i])['color'] = '#EF9A9A';
+          }
+        }
         this.mainService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
           data => {
             this.entries.length = 0;
