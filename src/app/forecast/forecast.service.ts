@@ -49,6 +49,12 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  removeEmployeeFromProject(projectId, assignmentId) {
+    return this.http.delete('http://onboarding.productops.com:3000/resource/project/' + projectId + '/assignments/' + assignmentId)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getEmployees(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/person' + params)
       .map((response: Response) => response.json())
@@ -119,6 +125,38 @@ export class ForecastService {
       monday.setDate(monday.getDate() + 7);
     }
     return weeks;
+  }
+
+  getRollUps(params) {
+    const rollUps = [];
+    this.getEmployees('?active=1' + params).subscribe(
+      data => {
+        const employees = data.result;
+        for (let i = 0; i < employees.length; i++) {
+          employees[i].opened = false;
+        }
+        for (const employee of employees) {
+          this.getEntries('?employeeid=' + employee.id + params).subscribe(
+            entries => {
+              if (entries.result.length > 0) {
+                rollUps.push(entries.result);
+              } else {
+                const index = employees.indexOf(employee);
+                employees.splice(index, 1);
+              }
+            }
+          );
+        }
+
+        this.getResources('?' + params.substring(1) + '&active=1').subscribe(
+          resources => {
+            this.filteredResources.next(resources);
+          }
+        );
+
+        return rollUps;
+      }
+    );
   }
 
 }

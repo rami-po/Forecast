@@ -1,29 +1,5 @@
 <div id="forecast" class="forecast-wrapper">
 
-  <div *ngIf="false" id="title" class="title-container">
-    <div class="title-row">
-      <div id="name" class="title">Name</div>
-
-      <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">
-        {{clientName}}
-      </div>
-      <md-menu #client_menu="mdMenu">
-        <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id, client.name)">
-          <span>{{client.name}}</span>
-        </button>
-      </md-menu>
-      <div id="project_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="project_menu" class="title-pointer">
-        {{projectName}}
-      </div>
-      <md-menu #project_menu="mdMenu">
-        <button *ngFor="let project of projects" md-menu-item
-                (click)="updateEntries('project', project.id, project.name)">
-          <span>{{project.name}}</span>
-        </button>
-      </md-menu>
-    </div>
-  </div>
-
   <div id="capacity-header" class="capacity-row-container">
     <app-capacity-row [weeks]="weeks" class="header"></app-capacity-row>
   </div>
@@ -33,7 +9,7 @@
   </div>
 
   <div id="side" class="side-list-container">
-    <app-side-list *ngIf="isDataAvailable" [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
+    <app-side-list *ngIf="isDataAvailable" [params]="params" [hasProject]="hasProject" [employees]="employees" [entries]="rollUps"></app-side-list>
   </div>
 
 

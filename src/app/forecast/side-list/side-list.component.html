@@ -8,6 +8,7 @@
       <div class="name-row" *ngFor="let entry of entries[i]">
         <div *ngIf="!hasProject" class="project-client">{{entry.client_name}}</div>
         <div *ngIf="!hasProject" class="project-client">{{entry.project_name}}</div>
+        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name"><md-icon svgIcon="delete"></md-icon></div>
       </div>
     </div>
   </div>

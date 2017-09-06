@@ -31,6 +31,7 @@ import {RollUpComponent} from './forecast/roll-up/roll-up.component';
 import {BobComponent} from './bob/bob.component';
 import {ClientListComponent} from './bob/client-list/client-list.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
+import {StatusMessageDialogComponent} from "./forecast/status-message/status-message.component";
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
     RollUpComponent,
     BobComponent,
     ClientListComponent,
-    CapacityRowComponent
+    CapacityRowComponent,
+    StatusMessageDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +66,8 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
     routing],
   bootstrap: [AppComponent],
   entryComponents: [
-    MilestonePromptComponent
+    MilestonePromptComponent,
+    StatusMessageDialogComponent
   ],
   providers: [DatePipe, GraphService, ForecastService]
 })

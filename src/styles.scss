@@ -2,10 +2,18 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~normalize.css";
 
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
+
 .page-wrapper {
 
 }
 
 md-menu {
   overflow-x: hidden !important;
+}
+
+md-dialog-container{
+  overflow: visible!important;
 }

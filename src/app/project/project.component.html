@@ -1,10 +1,10 @@
-<md-toolbar color="primary">
+<md-toolbar>
   <span>Forecasting</span>
 
   <button #parentMenu="mdMenuTrigger" md-button [mdMenuTriggerFor]="filter_menu">{{filterName}}<md-icon svgIcon="drop-down"></md-icon></button>
 
   <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
-    <button (click)="filter('', 'All Clients and Projects')" md-menu-item><span>All Clients and Projects</span></button>
+    <button (click)="filter('', 'All Projects')" md-menu-item><span>All Projects</span></button>
     <div *ngFor="let client of filterList">
       <button *ngIf="!checkForChildren(client.projects.length)" (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)"  md-menu-item>
         <span>{{client.name}}</span>

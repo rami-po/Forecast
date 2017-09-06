@@ -134,7 +134,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   getTextColor() {
     if (isNullOrUndefined(this.totalCapacities)) {
-      return 'blue';
+      return 'rgb(33, 150, 243)';
     }
     return 'black';
   }

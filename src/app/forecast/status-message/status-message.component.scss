@@ -1,0 +1,53 @@
+:host{
+
+  h3{
+    padding: 12px 25px;
+    margin: -25px -25px 8px;
+    text-align: center;
+    box-shadow: 0px 2px 8px rgba(0,0,0,.2);
+    background-color: #eee;
+
+    &.error{
+      background-color: #c31010;
+      color: white;
+    }
+
+    &.success{
+      background-color: #1eb31e;
+      color: white;
+    }
+
+    &.warning{
+      background-color: #eac607;
+      color: white;
+    }
+  }
+
+  md-dialog-actions{
+
+    button{
+      height: 30px;
+      line-height: 30px;
+    }
+
+    button[md-raised-button]{
+      float: right;
+    }
+  }
+
+  md-dialog-content{
+    width: 30rem;
+    overflow: visible;
+    margin: 3rem auto;
+
+    p{
+      text-align: center;
+      padding: .25rem 0;
+
+      &:not(:first-child){
+        border-top: 1px solid #eee;
+      }
+    }
+  }
+}
+

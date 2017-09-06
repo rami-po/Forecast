@@ -1,0 +1,17 @@
+<h3 md-dialog-title
+    [class.error]="error"
+    [class.success]="success"
+    [class.warning]="warning">{{title}}</h3>
+<md-dialog-content>
+  <p *ngFor="let message of messages">{{message}}</p>
+</md-dialog-content>
+<md-dialog-actions align="center">
+  <button md-button
+    *ngIf="dismissible"
+    (click)="dialogRef.close(false)">Cancel</button>
+  <button md-raised-button
+    color="primary"
+    autofocus="true"
+    (click)="dialogRef.close(true)">OK</button>
+  <span class="clear"></span>
+</md-dialog-actions>
