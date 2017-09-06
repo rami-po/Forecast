@@ -146,7 +146,7 @@ export class ForecastComponent implements OnInit {
         this.employees = employees;
         this.rollUps = rollUps;
 
-        this.forecastService.getResources('?' + params.substring(1)).subscribe(
+        this.forecastService.getResources('?' + params.substring(1) + '&active=1').subscribe(
           resources => {
             this.forecastService.filteredResources.next(resources);
             this.isDataAvailable = true;

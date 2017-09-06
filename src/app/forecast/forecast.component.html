@@ -3,7 +3,9 @@
   <div *ngIf="false" id="title" class="title-container">
     <div class="title-row">
       <div id="name" class="title">Name</div>
-      <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">{{clientName}}
+
+      <div id="client_menu" *ngIf="!hasProject" [mdMenuTriggerFor]="client_menu" class="title-pointer">
+        {{clientName}}
       </div>
       <md-menu #client_menu="mdMenu">
         <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id, client.name)">

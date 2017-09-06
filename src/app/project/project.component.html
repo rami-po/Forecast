@@ -1,19 +1,20 @@
 <md-toolbar color="primary">
-  <span>Forecasting {{filterName}}</span>
-  <span class="spacer"></span>
-  <button md-raised-button [disabled]="isDisabled" color="accent" (click)="updateGraphView()">{{graphButton}}</button>
-  <button md-raised-button [mdMenuTriggerFor]="project_menu" color="accent">Projects</button>
-  <md-menu #project_menu="mdMenu">
-    <button *ngFor="let project of projects" md-menu-item (click)="updateEntries('project', project.id, project.name)">
-      <span>{{project.name}}</span>
-    </button>
-  </md-menu>
-  <button md-raised-button [mdMenuTriggerFor]="client_menu" color="accent">Clients</button>
-  <md-menu #client_menu="mdMenu">
-    <button *ngFor="let client of clients" md-menu-item (click)="updateEntries('client', client.id, client.name)">
+  <span>Forecasting</span>
+
+  <button #parentMenu="mdMenuTrigger" md-button [mdMenuTriggerFor]="filter_menu">{{filterName}}</button>
+
+  <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
+    <button (click)="filter('', 'All Clients and Projects')" md-menu-item><span>All Clients and Projects</span></button>
+    <button (click)="$event.stopPropagation()" *ngFor="let client of filterList" [mdMenuTriggerFor]="proj_menu" md-menu-item>
       <span>{{client.name}}</span>
+      <md-menu [overlapTrigger]="false" #proj_menu="mdMenu">
+        <button *ngFor="let project of client.projects" (click)="filter(project.id, client.name + ' - ' + project.name)" md-menu-item="">
+          <span>{{project.name}}</span>
+        </button>
+      </md-menu>
     </button>
   </md-menu>
+
 </md-toolbar>
 
 <div *ngIf="isGraphShowing" class="graph-data-wrapper">
@@ -26,6 +27,7 @@
     <p><b>Project Profit Margin:</b> {{projectedProfitMargin | number:'2.2-2'}}%</p>
   </div>
 </div>
+
 
 <div class="forecast-wrapper">
   <app-forecast [height]="height" [forecastHeight]="forecastHeight"></app-forecast>

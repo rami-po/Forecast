@@ -97,7 +97,7 @@ export class GraphComponent implements OnInit, OnDestroy {
         drawTime: 'afterDraw',
         type: 'line',
         mode: 'vertical',
-        scaleID: 'x-axis-0',
+        scaleID: 'closeParentMenu-axis-0',
         value: '',
         borderColor: 'red',
         borderWidth: 2,

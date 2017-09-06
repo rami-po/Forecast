@@ -1,11 +1,15 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  AfterContentInit, AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, Output,
+  ViewChild,
+  AfterViewChecked,
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectService} from './project.service';
 import {ForecastService} from '../forecast/forecast.service';
 import {isUndefined} from 'util';
 import {GraphService} from './graph/graph.service';
 import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
-import {MdDialog} from '@angular/material';
+import {MdDialog, MdMenu, MdMenuTrigger} from '@angular/material';
 
 
 @Component({
@@ -16,6 +20,7 @@ import {MdDialog} from '@angular/material';
 })
 export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
+  @ViewChild('parentMenu') parentMenu: MdMenuTrigger;
   @Input() public projectId;
   @Input() public tableEnabled = true;
   private lastParams = '';
@@ -27,14 +32,13 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   public projectedProfitMargin;
   public remaining;
   private subscriptions = [];
+  public filterList = [];
+  public filterName = 'All Clients and Projects';
 
   public projects;
   public clients;
 
-  public isDisabled = true;
   public isGraphShowing = false;
-  public graphButton = 'Show Graph';
-  public filterName = '';
 
   public height = '76.5vh';
   public forecastHeight = '90.3vh';
@@ -43,6 +47,22 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
               private forecastService: ForecastService,
               public graphService: GraphService,
               private dialog: MdDialog) {
+  }
+
+  filter(id, name) {
+    this.filterName = name;
+    let params = '';
+    if (id !== '') {
+      if (name.indexOf('All Projects') === -1) {
+        this.isGraphShowing = true;
+        this.graphService.initializeGraph(this.params);
+      } else {
+        this.isGraphShowing = false;
+      }
+      params = (name.indexOf('All Projects') === -1 ? '&projectId=' : '&clientId=') + id;
+    }
+    this.forecastService.params.next(params);
+    this.parentMenu.closeMenu();
   }
 
   ngOnInit() {
@@ -57,9 +77,19 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.forecastService.getClients('?active=1').subscribe(
       data => {
-        data.result.splice(0, 0, {id: '', name: 'All'});
+        // data.result.splice(0, 0, {id: '', name: 'All'});
         this.forecastService.clients.next(data.result);
         this.clients = data.result;
+        for (let i = 0; i < this.clients.length; i++) {
+          this.forecastService.getProjects('?clientId=' + this.clients[i].id + '&active=1').subscribe(
+            projects => {
+              if (projects.result.length > 1) {
+                projects.result.splice(0, 0, {id: this.clients[i].id, name: 'All Projects'});
+                this.filterList.push({name: this.clients[i].name, id: this.clients[i].id, projects: projects.result});
+              }
+            }
+          );
+        }
       }
     );
 
@@ -134,42 +164,6 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  updateEntries(entry, id, name) {
-    let params = '';
-    if (id !== '') {
-      if (entry === 'project') {
-        params = '&projectId=' + id;
-        this.isDisabled = false;
-      } else {
-        params = '&clientId=' + id;
-        this.graphButton = 'Show Graph';
-        this.isGraphShowing = false;
-        this.isDisabled = true;
-      }
-      this.filterName = '- ' + name;
-    } else {
-      this.graphButton = 'Show Graph';
-      this.isGraphShowing = false;
-      this.isDisabled = true;
-      this.filterName = '';
-    }
-
-    this.forecastService.params.next(params);
-
-  }
-
-  updateGraphView() {
-    this.isGraphShowing = !this.isGraphShowing;
-    switch (this.isGraphShowing) {
-      case true:
-        this.graphService.initializeGraph(this.params);
-        this.graphButton = 'Hide Graph';
-        break;
-      case false:
-        this.graphButton = 'Show Graph';
-        break;
-    }
-  }
 
   ngAfterViewInit() {
     if (this.tableEnabled) {

@@ -1,4 +1,4 @@
-<div class="row-container">
+<div class="row-container" [class.highlight]="isOpened">
   <div *ngFor="let week of getWeeks(), let i = index" class="row">
     <input
       class="capacity"

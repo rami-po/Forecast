@@ -5,3 +5,7 @@
 .page-wrapper {
 
 }
+
+md-menu {
+  overflow-x: hidden !important;
+}

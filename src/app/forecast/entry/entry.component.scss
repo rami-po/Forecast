@@ -5,6 +5,11 @@
   flex-direction: row;
 }
 
+.highlight {
+  @extend .row-container;
+  border: 1px solid blue;
+}
+
 input:focus {
   outline-width: thick;
   outline-color: limegreen;
