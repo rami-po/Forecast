@@ -1,6 +1,6 @@
 <div *ngIf="true">
   <div>
-    <app-entry [totalCapacities]="totalCapacities" [row]="row" [employeeCapacity]="employee.capacity"></app-entry>
+    <app-entry [isOpened]="employee.opened" [totalCapacities]="totalCapacities" [row]="row" [employeeCapacity]="employee.capacity"></app-entry>
   </div>
   <div *ngIf="employee.opened">
     <div *ngFor="let entry of data, let i = index">

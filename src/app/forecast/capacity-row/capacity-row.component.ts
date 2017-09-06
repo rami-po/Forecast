@@ -18,7 +18,7 @@ export class CapacityRowComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.mainService.getResources('').subscribe(
+    this.mainService.getResources('?active=1').subscribe(
       data => {
         this.mainService.resources.next(data);
       }

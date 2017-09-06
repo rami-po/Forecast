@@ -36,6 +36,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public row;
   @Input() public totalCapacities;
   @Input() public employeeCapacity;
+  @Input() public isOpened = false;
   @Input() private params;
 
   constructor(public entryService: EntryService,
@@ -141,22 +142,23 @@ export class EntryComponent implements OnInit, OnDestroy {
         const boxNumber = columnNumber + (this.row * ForecastService.NUMBER_OF_WEEKS);
         this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
           callback => {
-            this.mainService.getResources('').subscribe(
+            this.mainService.getResources('?active=1').subscribe(
               data => {
                 this.mainService.resources.next(data);
               }
             );
-            this.mainService.getResources('?' + this.params.substring(1)).subscribe(
+            this.mainService.getResources('?' + this.params.substring(1) + '&active=1').subscribe(
               data => {
                 this.mainService.filteredResources.next(data);
               }
             );
 
             this.graphService.updateGraph(week);
-            this.mainService.getResources('?employeeId=' + this.entry.employeeId).subscribe(
+            this.mainService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
                 this.rollUpComponent.totalCapacities = resources.totalCapacities;
-                this.mainService.getResources('?employeeId=' + this.entry.employeeId + '&projectId=' + this.entry.projectId).subscribe(
+                this.mainService.getResources('?employeeId=' + this.entry.employeeId +
+                  '&projectId=' + this.entry.projectId + '&active=1').subscribe(
                   data => {
                     this.data.length = 0;
                     for (let i = 0; i < data.result.length; i++) {

@@ -34,10 +34,10 @@ export class RollUpComponent implements OnInit {
   }
 
   getEntries() {
-    this.mainService.getResources('?employeeId=' + this.employee.id).subscribe(
+    this.mainService.getResources('?employeeId=' + this.employee.id + '&active=1').subscribe(
       resources => {
         this.totalCapacities = resources.totalCapacities;
-        this.mainService.getResources('?employeeId=' + this.employee.id + this.params).subscribe(
+        this.mainService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
           data => {
             this.entries.length = 0;
             for (let row = 0; row < this.data.length; row++) {
