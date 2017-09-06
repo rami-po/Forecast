@@ -34,12 +34,7 @@ export class ForecastComponent implements OnInit {
   public projects;
   public clients;
 
-  public projectName = 'All Projects';
-  public clientName = 'All Clients';
-
   public isDataAvailable = false;
-  public isClientDataAvailable = false;
-  public isProjectDataAvailable = false;
   public mode = 'indeterminate';
 
   constructor(private forecastService: ForecastService,
@@ -109,7 +104,6 @@ export class ForecastComponent implements OnInit {
       data => {
         this.projects = data.result;
         this.projects.splice(0, 0, {id: '', name: 'All'});
-        this.isProjectDataAvailable = true;
       }
     );
 
@@ -117,7 +111,6 @@ export class ForecastComponent implements OnInit {
       data => {
         this.clients = data.result;
         this.clients.splice(0, 0, {id: '', name: 'All'});
-        this.isClientDataAvailable = true;
       }
     );
   }
@@ -158,38 +151,6 @@ export class ForecastComponent implements OnInit {
     );
   }
 
-  private refreshData() {
-    Observable.timer(1000).first().subscribe(
-      () => {
-        this.getRollUps(this.params);
-      }
-    );
-  }
-
-  updateEntries(entry, id, name) {
-    if (id !== '') {
-      if (entry === 'project') {
-        this.params = '&projectId=' + id;
-        this.projectName = name;
-        this.clientName = 'All Clients';
-      } else {
-        this.params = '&clientId=' + id;
-        this.clientName = name;
-        this.projectName = 'All Projects';
-      }
-    } else {
-      this.params = '';
-      this.projectName = 'All Projects';
-      this.clientName = 'All Clients';
-    }
-
-    this.forecastService.params.next(this.params.substring(1));
-
-    console.log(this.params);
-
-    this.getRollUps(this.params);
-
-  }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
            projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {

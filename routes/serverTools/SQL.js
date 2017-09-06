@@ -127,7 +127,7 @@ exports.getEntries = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
 
   connection.query(
-    'SELECT c.id AS client_id, c.name AS client_name, ' +
+    'SELECT a.id as id, c.id AS client_id, c.name AS client_name, ' +
     'p.id AS project_id, p.name AS project_name, ' +
     'e.id AS employee_id, e.first_name, e.last_name ' +
     'FROM clients c ' +
@@ -224,6 +224,16 @@ exports.createEntry = function (req, callback) {
 
 exports.updateCapacity = function (req, callback) {
   connection.query('UPDATE employees SET capacity = ' + req.body.capacity + ' WHERE id = ' + req.body.id, function (err, result) {
+    callback(err, result);
+  });
+};
+
+/*
+ * DELETE METHODS
+ */
+
+exports.deleteAssignment = function (req, callback) {
+  connection.query('DELETE FROM assignments WHERE id = ' + req.params.assignment_id + ' AND project_id = ' + req.params.project_id, function (err, result) {
     callback(err, result);
   });
 };

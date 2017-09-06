@@ -1,3 +1,6 @@
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
 .graph-data-wrapper {
   display: flex;
   flex-direction: row;
@@ -22,3 +25,9 @@
 button {
   margin-left: 16px;
 }
+
+md-toolbar {
+  background-color: $primary-blue;
+  color: white;
+}
+

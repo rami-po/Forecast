@@ -1,3 +1,6 @@
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
 .name-container {
   margin-bottom: 64px;
   display: flex;
@@ -10,11 +13,11 @@
 }
 
 .project-client {
-  color: blue;
+  color: $primary-blue;
   font-family: Arial;
   display: flex;
   position: relative;
-  width: 50%;
+  width: 33%;
   border: 1px solid white;
   height: 20px;
   text-overflow: ellipsis;
@@ -28,6 +31,7 @@
 .name {
   @extend .project-client;
   color: black;
+  width: 50%;
   font-weight: bold;
   justify-content: center;
   align-items: center;
@@ -41,11 +45,11 @@
 
 .capacity:focus {
   padding: 4px;
-  border: 2px solid limegreen;
+  border: 2px solid $primary-blue;
 }
 
 input:focus {
-  outline-color: limegreen;
+  outline-color: $primary-blue;
 }
 
 .user_name {

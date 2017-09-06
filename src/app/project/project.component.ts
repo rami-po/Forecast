@@ -34,7 +34,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   public remaining;
   private subscriptions = [];
   public filterList = [];
-  public filterName = 'All Clients and Projects';
+  public filterName = 'All Projects';
 
   public projects;
   public clients;

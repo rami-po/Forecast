@@ -31,3 +31,11 @@ exports.updateCapacity = function (req, callback) {
   })
 
 };
+
+exports.removeEmployeeFromProject = function (req, callback) {
+  harvestOptions.path = '/projects/' + req.params.project_id + '/user_assignments/' + req.params.assignment_id;
+  harvestOptions.method = 'DELETE';
+  server.makeHTTPCall(harvestOptions, null, function (status, result) {
+    callback(status, result);
+  })
+};

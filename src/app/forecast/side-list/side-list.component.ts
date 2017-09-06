@@ -5,6 +5,9 @@ import {ForecastService} from '../forecast.service';
 import {EntryComponent} from '../entry/entry.component';
 import {isNullOrUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
+import {DomSanitizer} from "@angular/platform-browser";
+import {MdDialog, MdIconRegistry} from "@angular/material";
+import {StatusMessageDialogComponent} from "../status-message/status-message.component";
 
 @Component({
   selector: 'app-side-list',
@@ -16,15 +19,45 @@ export class SideListComponent implements OnInit {
   @Input() public hasProject = true;
   @Input() public entries;
   @Input() public employees;
+  @Input() public params;
   public name: string;
   private lastEmployeeId;
   private timerSubscription;
 
-  constructor(private mainService: ForecastService) {
+  constructor(private mainService: ForecastService,
+              private iconRegistry: MdIconRegistry,
+              private forecastService: ForecastService,
+              private sanitizer: DomSanitizer,
+              private dialog: MdDialog) {
+    iconRegistry.addSvgIcon(
+      'delete',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'));
   }
 
 
   ngOnInit() {
+  }
+
+  deleteUser(entry) {
+    console.log(entry);
+    const dialog = this.dialog.open(StatusMessageDialogComponent);
+    dialog.componentInstance.title = 'Are you sure?';
+    dialog.componentInstance.error = true;
+    dialog.componentInstance.dismissible = true;
+    dialog.componentInstance.messages = ['You are removing ' + entry.first_name + ' ' + entry.last_name +
+      ' from the project: ' + entry.project_name + '.'];
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
+            data => {
+              console.log(data);
+              this.entries = this.forecastService.getRollUps(this.params);
+            }
+          );
+        }
+      }
+    );
   }
 
   type(value: string, employee) {
