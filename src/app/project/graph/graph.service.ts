@@ -69,6 +69,9 @@ export class GraphService {
     this.forecastService.getTimeEntries('?' + params).subscribe(
       timeEntries => {
 
+        console.log(params);
+        console.log(timeEntries.result.length);
+
         console.log('a');
 
         // !!! this loops needs to be optimized !!!

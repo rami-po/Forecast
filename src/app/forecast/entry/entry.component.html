@@ -1,4 +1,4 @@
-<div class="row-container" [class.highlight]="isOpened">
+<div class="row-container">
   <div *ngFor="let week of getWeeks(), let i = index" class="row">
     <input
       [style.background-color]="getColor(week, i)"

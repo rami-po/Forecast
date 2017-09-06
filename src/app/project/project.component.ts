@@ -59,12 +59,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filterName = name;
     let params = '';
     if (id !== '') {
-      if (name.indexOf('All Projects') === -1) {
-        this.isGraphShowing = true;
-        this.graphService.initializeGraph(this.params);
-      } else {
-        this.isGraphShowing = false;
-      }
+      this.isGraphShowing = name.indexOf('All Projects') === -1;
       params = (name.indexOf('All Projects') === -1 ? '&projectId=' : '&clientId=') + id;
     } else {
       this.isGraphShowing = false;
