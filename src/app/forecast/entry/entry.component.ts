@@ -39,6 +39,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public isOpened = false;
   @Input() private params;
 
+
   constructor(public entryService: EntryService,
               public graphService: GraphService,
               private mainService: ForecastService,
@@ -64,67 +65,78 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   public getCapacity(week, index): string {
-    if (!isNullOrUndefined(this.data) && !isNullOrUndefined(this.data[index])) {
-      if (this.data[index].week === week) {
-        return this.data[index].capacity;
-      } else {
-        this.data.splice(index, 0, {week: week, capacity: 0});
-        return this.data[index].capacity;
-      }
+    if (!isNullOrUndefined(this.data[index]) && this.data[index].week === week) {
+      return this.data[index].capacity;
     }
-    return '0';
+    this.data.splice(index, 0, {week: week, capacity: 0});
+    return this.data[index].capacity;
   }
 
   public getTotal(week, index): string {
-    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
-      if (this.totalCapacities[index].week === week) {
-        return this.totalCapacities[index].capacity;
-      } else {
-        this.totalCapacities.splice(index, 0, {week: week, capacity: 0});
-        return this.totalCapacities[index].capacity;
+    if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
+      return this.totalCapacities[index].capacity;
+    }
+    this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: 'red'});
+    return this.totalCapacities[index].capacity;
+  }
+
+  getDifference(employeeCap, capacity) {
+    return capacity - employeeCap;
+  }
+
+  getColor(week, index) {
+    if (!isNullOrUndefined(this.totalCapacities)) {
+      if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
+        return this.totalCapacities[index].color;
       }
+      this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: '#EF9A9A'});
+      return this.totalCapacities[index].color;
+    } else {
+      return 'white';
     }
-    return '0';
   }
 
-  getDifference(index): any {
-    const employeeCap = this.employeeCapacity / 3600;
-    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
-      return this.totalCapacities[index].capacity - employeeCap;
-    }
-    return 0 - employeeCap;
-  }
-
-  isGreen(index) {
-    const difference = this.getDifference(index);
-    return (difference === 0);
-  }
-
-  isLime(index) {
-    const difference = this.getDifference(index);
-    return ((difference <= 5 && difference > 0) || (difference >= -5 && difference < 0));
-  }
 
   isYellow(index) {
-    const difference = this.getDifference(index);
-    // return ((difference <= 10 && difference > 5) || (difference >= -10 && difference < -5));
-    return difference > 0;
-  }
-
-  isOrange(index) {
-    const difference = this.getDifference(index);
-    return ((difference <= 20 && difference > 10) || (difference >= -20 && difference < -10));
+    if (!isNullOrUndefined(this.totalCapacities[index])) {
+      if (this.totalCapacities[index].color === 'yellow') {
+        return true;
+      }
+    }
+    return false;
+    // const difference = this.getDifference(index);
+    // // return ((difference <= 10 && difference > 5) || (difference >= -10 && difference < -5));
+    // return difference > 0;
   }
 
   isRed(index) {
-    const difference = this.getDifference(index);
-    // return (difference > 20 || difference < -20);
-    return difference < 0;
+    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
+      if (this.totalCapacities[index].color === 'red') {
+        return true;
+      }
+    }
+    return false;
+    // const difference = this.getDifference(index);
+    // // return (difference > 20 || difference < -20);
+    // return difference < 0;
   }
 
   isDefault(index) {
-    const difference = this.getDifference(index);
-    return difference === 0;
+    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
+      if (this.totalCapacities[index].color === 'default') {
+        return true;
+      }
+    }
+    return false;
+    // const difference = this.getDifference(index);
+    // return difference === 0;
+  }
+
+  getTextColor() {
+    if (isNullOrUndefined(this.totalCapacities)) {
+      return 'blue';
+    }
+    return 'black';
   }
 
   type(value: string, week, columnNumber) {
@@ -156,6 +168,16 @@ export class EntryComponent implements OnInit, OnDestroy {
             this.graphService.updateGraph(week);
             this.mainService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
+                for (let i = 0; i < resources.totalCapacities.length; i++) {
+                  const difference = this.getDifference(this.employeeCapacity / 3600, resources.totalCapacities[i].capacity);
+                  if (difference === 0) {
+                    (resources.totalCapacities[i])['color'] = 'white';
+                  } else if (difference > 0) {
+                    (resources.totalCapacities[i])['color'] = '#FFF59D';
+                  } else if (difference < 0) {
+                    (resources.totalCapacities[i])['color'] = '#EF9A9A';
+                  }
+                }
                 this.rollUpComponent.totalCapacities = resources.totalCapacities;
                 this.mainService.getResources('?employeeId=' + this.entry.employeeId +
                   '&projectId=' + this.entry.projectId + '&active=1').subscribe(

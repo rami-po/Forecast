@@ -9,7 +9,8 @@ import {ForecastService} from '../forecast/forecast.service';
 import {isUndefined} from 'util';
 import {GraphService} from './graph/graph.service';
 import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
-import {MdDialog, MdMenu, MdMenuTrigger} from '@angular/material';
+import {MdDialog, MdIconRegistry, MdMenu, MdMenuTrigger} from '@angular/material';
+import {DomSanitizer} from "@angular/platform-browser";
 
 
 @Component({
@@ -46,7 +47,12 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private route: ActivatedRoute,
               private forecastService: ForecastService,
               public graphService: GraphService,
-              private dialog: MdDialog) {
+              private dialog: MdDialog,
+              private iconRegistry: MdIconRegistry,
+              private sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIcon(
+      'drop-down',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_arrow_drop_down_white_48px.svg'));
   }
 
   filter(id, name) {
@@ -60,9 +66,15 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isGraphShowing = false;
       }
       params = (name.indexOf('All Projects') === -1 ? '&projectId=' : '&clientId=') + id;
+    } else {
+      this.isGraphShowing = false;
     }
     this.forecastService.params.next(params);
     this.parentMenu.closeMenu();
+  }
+
+  checkForChildren(amountOfChildren) {
+    return amountOfChildren > 1;
   }
 
   ngOnInit() {
@@ -85,6 +97,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
             projects => {
               if (projects.result.length > 1) {
                 projects.result.splice(0, 0, {id: this.clients[i].id, name: 'All Projects'});
+              }
+              if (projects.result.length > 0) {
                 this.filterList.push({name: this.clients[i].name, id: this.clients[i].id, projects: projects.result});
               }
             }

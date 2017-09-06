@@ -10,7 +10,7 @@ import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
-  MdButtonModule, MdDialogModule, MdMenuModule, MdProgressSpinnerModule, MdToolbarModule,
+  MdButtonModule, MdDialogModule, MdIconModule, MdMenuModule, MdProgressSpinnerModule, MdToolbarModule,
   MdTooltipModule
 } from '@angular/material';
 import {DatePipe} from '@angular/common';
@@ -59,6 +59,7 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
     MdDialogModule,
     MdMenuModule,
     MdProgressSpinnerModule,
+    MdIconModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],
