@@ -27,8 +27,8 @@ export class ForecastComponent implements OnInit {
   @Input() public params = '';
   @Input() public height = '85.9vh';
   @Input() public forecastHeight = '100vh';
+  @Input() public isProjectView = false;
   private lastParams;
-  public hasProject = false;
 
   public employees;
   public projects;
@@ -58,47 +58,28 @@ export class ForecastComponent implements OnInit {
     EntryComponent.setWeeks(this.weeks);
     GridViewComponent.weeks = this.weeks;
 
-    // if it isn't the main route
-    // if (this.params !== '') {
-    //   this.hasProject = true;
-    //   this.table = document.getElementById('table');
-    //   this.forecast = document.getElementById('forecast');
-    //   const title = document.getElementById('title');
-    //   const name = document.getElementById('name');
-    //   this.table.style.height = '50vh';
-    //   this.table.style.width = '85%';
-    //   this.table.style.marginLeft = '15%';
-    //   this.header.style.marginLeft = '15%';
-    //   this.side.style.width = '15%';
-    //   this.side.style.height = '45vh';
-    //   this.forecast.style.height = '60vh';
-    //   title.style.width = '15%';
-    //   name.style.width = '100%';
-    // }
+    this.forecastService.rollUps$.subscribe(
+      data => {
+        this.rollUps = data;
+        this.isDataAvailable = true;
+      }
+    );
+
+    this.forecastService.employees$.subscribe(
+      data => {
+        this.employees = data;
+      }
+    );
 
     this.forecastService.params$.subscribe(
       params => {
         this.params = params;
         if (this.params !== this.lastParams) {
           this.lastParams = this.params;
-          this.getRollUps(params);
+          this.forecastService.updateRollUps(params);
         }
       }
     );
-
-    // this.forecastService.projects$.subscribe(
-    //   projects => {
-    //     this.projects = projects;
-    //     this.isProjectDataAvailable = true;
-    //   }
-    // );
-    //
-    // this.forecastService.clients$.subscribe(
-    //   clients => {
-    //     this.clients = clients;
-    //     this.isClientDataAvailable = true;
-    //   }
-    // );
 
     this.forecastService.getProjects('?active=1').subscribe(
       data => {
