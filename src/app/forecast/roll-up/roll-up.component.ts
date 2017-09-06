@@ -25,12 +25,12 @@ export class RollUpComponent implements OnInit {
 
   public isDataAvailable = false;
 
-  constructor(private mainService: ForecastService,
+  constructor(private forecastService: ForecastService,
               private rollUpService: RollUpService) {
   }
 
   ngOnInit() {
-    this.getEntries();
+   this.getEntries();
   }
 
   getDifference(employeeCap, capacity) {
@@ -38,7 +38,7 @@ export class RollUpComponent implements OnInit {
   }
 
   getEntries() {
-    this.mainService.getResources('?employeeId=' + this.employee.id + '&active=1').subscribe(
+    this.forecastService.getResources('?employeeId=' + this.employee.id + '&active=1').subscribe(
       resources => {
         this.totalCapacities = resources.totalCapacities;
         for (let i = 0; i < this.totalCapacities.length; i++) {
@@ -51,7 +51,7 @@ export class RollUpComponent implements OnInit {
             (this.totalCapacities[i])['color'] = '#EF9A9A';
           }
         }
-        this.mainService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
+        this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
           data => {
             this.entries.length = 0;
             for (let row = 0; row < this.data.length; row++) {

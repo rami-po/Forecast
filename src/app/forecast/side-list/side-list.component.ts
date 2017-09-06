@@ -16,7 +16,7 @@ import {StatusMessageDialogComponent} from "../status-message/status-message.com
 })
 export class SideListComponent implements OnInit {
 
-  @Input() public hasProject = true;
+  @Input() public isProjectView = false;
   @Input() public entries;
   @Input() public employees;
   @Input() public params;

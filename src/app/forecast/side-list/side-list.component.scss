@@ -38,6 +38,11 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
   text-align: center;
 }
 
+
+.add-user {
+  @extend .name;
+  font-weight: normal;
+}
 .capacity {
   @extend .name;
   font-weight: normal;

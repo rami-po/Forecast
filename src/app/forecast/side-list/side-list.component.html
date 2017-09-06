@@ -6,11 +6,22 @@
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
-        <div *ngIf="!hasProject" class="project-client">{{entry.client_name}}</div>
-        <div *ngIf="!hasProject" class="project-client">{{entry.project_name}}</div>
+        <div class="project-client">{{entry.client_name}}</div>
+        <div class="project-client">{{entry.project_name}}</div>
         <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name"><md-icon svgIcon="delete"></md-icon></div>
       </div>
     </div>
   </div>
+  <div *ngIf="isProjectView">
+    <button md-button class="add-user" [mdMenuTriggerFor]="unassignedEmployees">hi</button>
+  </div>
+
+  <md-menu [overlapTrigger]="false" #unassignedEmployees="mdMenu">
+    <div md-menu-item>hi</div>
+    <div md-menu-item>hi</div>
+    <div md-menu-item>hi</div>
+    <div md-menu-item>hi</div>
+    <div md-menu-item>hi</div>
+  </md-menu>
 </div>
 
