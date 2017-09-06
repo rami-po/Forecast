@@ -135,16 +135,16 @@ export class ForecastComponent implements OnInit {
             }
           );
         }
-
         this.employees = employees;
+        this.forecastService.employees.next(employees);
         this.rollUps = rollUps;
+        this.forecastService.rollUps.next(rollUps);
 
         this.forecastService.getResources('?' + params.substring(1) + '&active=1').subscribe(
           resources => {
             this.forecastService.filteredResources.next(resources);
             this.isDataAvailable = true;
             this.mode = 'determinate';
-            // this.refreshData();
           }
         );
       }

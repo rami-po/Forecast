@@ -36,10 +36,28 @@ export class SideListComponent implements OnInit {
 
 
   ngOnInit() {
+
+    this.forecastService.rollUps$.subscribe(
+      data => {
+        this.entries = data;
+      }
+    );
+
+    this.forecastService.employees$.subscribe(
+      data => {
+        this.employees = data;
+      }
+    );
+
+    this.forecastService.params$.subscribe(
+      data => {
+        this.params = data;
+      }
+    );
+
   }
 
   deleteUser(entry) {
-    console.log(entry);
     const dialog = this.dialog.open(StatusMessageDialogComponent);
     dialog.componentInstance.title = 'Are you sure?';
     dialog.componentInstance.error = true;
@@ -51,8 +69,7 @@ export class SideListComponent implements OnInit {
         if (confirmed) {
           this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
             data => {
-              console.log(data);
-              this.entries = this.forecastService.getRollUps(this.params);
+              this.forecastService.updateRollUps(this.params);
             }
           );
         }

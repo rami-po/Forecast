@@ -127,7 +127,7 @@ export class ForecastService {
     return weeks;
   }
 
-  getRollUps(params) {
+  updateRollUps(params) {
     const rollUps = [];
     this.getEmployees('?active=1' + params).subscribe(
       data => {
@@ -148,13 +148,14 @@ export class ForecastService {
           );
         }
 
+        this.employees.next(employees);
+        this.rollUps.next(rollUps);
+
         this.getResources('?' + params.substring(1) + '&active=1').subscribe(
           resources => {
             this.filteredResources.next(resources);
           }
         );
-
-        return rollUps;
       }
     );
   }
