@@ -10,7 +10,7 @@
 }
 
 .project-client {
-  color: black;
+  color: blue;
   font-family: Arial;
   display: flex;
   position: relative;
@@ -27,6 +27,7 @@
 
 .name {
   @extend .project-client;
+  color: black;
   font-weight: bold;
   justify-content: center;
   align-items: center;
