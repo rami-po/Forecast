@@ -233,7 +233,7 @@ exports.updateCapacity = function (req, callback) {
  */
 
 exports.deleteAssignment = function (req, callback) {
-  connection.query('DELETE FROM assignments WHERE id = ' + req.params.assignment_id + ' AND project_id = ' + req.params.project_id, function (err, result) {
+  connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + req.params.assignment_id + ' AND project_id = ' + req.params.project_id, function (err, result) {
     callback(err, result);
   });
 };
