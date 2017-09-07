@@ -132,7 +132,7 @@ router.get('/project/:id/entries*', function (req, res, next) {
 
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
   harvest.removeEmployeeFromProject(req, function (status, result) {
-    if (status === 200) {
+    if (status === 200 || status === 404) {
       SQL.deleteAssignment(req, function (err, result) {
         if (err) {
           return res.status(500).json({
