@@ -8,6 +8,7 @@ import {Observable} from 'rxjs/Observable';
 import {DomSanitizer} from "@angular/platform-browser";
 import {MdDialog, MdIconRegistry} from "@angular/material";
 import {StatusMessageDialogComponent} from "../status-message/status-message.component";
+import {Subject} from "rxjs/Subject";
 
 @Component({
   selector: 'app-side-list',
@@ -20,6 +21,7 @@ export class SideListComponent implements OnInit {
   @Input() public entries;
   @Input() public employees;
   @Input() public params;
+  @Input() public unassignedEmployees;
   public name: string;
   private lastEmployeeId;
   private timerSubscription;
@@ -46,6 +48,7 @@ export class SideListComponent implements OnInit {
     this.forecastService.employees$.subscribe(
       data => {
         this.employees = data;
+        this.getUnassignedEmployees();
       }
     );
 
@@ -55,6 +58,47 @@ export class SideListComponent implements OnInit {
       }
     );
 
+  }
+
+  getUnassignedEmployees() {
+    this.mainService.getEmployees('').subscribe(
+      data => {
+        const allEmployees = data.result;
+        for (let i = 0; i < this.employees.length; i++) {
+          allEmployees.find(
+            (item, index) => {
+              if (item.id === this.employees[i].id) {
+                allEmployees.splice(index, 1);
+                return index;
+              }
+            }
+          );
+        }
+        this.unassignedEmployees = allEmployees;
+      }
+    );
+
+  }
+
+  addUser(employee) {
+    console.log(this.entries[0][0]);
+    const dialog = this.dialog.open(StatusMessageDialogComponent);
+    dialog.componentInstance.title = 'Are you sure?';
+    dialog.componentInstance.error = true;
+    dialog.componentInstance.dismissible = true;
+    dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
+    ' to the project: ' + this.entries[0][0].project_name + '.'];
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.forecastService.addEmployeeToProject(this.entries[0][0].project_id, employee.id).subscribe(
+            data => {
+              this.forecastService.updateRollUps(this.params);
+            }
+          );
+        }
+      }
+    );
   }
 
   deleteUser(entry) {

@@ -155,6 +155,41 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
   })
 });
 
+router.post('/project/:project_id/assignments', function(req, res, next) {
+  harvest.addEmployeeToProject(req, function (status, result) {
+    if (status === 201) {
+      req.params['assignment_id'] = result.id;
+      harvest.getAssignment(req, function (status, result) {
+        if (status === 200) {
+          SQL.addAssignment(result.user_assignment, function (err, result) {
+            if (err) {
+              return res.status(500).json({
+                message: 'Error!',
+                err: err
+              });
+            } else {
+              return res.status(200).json({
+                message: 'Success!',
+                result: result
+              });
+            }
+          });
+        } else {
+          return res.status(status).json({
+            message: 'Error!',
+            err: result
+          });
+        }
+      })
+    } else {
+      return res.status(status).json({
+        message: 'Error!',
+        err: result
+      });
+    }
+  })
+});
+
 /*
  * CLIENT ROUTES
  */

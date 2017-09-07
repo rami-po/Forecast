@@ -37,5 +37,21 @@ exports.removeEmployeeFromProject = function (req, callback) {
   harvestOptions.method = 'DELETE';
   server.makeHTTPCall(harvestOptions, null, function (status, result) {
     callback(status, result);
-  })
+  });
+};
+
+exports.addEmployeeToProject = function (req, callback) {
+  harvestOptions.path = '/projects/' + req.params.project_id + '/user_assignments';
+  harvestOptions.method = 'POST';
+  server.makeHTTPCall(harvestOptions, JSON.stringify(req.body), function (status, result) {
+    callback(status, result);
+  });
+};
+
+exports.getAssignment = function (req, callback) {
+  harvestOptions.path = '/projects/' + req.params.project_id + '/user_assignments/' + req.params.assignment_id;
+  harvestOptions.method = 'GET';
+  server.makeHTTPCall(harvestOptions, null, function (status, result) {
+    callback(status, result);
+  });
 };
