@@ -42,6 +42,7 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
 .add-user {
   @extend .name;
   font-weight: normal;
+  cursor: pointer;
 }
 .capacity {
   @extend .name;

@@ -228,6 +228,21 @@ exports.updateCapacity = function (req, callback) {
   });
 };
 
+exports.addAssignment = function (assignment, callback) {
+  connection.query("INSERT INTO assignments (id, user_id, project_id, is_project_manager, deactivated, hourly_rate, " +
+    "budget, created_at, updated_at, estimate, expected_weekly_hours) VALUES ('" + assignment.id + "', '" +
+    assignment.user_id + "', '" + assignment.project_id + "', '" + +assignment.is_project_manager + "', '" +
+    +assignment.deactivated + "', '" + assignment.hourly_rate + "', '" + assignment.budget + "', '" +
+    assignment.created_at + "', '" + assignment.updated_at + "', '" + assignment.estimate + "', '" +
+    assignment.expected_weekly_hours + "') ON DUPLICATE KEY UPDATE user_id='" + assignment.user_id + "', project_id='" +
+    assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
+    +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
+    "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
+    assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'", function (err, result) {
+    callback(err, result);
+  });
+};
+
 /*
  * DELETE METHODS
  */

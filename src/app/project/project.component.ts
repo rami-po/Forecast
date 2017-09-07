@@ -42,7 +42,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   public isGraphShowing = false;
 
   public height = '76.5vh';
-  public forecastHeight = '90.3vh';
+  public forecastHeight = '91.3vh';
 
   constructor(private route: ActivatedRoute,
               private forecastService: ForecastService,

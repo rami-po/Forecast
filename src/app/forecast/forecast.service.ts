@@ -55,6 +55,14 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  addEmployeeToProject(projectId, employeeId) {
+    const body = JSON.stringify({user: { id: employeeId }});
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.post('http://onboarding.productops.com:3000/resource/project/' + projectId + '/assignments', body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getEmployees(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/person' + params)
       .map((response: Response) => response.json())
@@ -150,6 +158,12 @@ export class ForecastService {
 
         this.employees.next(employees);
         this.rollUps.next(rollUps);
+
+        this.getResources('?active=1').subscribe(
+          resources => {
+            this.resources.next(resources);
+          }
+        );
 
         this.getResources('?' + params.substring(1) + '&active=1').subscribe(
           resources => {

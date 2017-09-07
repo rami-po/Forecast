@@ -2,26 +2,27 @@
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
       <div class="user_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
-      <input maxlength="2" onclick="select()" class="capacity" (input)="type($event.target.value, employee)" [value]="employee.capacity/3600">
+      <input maxlength="2" onclick="select()" class="capacity" (input)="type($event.target.value, employee)"
+             [value]="employee.capacity/3600">
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
         <div class="project-client">{{entry.client_name}}</div>
         <div class="project-client">{{entry.project_name}}</div>
-        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name"><md-icon svgIcon="delete"></md-icon></div>
+        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name">
+          <md-icon svgIcon="delete"></md-icon>
+        </div>
       </div>
     </div>
   </div>
   <div *ngIf="isProjectView">
-    <button md-button class="add-user" [mdMenuTriggerFor]="unassignedEmployees">hi</button>
+    <div class="name-row">
+      <div class="user_name" [mdMenuTriggerFor]="unassignedEmployeesMenu">Add employee +</div>
+    </div>
   </div>
 
-  <md-menu [overlapTrigger]="false" #unassignedEmployees="mdMenu">
-    <div md-menu-item>hi</div>
-    <div md-menu-item>hi</div>
-    <div md-menu-item>hi</div>
-    <div md-menu-item>hi</div>
-    <div md-menu-item>hi</div>
+  <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
+    <button *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
   </md-menu>
 </div>
 
