@@ -17,12 +17,14 @@
   </div>
   <div *ngIf="isProjectView">
     <div class="name-row">
-      <div class="user_name" [mdMenuTriggerFor]="unassignedEmployeesMenu">Add employee +</div>
+      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu">+ Add Employee</div>
+      <div class="add-employee"></div>
     </div>
   </div>
 
   <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
-    <button *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+    <button [class.blue-text]="employee.id === 'fake_id'"
+            *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
   </md-menu>
 </div>
 

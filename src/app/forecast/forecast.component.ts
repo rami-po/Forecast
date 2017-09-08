@@ -37,8 +37,7 @@ export class ForecastComponent implements OnInit {
   public isDataAvailable = false;
   public mode = 'indeterminate';
 
-  constructor(private forecastService: ForecastService,
-              private datePipe: DatePipe) {
+  constructor(private forecastService: ForecastService) {
   }
 
   ngOnInit() {
@@ -95,43 +94,6 @@ export class ForecastComponent implements OnInit {
       }
     );
   }
-
-  getRollUps(params) {
-    const rollUps = [];
-    this.forecastService.getEmployees('?active=1' + params).subscribe(
-      data => {
-        const employees = data.result;
-        for (let i = 0; i < employees.length; i++) {
-          employees[i].opened = false;
-        }
-        for (const employee of employees) {
-          this.forecastService.getEntries('?employeeid=' + employee.id + params).subscribe(
-            entries => {
-              if (entries.result.length > 0) {
-                rollUps.push(entries.result);
-              } else {
-                const index = employees.indexOf(employee);
-                employees.splice(index, 1);
-              }
-            }
-          );
-        }
-        this.employees = employees;
-        this.forecastService.employees.next(employees);
-        this.rollUps = rollUps;
-        this.forecastService.rollUps.next(rollUps);
-
-        this.forecastService.getResources('?' + params.substring(1) + '&active=1').subscribe(
-          resources => {
-            this.forecastService.filteredResources.next(resources);
-            this.isDataAvailable = true;
-            this.mode = 'determinate';
-          }
-        );
-      }
-    );
-  }
-
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
            projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {

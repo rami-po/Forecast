@@ -63,8 +63,17 @@ input:focus {
   cursor: pointer;
 }
 
+.add-employee {
+  @extend .user_name;
+  color: $primary-blue;
+}
+
 .name2 {
   @extend .name;
   width: 100%;
+}
+
+.blue-text {
+  color: $primary-blue;
 }
 
