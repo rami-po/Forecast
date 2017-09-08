@@ -13,6 +13,7 @@ export class StatusMessageDialogComponent implements OnInit {
   public success: boolean = false;
   public error: boolean = false;
   public warning: boolean = false;
+  public custom: boolean = false;
 
   constructor(
     private dialogRef: MdDialogRef<StatusMessageDialogComponent>,

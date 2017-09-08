@@ -76,7 +76,8 @@ export class EntryComponent implements OnInit, OnDestroy {
     if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
       return this.totalCapacities[index].capacity;
     }
-    this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: 'red'});
+    const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
+    this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: color});
     return this.totalCapacities[index].capacity;
   }
 
@@ -89,9 +90,11 @@ export class EntryComponent implements OnInit, OnDestroy {
       if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
         return this.totalCapacities[index].color;
       }
-      this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: '#EF9A9A'});
+      const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
+      this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: color});
       return this.totalCapacities[index].color;
     } else {
+      // it is an editable cell
       return 'white';
     }
   }

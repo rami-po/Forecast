@@ -75,16 +75,20 @@ export class SideListComponent implements OnInit {
           );
         }
         this.unassignedEmployees = allEmployees;
+        // this.unassignedEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Fake', last_name: 'Employee'});
       }
     );
 
   }
 
   addUser(employee) {
-    console.log(this.entries[0][0]);
+    if (employee.id === 'fake_id') {
+      this.addFakeUser(employee);
+      return null;
+    }
     const dialog = this.dialog.open(StatusMessageDialogComponent);
     dialog.componentInstance.title = 'Are you sure?';
-    dialog.componentInstance.error = true;
+    dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
     ' to the project: ' + this.entries[0][0].project_name + '.'];
@@ -101,13 +105,17 @@ export class SideListComponent implements OnInit {
     );
   }
 
+  addFakeUser(employee) {
+    console.log('123');
+  }
+
   deleteUser(entry) {
     const dialog = this.dialog.open(StatusMessageDialogComponent);
     dialog.componentInstance.title = 'Are you sure?';
-    dialog.componentInstance.error = true;
+    dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.messages = ['You are removing ' + entry.first_name + ' ' + entry.last_name +
-      ' from the project: ' + entry.project_name + '.'];
+    ' from the project: ' + entry.project_name + '.'];
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {

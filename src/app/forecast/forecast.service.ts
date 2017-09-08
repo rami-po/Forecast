@@ -140,15 +140,14 @@ export class ForecastService {
     this.getEmployees('?active=1' + params).subscribe(
       data => {
         const employees = data.result;
-        for (let i = 0; i < employees.length; i++) {
-          employees[i].opened = false;
-        }
         for (const employee of employees) {
+          employee.opened = false;
           this.getEntries('?employeeid=' + employee.id + params).subscribe(
             entries => {
               if (entries.result.length > 0) {
                 rollUps.push(entries.result);
               } else {
+                console.log('Did the shift glitch just occur?');
                 const index = employees.indexOf(employee);
                 employees.splice(index, 1);
               }

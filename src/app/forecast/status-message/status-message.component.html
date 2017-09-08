@@ -1,7 +1,8 @@
 <h3 md-dialog-title
     [class.error]="error"
     [class.success]="success"
-    [class.warning]="warning">{{title}}</h3>
+    [class.warning]="warning"
+    [class.custom]="custom">{{title}}</h3>
 <md-dialog-content>
   <p *ngFor="let message of messages">{{message}}</p>
 </md-dialog-content>

@@ -1,3 +1,6 @@
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
 :host{
 
   h3{
@@ -21,6 +24,10 @@
       background-color: #eac607;
       color: white;
     }
+    &.custom{
+      background-color: $primary-blue;
+      color: white;
+    }
   }
 
   md-dialog-actions{
@@ -31,6 +38,7 @@
     }
 
     button[md-raised-button]{
+      background-color: $primary-blue;
       float: right;
     }
   }
