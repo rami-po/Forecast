@@ -7,7 +7,7 @@
     <app-entry *ngFor="let entry of data, let i = index"
                [employeeCapacity]="employee.capacity"
                [params]="params"
-               [data]="this.entries[i]" [row]="i"
+               [data]="entries[i]" [row]="i"
                [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name, entry.client_id, entry.project_name, entry.project_id, null, null, null)'>
     </app-entry>
 

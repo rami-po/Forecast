@@ -24,7 +24,7 @@ import {RollUpService} from '../roll-up/roll-up.service';
   selector: 'app-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [EntryService, RollUpService]
+  providers: [EntryService]
 })
 export class EntryComponent implements OnInit, OnDestroy {
 
@@ -42,7 +42,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   constructor(public entryService: EntryService,
               public graphService: GraphService,
-              private mainService: ForecastService,
+              private forecastService: ForecastService,
               private rollUpComponent: RollUpComponent,
               private rollUpService: RollUpService) {
   }
@@ -157,19 +157,19 @@ export class EntryComponent implements OnInit, OnDestroy {
         const boxNumber = columnNumber + (this.row * ForecastService.NUMBER_OF_WEEKS);
         this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
           callback => {
-            this.mainService.getResources('?active=1').subscribe(
+            this.forecastService.getResources('?active=1').subscribe(
               data => {
-                this.mainService.resources.next(data);
+                this.forecastService.resources.next(data);
               }
             );
-            this.mainService.getResources('?' + this.params.substring(1) + '&active=1').subscribe(
+            this.forecastService.getResources('?' + this.params.substring(1) + '&active=1').subscribe(
               data => {
-                this.mainService.filteredResources.next(data);
+                this.forecastService.filteredResources.next(data);
               }
             );
 
             this.graphService.updateGraph(week);
-            this.mainService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
+            this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
                 for (let i = 0; i < resources.totalCapacities.length; i++) {
                   const difference = this.getDifference(this.employeeCapacity / 3600, resources.totalCapacities[i].capacity);
@@ -181,8 +181,29 @@ export class EntryComponent implements OnInit, OnDestroy {
                     (resources.totalCapacities[i])['color'] = '#EF9A9A';
                   }
                 }
-                this.rollUpComponent.totalCapacities = resources.totalCapacities;
-                this.mainService.getResources('?employeeId=' + this.entry.employeeId +
+
+                if (this.params !== '') {
+                  this.forecastService.getResources('?employeeId=' + this.entry.employeeId + this.params + '&active=1').subscribe(
+                    filteredResources => {
+                      const filteredCapacities = filteredResources.totalCapacities;
+                      let filteredResourcesIndex = 0;
+                      for (let resourcesIndex = 0; resourcesIndex < resources.totalCapacities.length; resourcesIndex++) {
+                        if (filteredResourcesIndex < filteredCapacities.length &&
+                          resources.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
+                          resources.totalCapacities[resourcesIndex].capacity =
+                            filteredCapacities[filteredResourcesIndex].capacity + ' (' +
+                            resources.totalCapacities[resourcesIndex].capacity + ')';
+                          filteredResourcesIndex++;
+                        }
+                      }
+                      this.rollUpComponent.totalCapacities = resources.totalCapacities;
+                    }
+                  );
+                } else {
+                  this.rollUpComponent.totalCapacities = resources.totalCapacities;
+                }
+
+                this.forecastService.getResources('?employeeId=' + this.entry.employeeId +
                   '&projectId=' + this.entry.projectId + '&active=1').subscribe(
                   data => {
                     this.data.length = 0;

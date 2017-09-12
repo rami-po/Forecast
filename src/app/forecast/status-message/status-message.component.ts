@@ -9,17 +9,23 @@ import { MdDialogRef } from '@angular/material';
 export class StatusMessageDialogComponent implements OnInit {
   public messages: any;
   public title: string;
-  public dismissible: boolean = false;
-  public success: boolean = false;
-  public error: boolean = false;
-  public warning: boolean = false;
-  public custom: boolean = false;
+  public dismissible = false;
+  public success = false;
+  public error = false;
+  public warning = false;
+  public custom = false;
+  public input = false;
+  public inputText;
 
   constructor(
-    private dialogRef: MdDialogRef<StatusMessageDialogComponent>,
+    public dialogRef: MdDialogRef<StatusMessageDialogComponent>,
   ) { }
 
   ngOnInit() { }
+
+  onKey(event) {
+    this.inputText = event.target.value;
+  }
 
 }
 

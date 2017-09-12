@@ -5,6 +5,9 @@
     [class.custom]="custom">{{title}}</h3>
 <md-dialog-content>
   <p *ngFor="let message of messages">{{message}}</p>
+  <div align="center" >
+    <input (keyup)="onKey($event)" *ngIf="input" md-input>
+  </div>
 </md-dialog-content>
 <md-dialog-actions align="center">
   <button md-button

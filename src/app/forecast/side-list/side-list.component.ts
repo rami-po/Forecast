@@ -61,13 +61,13 @@ export class SideListComponent implements OnInit {
   }
 
   getUnassignedEmployees() {
-    this.mainService.getEmployees('').subscribe(
+    this.mainService.getEmployees('?active=1').subscribe(
       data => {
         const allEmployees = data.result;
         for (let i = 0; i < this.employees.length; i++) {
           allEmployees.find(
             (item, index) => {
-              if (item.id === this.employees[i].id) {
+              if (!isNullOrUndefined(item) && !isNullOrUndefined(this.employees[i]) && item.id === this.employees[i].id) {
                 allEmployees.splice(index, 1);
                 return index;
               }
@@ -75,28 +75,27 @@ export class SideListComponent implements OnInit {
           );
         }
         this.unassignedEmployees = allEmployees;
-        // this.unassignedEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Fake', last_name: 'Employee'});
+        this.unassignedEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Add', last_name: 'Other'});
       }
     );
 
   }
 
   addUser(employee) {
-    if (employee.id === 'fake_id') {
-      this.addFakeUser(employee);
-      return null;
-    }
     const dialog = this.dialog.open(StatusMessageDialogComponent);
-    dialog.componentInstance.title = 'Are you sure?';
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
+    if (employee.id === 'fake_id') {
+      this.addFakeUser(dialog);
+      return null;
+    }
     dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
     ' to the project: ' + this.entries[0][0].project_name + '.'];
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {
-          this.forecastService.addEmployeeToProject(this.entries[0][0].project_id, employee.id).subscribe(
-            data => {
+          this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
+            () => {
               this.forecastService.updateRollUps(this.params);
             }
           );
@@ -105,8 +104,22 @@ export class SideListComponent implements OnInit {
     );
   }
 
-  addFakeUser(employee) {
-    console.log('123');
+  addFakeUser(dialog) {
+    dialog.componentInstance.title = 'Add Other Employee';
+    dialog.componentInstance.input = true;
+    dialog.componentInstance.messages = ['Enter a name please.'];
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.forecastService.addFakeEmployee(dialog.componentInstance.inputText,
+            this.params.substring(this.params.indexOf('project') + 10)).subscribe(
+            () => {
+              this.forecastService.updateRollUps(this.params);
+            }
+          );
+        }
+      }
+    );
   }
 
   deleteUser(entry) {
