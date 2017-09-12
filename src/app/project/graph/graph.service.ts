@@ -91,11 +91,13 @@ export class GraphService {
 
         let actualCap = 0;
         let forecastCap = 0;
-        this.forecastService.getProjects('/' + params.substring(11)).subscribe(
+        const index = params.indexOf('project');
+        this.forecastService.getProjects('/' + params.substring(index + 10)).subscribe(
           project => {
             this.budget = project.result[0].cost_budget;
             // REMOVE THIS!!
             this.budget = 3800;
+            console.log('?' + params);
             this.forecastService.getResources('?' + params).subscribe(
               dataTC => {
                 for (const week in totalCapacities) {

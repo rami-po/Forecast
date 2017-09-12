@@ -8,6 +8,8 @@ var tools = require('./serverTools/tools');
 var SQL = require('./serverTools/SQL');
 var harvest = require('./serverTools/harvest');
 
+const uuidv4 = require('uuid/v4');
+
 /*
  * PERSON ROUTES
  */
@@ -64,6 +66,33 @@ router.put('/person', function (req, res, next) {
       return res.status(status).json({
         message: 'Error!',
         err: result
+      });
+    }
+  });
+});
+
+router.post('/person/fake', function (req, res, next) {
+  const employee = {id: uuidv4(), first_name: req.body.name, last_name: '', capacity: 144000, is_active: 1, is_contractor: 0};
+  const assignment = {id: uuidv4(), user_id: employee.id, project_id: req.body.project_id, deactivated: 0};
+  SQL.addFakeEmployee(employee, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      SQL.addFakeAssignment(assignment, function (err, result) {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error!',
+            err: err
+          });
+        } else {
+          return res.status(200).json({
+            message: 'Success!',
+            result: result
+          });
+        }
       });
     }
   });
@@ -157,11 +186,26 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
 
 router.post('/project/:project_id/assignments', function(req, res, next) {
   harvest.addEmployeeToProject(req, function (status, result) {
-    if (status === 201) {
+    if (status === 201 || status === 404) {
       req.params['assignment_id'] = result.id;
       harvest.getAssignment(req, function (status, result) {
         if (status === 200) {
           SQL.addAssignment(result.user_assignment, function (err, result) {
+            if (err) {
+              return res.status(500).json({
+                message: 'Error!',
+                err: err
+              });
+            } else {
+              return res.status(200).json({
+                message: 'Success!',
+                result: result
+              });
+            }
+          });
+        } else if (status === 404) {
+          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id};
+          SQL.addFakeAssignment(assignment, function (err, result) {
             if (err) {
               return res.status(500).json({
                 message: 'Error!',
@@ -275,6 +319,8 @@ router.get('/entry', function (req, res, next) {
 });
 
 router.post('/entry', function (req, res, next) {
+  console.log(req.body);
+  console.log('.....');
   SQL.createEntry(req, function (err, result) {
     if (err) {
       return res.status(500).json({

@@ -56,7 +56,7 @@ export class ForecastService {
   }
 
   addEmployeeToProject(projectId, employeeId) {
-    const body = JSON.stringify({user: { id: employeeId }});
+    const body = JSON.stringify({user: {id: employeeId}});
     const headers = new Headers({'Content-Type': 'application/json'});
     return this.http.post('http://onboarding.productops.com:3000/resource/project/' + projectId + '/assignments', body, {headers: headers})
       .map((response: Response) => response.json())
@@ -73,6 +73,14 @@ export class ForecastService {
     const body = JSON.stringify(employee);
     const headers = new Headers({'Content-Type': 'application/json'});
     return this.http.put('http://onboarding.productops.com:3000/resource/person', body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  addFakeEmployee(name, projectId) {
+    const body = JSON.stringify({name: name, project_id: projectId});
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.post('http://onboarding.productops.com:3000/resource/person/fake', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -137,17 +145,20 @@ export class ForecastService {
 
   updateRollUps(params) {
     const rollUps = [];
+
     this.getEmployees('?active=1' + params).subscribe(
       data => {
+        console.log(data);
         const employees = data.result;
-        for (const employee of employees) {
+        for (let i = 0; i < employees.length; i++) {
+          const employee = employees[i];
           employee.opened = false;
-          this.getEntries('?employeeid=' + employee.id + params).subscribe(
+          rollUps.push('');
+          this.getEntries('?employeeid=' + employee.id /* + params */).subscribe(
             entries => {
               if (entries.result.length > 0) {
-                rollUps.push(entries.result);
+                rollUps.splice(i, 1, entries.result);
               } else {
-                console.log('Did the shift glitch just occur?');
                 const index = employees.indexOf(employee);
                 employees.splice(index, 1);
               }
@@ -157,6 +168,7 @@ export class ForecastService {
 
         this.employees.next(employees);
         this.rollUps.next(rollUps);
+
 
         this.getResources('?active=1').subscribe(
           resources => {

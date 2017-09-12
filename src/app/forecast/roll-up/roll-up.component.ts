@@ -11,7 +11,7 @@ import {Observable} from "rxjs/Observable";
   selector: 'app-roll-up',
   templateUrl: './roll-up.component.html',
   styleUrls: ['./roll-up.component.scss'],
-  providers: [RollUpService]
+  providers: []
 })
 export class RollUpComponent implements OnInit {
 
@@ -30,7 +30,7 @@ export class RollUpComponent implements OnInit {
   }
 
   ngOnInit() {
-   this.getEntries();
+    this.getEntries();
   }
 
   getDifference(employeeCap, capacity) {
@@ -51,24 +51,41 @@ export class RollUpComponent implements OnInit {
             (this.totalCapacities[i])['color'] = '#EF9A9A';
           }
         }
-        this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
-          data => {
-            this.entries.length = 0;
-            for (let row = 0; row < this.data.length; row++) {
-              this.entries.push([]);
-              for (let i = 0; i < data.result.length; i++) {
-                if (this.data[row].project_id === data.result[i].project_id) {
-                  this.entries[row].push({
-                    week: data.result[i].week_of.substring(0, 10),
-                    capacity: data.result[i].capacity
-                  });
+
+        this.entries.length = 0;
+        for (let row = 0; row < this.data.length; row++) {
+          this.entries.push([]);
+          for (let i = 0; i < resources.result.length; i++) {
+            if (this.data[row].project_id === resources.result[i].project_id) {
+              this.entries[row].push({
+                week: resources.result[i].week_of.substring(0, 10),
+                capacity: resources.result[i].capacity
+              });
+            }
+          }
+        }
+
+        if (this.params !== '') {
+          this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
+            filteredResources => {
+              const filteredCapacities = filteredResources.totalCapacities;
+              let filteredResourcesIndex = 0;
+              for (let resourcesIndex = 0; resourcesIndex < this.totalCapacities.length; resourcesIndex++) {
+                if (filteredResourcesIndex < filteredCapacities.length &&
+                  this.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
+                  this.totalCapacities[resourcesIndex].capacity =
+                    filteredCapacities[filteredResourcesIndex].capacity + ' (' +
+                    this.totalCapacities[resourcesIndex].capacity + ')';
+                  filteredResourcesIndex++;
                 }
               }
+              this.isDataAvailable = true;
+              this.refreshData();
             }
-            this.isDataAvailable = true;
-            this.refreshData();
-          }
-        );
+          );
+        } else {
+          this.isDataAvailable = true;
+        }
       }
     );
   }

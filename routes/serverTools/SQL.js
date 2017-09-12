@@ -10,10 +10,11 @@ var sql_config = {
   port: sqlSecret.PORT,
   user: sqlSecret.MYSQL_USER,
   password: sqlSecret.MYSQL_PASS,
-  database: sqlSecret.DATABASE
+  database: sqlSecret.DATABASE,
+  multipleStatements: true
 };
 
-var connection;
+let connection;
 
 function handleDisconnect() {
   connection = mysql.createConnection(sql_config);
@@ -46,19 +47,27 @@ exports.get = function (req) {
 };
 
 exports.getPeople = function (req, callback) {
-  const employeeId = (req.params.id !== undefined ? req.params.id : 'a.user_id');
+  let employeeId = (req.params.id !== undefined ? req.params.id : 'a.user_id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
   const isActive = (req.query.active ? req.query.active : 'e.is_active');
 
+  if (isNaN(employeeId) && employeeId !== 'a.user_id') {
+    employeeId = '\'' + employeeId + '\'';
+  }
+
   connection.query(
+    'DROP TABLE IF EXISTS all_assignments;' +
+    'DROP TABLE IF EXISTS all_employees;' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ' +
     'SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, ' +
     'e.telephone, e.is_active, e.default_hourly_rate, ' + 'e.department, e.updated_at, e.cost_rate, e.capacity ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN assignments a ON p.id = a.project_id ' +
-    'LEFT OUTER JOIN employees e ON e.id = a.user_id ' +
+    'LEFT OUTER JOIN all_assignments a ON p.id = a.project_id ' +
+    'LEFT OUTER JOIN all_employees e ON e.id = a.user_id ' +
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
     'AND e.is_active = ' + isActive + ' ' +
@@ -66,8 +75,13 @@ exports.getPeople = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY e.last_name ASC', function (err, result) {
+    'ORDER BY e.last_name ASC;', function (err, result) {
+      console.log(result);
+      if (result != null) {
+        result = result[4];
+      }
       callback(err, result);
+
     });
 
 };
@@ -122,25 +136,33 @@ exports.getDates = function (req) {
 };
 
 exports.getEntries = function (req, callback) {
+
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
 
   connection.query(
+    'DROP TABLE IF EXISTS all_assignments;' +
+    'DROP TABLE IF EXISTS all_employees;' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ' +
     'SELECT a.id as id, c.id AS client_id, c.name AS client_name, ' +
     'p.id AS project_id, p.name AS project_name, ' +
     'e.id AS employee_id, e.first_name, e.last_name ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN assignments a ON p.id = a.project_id ' +
-    'LEFT OUTER JOIN employees e ON e.id = a.user_id ' +
+    'LEFT OUTER JOIN all_assignments a ON p.id = a.project_id ' +
+    'LEFT OUTER JOIN all_employees e ON e.id = a.user_id ' +
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
     'AND e.is_active = 1 ' +
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY e.last_name, c.name, p.name ASC', function (err, result) {
+    'ORDER BY e.last_name, c.name, p.name ASC;', function (err, result) {
+      if (result != null) {
+        result = result[4];
+      }
       callback(err, result);
     });
 };
@@ -160,24 +182,31 @@ exports.getData = function (req, callback) {
   const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
   connection.query(
+    'DROP TABLE IF EXISTS all_assignments;' +
+    'DROP TABLE IF EXISTS all_employees;' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
+    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ' +
     'SELECT c.id AS client_id, ' +
     'p.id AS project_id, ' +
     'e.id AS employee_id, ' +
     'r.week_of, r.capacity ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN assignments a ON a.project_id = p.id ' +
-    'LEFT OUTER JOIN employees e ON e.id = a.user_id ' +
+    'LEFT OUTER JOIN all_assignments a ON a.project_id = p.id ' +
+    'LEFT OUTER JOIN all_employees e ON e.id = a.user_id ' +
     'LEFT OUTER JOIN resourceManagement r ON  r.client_id = c.id AND r.project_id = p.id AND r.employee_id = e.id ' +
-    'WHERE a.deactivated = 0 ' +
-    'AND p.id = ' + projectId + ' ' +
+    'WHERE p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
+    'AND a.deactivated = 0 ' +
     'AND e.is_active = 1 ' +
     'AND p.active = 1 ' +
-    'AND r.capacity IS NOT NULL ' +
+    'AND r.capacity <> \'\' ' +
     active +
-    'ORDER BY r.box_number ASC', function (err, result) {
+    'ORDER BY r.box_number ASC;', function (err, result) {
+      if (result != null) {
+        result = result[4];
+      }
       callback(err, result);
     });
 };
@@ -211,7 +240,7 @@ exports.getTimeEntries = function (req, callback) {
  */
 
 exports.createEntry = function (req, callback) {
-  console.log(req.body);
+  console.log(req.body.employeeId);
   connection.query('INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, ' +
     'capacity, box_number) VALUES (\'' + req.body.clientId + '\', \'' + req.body.projectId + '\', \'' +
     req.body.employeeId + '\', \'' + req.body.weekOf + '\', \'' +
@@ -228,6 +257,52 @@ exports.updateCapacity = function (req, callback) {
   });
 };
 
+exports.addEmployee = function (employee, callback) {
+  connection.query("INSERT INTO employees (id, email, created_at, is_admin, first_name, last_name, is_contractor, " +
+    "telephone, is_active, default_hourly_rate, department, updated_at, cost_rate, capacity) " + "VALUES ('" +
+    employee.id + "', '" + employee.email + "', '" + employee.created_at + "', '" + +employee.is_admin + "', '" +
+    employee.first_name + "', '" + employee.last_name + "', '" + +employee.is_contractor + "', '" +
+    employee.telephone + "', '" + +employee.is_active + "', '" + employee.default_hourly_rate + "', '" +
+    employee.department + "', '" + employee.updated_at + "', '" + employee.cost_rate + "', '" +
+    employee.weekly_capacity + "') ON DUPLICATE KEY UPDATE email='" + employee.email + "', created_at='" +
+    employee.created_at + "', first_name='" + employee.first_name + "', last_name='" + employee.last_name +
+    "', is_contractor='" + +employee.is_contractor + "', telephone='" + employee.telephone + "', is_active='" +
+    +employee.is_active + "', default_hourly_rate='" + employee.default_hourly_rate + "', department='" +
+    employee.department + "', updated_at='" + employee.updated_at + "', cost_rate='" + employee.cost_rate +
+    "', capacity='" + employee.weekly_capacity + "'; " /*+
+
+    "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" +
+    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
+    "capacity='" + employee.capacity + "'"*/, function (err, result) {
+    callback(err, result);
+  });
+};
+
+exports.addFakeEmployee = function (employee, callback) {
+  console.log("INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity) " + "VALUES ('" +
+    employee.id + "', '" + employee.first_name + "', '" + employee.last_name + "', '" + employee.is_contractor + "', '" +
+    employee.is_active + "', '" + employee.capacity + "') " +
+    "ON DUPLICATE KEY UPDATE first_name='" + employee.first_name + "', last_name='" +
+    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
+    "capacity='" + employee.capacity + "'; " +
+    "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" +
+    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
+    "capacity='" + employee.capacity + "'");
+
+  connection.query("INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity) " + "VALUES ('" +
+    employee.id + "', '" + employee.first_name + "', '" + employee.last_name + "', '" + employee.is_contractor + "', '" +
+    employee.is_active + "', '" + employee.capacity + "') " +
+    "ON DUPLICATE KEY UPDATE first_name='" + employee.first_name + "', last_name='" +
+    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
+    "capacity='" + employee.capacity + "'; " /*+
+
+    "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" +
+    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
+    "capacity='" + employee.capacity + "'"*/, function (err, result) {
+    callback(err, result);
+  });
+};
+
 exports.addAssignment = function (assignment, callback) {
   connection.query("INSERT INTO assignments (id, user_id, project_id, is_project_manager, deactivated, hourly_rate, " +
     "budget, created_at, updated_at, estimate, expected_weekly_hours) VALUES ('" + assignment.id + "', '" +
@@ -238,9 +313,28 @@ exports.addAssignment = function (assignment, callback) {
     assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
     +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
     "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
-    assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'", function (err, result) {
+    assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'; " /*+
+
+    "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" + assignment.user_id + "', project_id='" +
+    assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
+    +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
+    "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
+    assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'"*/, function (err, result) {
     callback(err, result);
   });
+};
+
+exports.addFakeAssignment = function (assignment, callback) {
+  connection.query("INSERT INTO assignments_fake (id, user_id, project_id, deactivated) VALUES ('" +
+    assignment.id + "', '" + assignment.user_id + "', '" + assignment.project_id + "', '" + assignment.deactivated + "') " +
+    "ON DUPLICATE KEY UPDATE user_id='" +
+    assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'; " /*+
+
+    "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" +
+    assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'"*/,
+    function (err, result) {
+      callback(err, result);
+    });
 };
 
 /*
