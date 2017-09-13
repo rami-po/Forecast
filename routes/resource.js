@@ -71,6 +71,22 @@ router.put('/person', function (req, res, next) {
   });
 });
 
+router.put('/person/fake', function (req, res, next) {
+  SQL.addFakeEmployee(req.body, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
 router.post('/person/fake', function (req, res, next) {
   const employee = {id: uuidv4(), first_name: req.body.name, last_name: '', capacity: 144000, is_active: 1, is_contractor: 0};
   const assignment = {id: uuidv4(), user_id: employee.id, project_id: req.body.project_id, deactivated: 0};
@@ -93,6 +109,22 @@ router.post('/person/fake', function (req, res, next) {
             result: result
           });
         }
+      });
+    }
+  });
+});
+
+router.delete('/person/fake/:id', function (req, res, next) {
+  SQL.deleteFakeEmployee(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
       });
     }
   });
@@ -162,7 +194,7 @@ router.get('/project/:id/entries*', function (req, res, next) {
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
   harvest.removeEmployeeFromProject(req, function (status, result) {
     if (status === 200 || status === 404) {
-      SQL.deleteAssignment(req, function (err, result) {
+      SQL.deactivateAssignment(req, function (err, result) {
         if (err) {
           return res.status(500).json({
             message: 'Error!',
@@ -182,6 +214,10 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
       });
     }
   })
+});
+
+router.delete('/project/:project_id/assignments_fake/:assignment_id', function (req, res, next) {
+
 });
 
 router.post('/project/:project_id/assignments', function(req, res, next) {
@@ -290,6 +326,38 @@ router.get('/assignment', function (req, res, next) {
   });
 });
 
+router.get('/assignment/:id', function (req, res, next) {
+  SQL.getAssignments(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.delete('/assignment/fake/:id', function (req, res, next) {
+  SQL.deleteFakeAssignment(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 /*
  * WEEK ROUTES
  */
@@ -379,6 +447,22 @@ router.get('/data', function (req, res, next) {
       });
     }
   });
+});
+
+router.put('/data', function (req, res, next) {
+  SQL.updateData(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
 });
 
 /*

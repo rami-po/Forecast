@@ -8,6 +8,7 @@ import { MdDialogRef } from '@angular/material';
 })
 export class StatusMessageDialogComponent implements OnInit {
   public messages: any;
+  public options: any;
   public title: string;
   public dismissible = false;
   public success = false;
@@ -25,6 +26,10 @@ export class StatusMessageDialogComponent implements OnInit {
 
   onKey(event) {
     this.inputText = event.target.value;
+  }
+
+  resolve(option) {
+    option['isResolved'] = !option['isResolved'];
   }
 
 }

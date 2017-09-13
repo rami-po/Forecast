@@ -54,6 +54,19 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
   border: 2px solid $primary-blue;
 }
 
+.fake-user-name {
+  @extend .capacity;
+}
+
+.fake-user-capacity {
+  @extend .capacity;
+  width: 60%;
+}
+
+.fake-user-icon {
+  cursor: pointer;
+}
+
 input:focus {
   outline-color: $primary-blue;
 }
@@ -75,5 +88,9 @@ input:focus {
 
 .blue-text {
   color: $primary-blue;
+}
+
+/deep/ md-menu.mat-menu-panel {
+  max-height: 50vh!important;
 }
 

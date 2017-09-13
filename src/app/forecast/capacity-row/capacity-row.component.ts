@@ -49,9 +49,6 @@ export class CapacityRowComponent implements OnInit {
 
   getFilteredCapacity(week, index) {
     if (!isUndefined(this.filteredCapacities) && !isUndefined(this.filteredCapacities[index])) {
-      if (this.filteredCapacities[index].capacity === this.totalCapacities[index].capacity) {
-        return '0';
-      }
       if (this.filteredCapacities[index].week !== week) {
         this.filteredCapacities.splice(index, 0, {week: week, capacity: 0});
       }

@@ -10,7 +10,8 @@ import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
-  MdButtonModule, MdDialogModule, MdIconModule, MdInputModule, MdMenuModule, MdProgressSpinnerModule, MdToolbarModule,
+  MdButtonModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule, MdMenuModule, MdProgressSpinnerModule,
+  MdToolbarModule,
   MdTooltipModule
 } from '@angular/material';
 import {DatePipe} from '@angular/common';
@@ -33,6 +34,7 @@ import {ClientListComponent} from './bob/client-list/client-list.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
 import {StatusMessageDialogComponent} from "./forecast/status-message/status-message.component";
 import {RollUpService} from "./forecast/roll-up/roll-up.service";
+import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-employee.component";
 
 @NgModule({
   declarations: [
@@ -50,7 +52,8 @@ import {RollUpService} from "./forecast/roll-up/roll-up.service";
     BobComponent,
     ClientListComponent,
     CapacityRowComponent,
-    StatusMessageDialogComponent
+    StatusMessageDialogComponent,
+    FakeEmployeeComponent
   ],
   imports: [
     BrowserModule,
@@ -64,12 +67,14 @@ import {RollUpService} from "./forecast/roll-up/roll-up.service";
     MdProgressSpinnerModule,
     MdIconModule,
     MdInputModule,
+    MdCheckboxModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],
   entryComponents: [
     MilestonePromptComponent,
-    StatusMessageDialogComponent
+    StatusMessageDialogComponent,
+    FakeEmployeeComponent
   ],
   providers: [DatePipe, GraphService, ForecastService, RollUpService]
 })

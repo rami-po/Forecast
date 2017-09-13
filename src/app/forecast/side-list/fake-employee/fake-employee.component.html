@@ -1,0 +1,28 @@
+<h3 md-dialog-title
+    [class.error]="error"
+    [class.success]="success"
+    [class.warning]="warning"
+    [class.custom]="custom">{{title}}</h3>
+<md-dialog-content>
+  <p *ngFor="let message of messages">{{message}}</p>
+  <div align="center" >
+    <input (keyup)="onKey($event)" *ngIf="input" [value]="fakeEmployee.first_name" placeholder="New Name" mdInput>
+  </div>
+  <div align="center">
+    <button [mdMenuTriggerFor]="realEmployeesMenu" md-button>Transform</button>
+  </div>
+</md-dialog-content>
+<md-dialog-actions align="center">
+  <button md-button
+          *ngIf="dismissible"
+          (click)="dialogRef.close(false)">Cancel</button>
+  <button md-raised-button
+          color="primary"
+          autofocus="true"
+          (click)="dialogRef.close(true)">OK</button>
+  <span class="clear"></span>
+</md-dialog-actions>
+
+<md-menu #realEmployeesMenu="mdMenu">
+  <button *ngFor="let employee of realEmployees" (click)="transformUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+</md-menu>
