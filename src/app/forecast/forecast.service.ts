@@ -7,7 +7,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
-import {isUndefined} from 'util';
+import {isNullOrUndefined, isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
 
 @Injectable()
@@ -85,6 +85,14 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  putFakeEmployees(employee) {
+    const body = JSON.stringify(employee);
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.put('http://onboarding.productops.com:3000/resource/person/fake', body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getClients(params) {
     return this.http.get('http://onboarding.productops.com:3000/resource/client' + params)
       .map((response: Response) => {
@@ -94,8 +102,8 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
-  getAssignments() {
-    return this.http.get('http://onboarding.productops.com:3000/resource/assignment')
+  getAssignments(params) {
+    return this.http.get('http://onboarding.productops.com:3000/resource/assignment' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -125,6 +133,26 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  updateResources(employeeId, fakeEmployeeId, projectId) {
+    const body = JSON.stringify({employee_id: employeeId, project_id: projectId, fake_employee_id: fakeEmployeeId});
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.put('http://onboarding.productops.com:3000/resource/data', body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  deleteFakeAssignment(id) {
+    return this.http.delete('http://onboarding.productops.com:3000/resource/assignment/fake/' + id)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  deleteFakeEmployee(id) {
+    return this.http.delete('http://onboarding.productops.com:3000/resource/person/fake/' + id)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getMonday(d): Date {
     const date = new Date(d);
     while (date.getDay() !== 1) {
@@ -145,11 +173,33 @@ export class ForecastService {
 
   updateRollUps(params) {
     const rollUps = [];
+    const rollUps2 = [];
 
     this.getEmployees('?active=1' + params).subscribe(
       data => {
-        console.log(data);
         const employees = data.result;
+        // this.getEntries('').subscribe(
+        //   entries => {
+        //     let j = 0;
+        //     for (let i = 0; i < employees.length; i++) {
+        //       const employee = employees[i];
+        //       employee.opened = false;
+        //       rollUps2.push('');
+        //       const entriesTemp = [];
+        //       while (j < entries.result.length) {
+        //         const entry = entries.result[j];
+        //         if (employee.id === entry.employee_id) {
+        //           entriesTemp.push(entry);
+        //           j++;
+        //         } else {
+        //           rollUps2.splice(i, 1, entriesTemp);
+        //           break;
+        //         }
+        //       }
+        //     }
+        //   }
+        // );
+
         for (let i = 0; i < employees.length; i++) {
           const employee = employees[i];
           employee.opened = false;
@@ -168,7 +218,6 @@ export class ForecastService {
 
         this.employees.next(employees);
         this.rollUps.next(rollUps);
-
 
         this.getResources('?active=1').subscribe(
           resources => {

@@ -32,26 +32,28 @@ export class GraphService {
   }
 
   updateGraph(week) {
-    this.forecastService.getResources('?' + this.params).subscribe(
-      data => {
-        for (let i = 0; i < data.totalCapacities.length; i++) {
-          if (data.totalCapacities[i].week === week) {
-            const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM-dd-yyyy'));
-            console.log(index);
-            const dataClone = JSON.parse(JSON.stringify(this.localLineChartData));
-            console.log(dataClone[1].data);
-            const before = (index !== 0 ? dataClone[1].data[index - 1] : 0)
-            const newCap = data.totalCapacities[i].capacity + before - dataClone[1].data[index];
-            for (let j = index; j < dataClone[1].data.length; j++) {
-              dataClone[1].data[j] += newCap;
-            }
-            this.lineChartData.next(dataClone);
-            this.localLineChartData = dataClone;
+    if (!isNullOrUndefined(this.localLineChartData)) {
+      this.forecastService.getResources('?' + this.params).subscribe(
+        data => {
+          for (let i = 0; i < data.totalCapacities.length; i++) {
+            if (data.totalCapacities[i].week === week) {
+              const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM-dd-yyyy'));
+              console.log(index);
+              const dataClone = JSON.parse(JSON.stringify(this.localLineChartData));
+              console.log(dataClone[1].data);
+              const before = (index !== 0 ? dataClone[1].data[index - 1] : 0)
+              const newCap = data.totalCapacities[i].capacity + before - dataClone[1].data[index];
+              for (let j = index; j < dataClone[1].data.length; j++) {
+                dataClone[1].data[j] += newCap;
+              }
+              this.lineChartData.next(dataClone);
+              this.localLineChartData = dataClone;
 
+            }
           }
         }
-      }
-    );
+      );
+    }
   }
 
   initializeGraph(params) {

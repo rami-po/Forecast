@@ -57,21 +57,6 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
       }
     }
 
-    .checkboxes {
-
-      display: flex;
-      flex-direction: column;
-
-      md-checkbox{
-        text-align: center;
-        padding: .25rem 0;
-
-        &:not(:first-child){
-          border-top: 1px solid #eee;
-        }
-      }
-    }
-
     input {
       width: 300px;
     }

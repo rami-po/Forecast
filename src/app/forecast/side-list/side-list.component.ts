@@ -9,6 +9,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {MdDialog, MdIconRegistry} from "@angular/material";
 import {StatusMessageDialogComponent} from "../status-message/status-message.component";
 import {Subject} from "rxjs/Subject";
+import {FakeEmployeeComponent} from "./fake-employee/fake-employee.component";
 
 @Component({
   selector: 'app-side-list',
@@ -24,16 +25,18 @@ export class SideListComponent implements OnInit {
   @Input() public unassignedEmployees;
   public name: string;
   private lastEmployeeId;
+  private lastEmployeeId2;
   private timerSubscription;
+  private timerSubscription2;
+  public realEmployees;
 
-  constructor(private mainService: ForecastService,
+  constructor(private forecastService: ForecastService,
               private iconRegistry: MdIconRegistry,
-              private forecastService: ForecastService,
               private sanitizer: DomSanitizer,
               private dialog: MdDialog) {
-    iconRegistry.addSvgIcon(
-      'delete',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'));
+    iconRegistry
+      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
+      .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
   }
 
 
@@ -58,10 +61,16 @@ export class SideListComponent implements OnInit {
       }
     );
 
+    this.forecastService.getEmployees('?real=1&active=1').subscribe(
+      data => {
+        this.realEmployees = data.result;
+      }
+    );
+
   }
 
   getUnassignedEmployees() {
-    this.mainService.getEmployees('?active=1').subscribe(
+    this.forecastService.getEmployees('?active=1').subscribe(
       data => {
         const allEmployees = data.result;
         for (let i = 0; i < this.employees.length; i++) {
@@ -142,6 +151,10 @@ export class SideListComponent implements OnInit {
     );
   }
 
+  transformUser(employee) {
+    console.log(employee);
+  }
+
   type(value: string, employee) {
     console.log('sending...');
     if (!isNaN(Number(value))) {
@@ -154,13 +167,47 @@ export class SideListComponent implements OnInit {
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
         employee.capacity = Number(value) * 3600;
-        this.mainService.putEmployees(employee).subscribe();
+        this.forecastService.putEmployees(employee).subscribe();
       });
     } else {
       console.log('not a number...');
     }
   }
 
+  edit(value: string, employee) {
+    console.log('sending...');
+    if (!isNullOrUndefined(this.timerSubscription2) && employee.id === this.lastEmployeeId2) {
+      console.log('changed...');
+      this.timerSubscription2.unsubscribe();
+    }
+    this.lastEmployeeId2 = employee.id;
+    const timer = Observable.timer(2000);
+    this.timerSubscription2 = timer.subscribe(t => {
+      console.log('sent');
+      employee.first_name = value;
+      this.forecastService.putFakeEmployees(employee).subscribe();
+    });
+  }
+
+  openConsole(employee) {
+    const dialog = this.dialog.open(FakeEmployeeComponent);
+    dialog.componentInstance.title = employee.first_name;
+    dialog.componentInstance.custom = true;
+    dialog.componentInstance.input = true;
+    dialog.componentInstance.realEmployees = this.realEmployees;
+    dialog.componentInstance.fakeEmployee = employee;
+    dialog.componentInstance.params = this.params;
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          if (dialog.componentInstance.inputText.length > 0) {
+            employee.first_name = dialog.componentInstance.inputText;
+            this.forecastService.putFakeEmployees(employee).subscribe();
+          }
+        }
+      }
+    );
+  }
 
   getName(entry): string {
     return entry[0].first_name + ' ' + entry[0].last_name;
