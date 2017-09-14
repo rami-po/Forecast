@@ -35,6 +35,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public data;
   @Input() public row;
   @Input() public totalCapacities;
+  @Input() public filteredCapacities;
   @Input() public employeeCapacity;
   @Input() public isOpened = false;
   @Input() private params;
@@ -77,8 +78,9 @@ export class EntryComponent implements OnInit, OnDestroy {
       return this.totalCapacities[index].capacity;
     }
     const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-    this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: color});
+    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 (0)'), color: color});
     return this.totalCapacities[index].capacity;
+
   }
 
   getDifference(employeeCap, capacity) {
@@ -91,7 +93,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return this.totalCapacities[index].color;
       }
       const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-      this.totalCapacities.splice(index, 0, {week: week, capacity: 0, color: color});
+      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 (0)'), color: color});
       return this.totalCapacities[index].color;
     } else {
       // it is an editable cell
