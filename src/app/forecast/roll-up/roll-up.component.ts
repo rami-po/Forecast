@@ -67,7 +67,6 @@ export class RollUpComponent implements OnInit {
         }
 
         if (this.params !== '') {
-          console.log(this.totalCapacities);
           this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
             filteredResources => {
               const filteredCapacities = filteredResources.totalCapacities;

@@ -33,16 +33,14 @@ export class GraphService {
 
   updateGraph(week) {
     if (!isNullOrUndefined(this.localLineChartData)) {
-      this.forecastService.getResources('?' + this.params).subscribe(
+      this.forecastService.getResources('?' + this.params + '&active=1&cost=1').subscribe(
         data => {
           for (let i = 0; i < data.totalCapacities.length; i++) {
             if (data.totalCapacities[i].week === week) {
               const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM-dd-yyyy'));
-              console.log(index);
               const dataClone = JSON.parse(JSON.stringify(this.localLineChartData));
-              console.log(dataClone[1].data);
-              const before = (index !== 0 ? dataClone[1].data[index - 1] : 0)
-              const newCap = data.totalCapacities[i].capacity + before - dataClone[1].data[index];
+              const before = (index !== 0 ? dataClone[1].data[index - 1] : 0);
+              const newCap = data.totalCapacities[i].cost + before - dataClone[1].data[index];
               for (let j = index; j < dataClone[1].data.length; j++) {
                 dataClone[1].data[j] += newCap;
               }
@@ -68,16 +66,29 @@ export class GraphService {
     const forecastData = [];
     const breakPointData = [];
 
+    console.log(params);
+
+    this.forecastService.getEmployees('?' + params).subscribe(
+      employeesData => {
+        const employees = employeesData.result;
+        for (const employee of employees) {
+          console.log('?' + params + '&userid=' + employee.id);
+          this.forecastService.getTimeEntries('?' + params + '&userid=' + employee.id).subscribe(
+            timeEntriesData => {
+              console.log(timeEntriesData.result);
+            }
+          );
+        }
+      }
+    );
+
     this.forecastService.getTimeEntries('?' + params).subscribe(
       timeEntries => {
-
-        console.log(params);
-        console.log(timeEntries.result.length);
+        console.log(timeEntries);
 
         console.log('a');
 
         // !!! this loops needs to be optimized !!!
-        // Takes all the separate dates and pools them in their respective Monday's
         const totalCapacities = [];
         const fcTotalCapacities = [];
         for (let i = 0; i < timeEntries.result.length; i++) {
@@ -86,7 +97,7 @@ export class GraphService {
           if (totalCapacities[monday] == null) {
             totalCapacities[monday] = 0;
           }
-          totalCapacities[monday] += timeEntries.result[i].hours;
+          totalCapacities[monday] += timeEntries.result[i].hours * timeEntries.result[i].cost;
         }
 
         console.log('b');
@@ -118,7 +129,7 @@ export class GraphService {
 
                 console.log('d');
 
-                // Cycles through the dates and checks for missing Monday's and adds them if found
+                // Cycles through the dates and checks for missing Mondays and adds them if found
                 for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
                   const firstDate = new Date(labels[i]);
                   firstDate.setDate(firstDate.getDate() + 7);
@@ -138,7 +149,7 @@ export class GraphService {
                 console.log('f');
 
                 // Adds forecasted data to graph arrays
-                this.forecastService.getResources('?' + params + '&active=1').subscribe(
+                this.forecastService.getResources('?' + params + '&active=1&cost=1').subscribe(
                   resources => {
 
                     for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
@@ -156,7 +167,7 @@ export class GraphService {
                     for (let i = 0; i < this.weeks.length; i++) {
                       const capacity = resources.totalCapacities[index];
                       if (!isNullOrUndefined(capacity) && capacity.week === this.weeks[i]) {
-                        forecastCap += capacity.capacity;
+                        forecastCap += capacity.cost;
                         forecastData.push(forecastCap);
                         index++;
                       } else {

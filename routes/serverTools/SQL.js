@@ -47,7 +47,7 @@ exports.get = function (req) {
 };
 
 exports.getPeople = function (req, callback) {
-  let employeeId = (req.params.id !== undefined ? req.params.id : 'a.user_id');
+  let employeeId = (req.params.id ? req.params.id : 'a.user_id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
@@ -81,6 +81,7 @@ exports.getPeople = function (req, callback) {
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
     'LEFT OUTER JOIN ' + assignments + ' a ON p.id = a.project_id ' +
     'LEFT OUTER JOIN ' + employees + ' e ON e.id = a.user_id ' +
+    // 'LEFT OUTER JOIN tiers t ON t.id = e.tier_id ' +
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
     'AND e.is_active = ' + isActive + ' ' +
@@ -89,6 +90,7 @@ exports.getPeople = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;', function (err, result) {
+      console.log(result);
       if (result != null && result[3].fieldCount != null) {
         result = result[4];
       }
@@ -177,7 +179,7 @@ exports.getAssignments = function (req, callback) {
   let id = (req.params.id !== undefined ? req.params.id : 'id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'user_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'project_id');
-  const deactivated = (req.query.deactivated ? req.query.deactivated: 'deactivated');
+  const deactivated = (req.query.deactivated ? req.query.deactivated : 'deactivated');
 
   if (isNaN(id) && id !== 'id') {
     id = '\'' + id + '\'';
@@ -245,8 +247,16 @@ exports.getData = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'r.project_id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'r.employee_id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'r.client_id');
+  let cost = '';
+  let costJoin = '';
+  if (req.query.cost === '1') {
+    cost = ', t.cost';
+    costJoin =
+      'LEFT OUTER JOIN employees e ON r.employee_id = e.id ' +
+      'LEFT OUTER JOIN tiers t on t.id = e.tier_id ';
+  }
 
-  var monday;
+  let monday;
   tools.getMonday(function (date) {
     tools.convertDate(date, function (convertedDate) {
       monday = convertedDate;
@@ -256,7 +266,8 @@ exports.getData = function (req, callback) {
   const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
   connection.query(
-    'SELECT * FROM resourceManagement r ' +
+    'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
+    costJoin +
     'WHERE r.project_id = ' + projectId + ' ' +
     'AND r.client_id = ' + clientId + ' ' +
     'AND r.employee_id = ' + employeeId + ' ' +
@@ -310,9 +321,15 @@ exports.getMembers = function (req, callback) {
 exports.getTimeEntries = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 't.id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  const userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
 
-  connection.query('SELECT * FROM timeEntries t ' +
+  if (isNaN(userId) && userId !== 't.user_id') {
+    userId = '\'' + userId + '\'';
+  }
+
+  connection.query('SELECT t.id, t.user_id, t.project_id, t.task_id, t.notes, t.spent_at, t.hours, ti.cost, e.capacity FROM timeEntries t ' +
+    'LEFT OUTER JOIN employees e ON t.user_id = e.id ' +
+    'LEFT OUTER JOIN tiers ti on ti.id = e.tier_id ' +
     'WHERE t.id = ' + id + ' ' +
     'AND t.project_id = ' + projectId + ' ' +
     'AND t.user_id = ' + userId + ' ' +
@@ -430,8 +447,8 @@ exports.updateData = function (req, callback) {
     ' AND project_id = ' + req.body.project_id + ';UPDATE resourceManagement SET employee_id = ' + req.body.employee_id +
     ' WHERE employee_id = ' + req.body.fake_employee_id + ' AND project_id = ' + req.body.project_id,
     function (err, result) {
-    callback(err, result);
-  })
+      callback(err, result);
+    })
 };
 
 exports.deactivateAssignment = function (req, callback) {
@@ -463,3 +480,10 @@ exports.deleteFakeEmployee = function (req, callback) {
     callback(err, result);
   });
 };
+
+exports.custom = function (req, callback) {
+  connection.query('ALTER TABLE tiers ALTER COLUMN cost varchar(255) COLLATE utf8_general_ci', function (err, result) {
+    callback(err, result);
+  });
+};
+// CREATE TABLE tiers (id varchar(255), cost int(11));

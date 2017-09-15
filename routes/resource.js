@@ -416,22 +416,30 @@ router.get('/data', function (req, res, next) {
         err: err
       });
     } else {
-      var totalCapacities = {};
-      for (var i = 0; i < result.length; i++) {
+      const totalCapacities = {};
+      const totalCost = {};
+      for (let i = 0; i < result.length; i++) {
         tools.convertDate(result[i].week_of, function (date) {
           if (totalCapacities[date] == null) {
             totalCapacities[date] = 0;
           }
           totalCapacities[date] += result[i].capacity;
+          if (req.query.cost === '1') {
+            if (totalCost[date] == null) {
+              totalCost[date] = 0;
+            }
+            totalCost[date] += result[i].capacity *  result[i].cost;
+          }
 
         });
       }
 
-      var JSONArray = [];
-      for (week in totalCapacities) {
-        var data = {
+      const JSONArray = [];
+      for (const week in totalCapacities) {
+        const data = {
           week: week,
-          capacity: totalCapacities[week]
+          capacity: totalCapacities[week],
+          cost: (req.query.cost === '1' ? totalCost[week] : 0)
         };
         JSONArray.push(data);
       }
