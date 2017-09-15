@@ -2,7 +2,7 @@
  * Created by Rami Khadder on 9/14/2017.
  */
 
-const SQL = require('./routes/serverTools/SQL');
+// const SQL = require('./routes/serverTools/SQL');
 
 
 // SQL.custom(null, function (err, result) {

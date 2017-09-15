@@ -63,6 +63,7 @@ export class SideListComponent implements OnInit {
 
     this.forecastService.getEmployees('?real=1&active=1').subscribe(
       data => {
+        console.log(data.result);
         this.realEmployees = data.result;
       }
     );
