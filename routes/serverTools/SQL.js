@@ -90,18 +90,12 @@ exports.getPeople = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;', function (err, result) {
-      console.log(result);
-      if (result != null && result[3].fieldCount != null) {
-        result = result[4];
-      }
-      callback(err, result);
-
+      callback(err, result[result.length-1]);
     });
 
 };
 
 exports.getProjects = function (req, callback) {
-
 
   const projectId = (req.params.id !== undefined ? req.params.id : 'a.project_id');
   let employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
@@ -138,10 +132,7 @@ exports.getProjects = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY p.name', function (err, result) {
-      if (result != null && result[3].fieldCount != null) {
-        result = result[4];
-      }
-      callback(err, result);
+      callback(err, result[result.length-1]);
     });
 };
 
@@ -236,10 +227,7 @@ exports.getEntries = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id, c.id, p.id ASC;', function (err, result) {
-      if (result != null) {
-        result = result[4];
-      }
-      callback(err, result);
+      callback(err, result[result.length-1]);
     });
 };
 
