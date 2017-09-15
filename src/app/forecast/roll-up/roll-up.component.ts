@@ -22,6 +22,7 @@ export class RollUpComponent implements OnInit {
 
   public entries = [];
   public totalCapacities;
+  public filteredCapacities;
 
   public isDataAvailable = false;
 
@@ -69,6 +70,7 @@ export class RollUpComponent implements OnInit {
           this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
             filteredResources => {
               const filteredCapacities = filteredResources.totalCapacities;
+              this.filteredCapacities = filteredCapacities;
               let filteredResourcesIndex = 0;
               for (let resourcesIndex = 0; resourcesIndex < this.totalCapacities.length; resourcesIndex++) {
                 if (filteredResourcesIndex < filteredCapacities.length &&
@@ -77,6 +79,8 @@ export class RollUpComponent implements OnInit {
                     filteredCapacities[filteredResourcesIndex].capacity + ' (' +
                     this.totalCapacities[resourcesIndex].capacity + ')';
                   filteredResourcesIndex++;
+                } else {
+                  this.totalCapacities[resourcesIndex].capacity = '0 (' + this.totalCapacities[resourcesIndex].capacity + ')';
                 }
               }
               this.isDataAvailable = true;
