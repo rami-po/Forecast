@@ -59,10 +59,10 @@ exports.getPeople = function (req, callback) {
   }
 
   let getFakes =
-    'DROP TABLE IF EXISTS all_assignments;' +
-    'DROP TABLE IF EXISTS all_employees;' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ';
+    `DROP TABLE IF EXISTS all_assignments;
+    DROP TABLE IF EXISTS all_employees;
+    CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x;
+    CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y;`;
 
   let assignments = 'all_assignments';
   let employees = 'all_employees';
@@ -73,25 +73,29 @@ exports.getPeople = function (req, callback) {
     employees = 'employees';
   }
 
-  connection.query(
+  const query =
     getFakes +
-    'SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, ' +
-    'e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity ' +
-    'FROM clients c ' +
-    'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN ' + assignments + ' a ON p.id = a.project_id ' +
-    'LEFT OUTER JOIN ' + employees + ' e ON e.id = a.user_id ' +
-    // 'LEFT OUTER JOIN tiers t ON t.id = e.tier_id ' +
-    'WHERE a.deactivated = 0 ' +
-    'AND p.active = 1 ' +
-    'AND e.is_active = ' + isActive + ' ' +
-    'AND e.is_contractor = ' + isContractor + ' ' +
-    'AND p.id = ' + projectId + ' ' +
-    'AND c.id = ' + clientId + ' ' +
-    'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;', function (err, result) {
-      callback(err, result[result.length-1]);
-    });
+    `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, 
+    e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity 
+    FROM clients c 
+    LEFT OUTER JOIN projects p ON c.id = p.client_id 
+    LEFT OUTER JOIN ` + assignments + ` a ON p.id = a.project_id 
+    LEFT OUTER JOIN ` + employees + ` e ON e.id = a.user_id 
+    WHERE a.deactivated = 0 
+    AND p.active = 1 
+    AND e.is_active = ` + isActive + ` 
+    AND e.is_contractor = ` + isContractor + ` 
+    AND p.id = ` + projectId + ` 
+    AND c.id = ` + clientId + ` 
+    AND e.id = ` + employeeId + ` 
+    ORDER BY CASE last_name <> '' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;`;
+
+  connection.query(query, function (err, result) {
+    if (result[0].fieldCount != null) {
+      result = result[result.length - 1];
+    }
+    callback(err, result);
+  });
 
 };
 
@@ -132,7 +136,10 @@ exports.getProjects = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY p.name', function (err, result) {
-      callback(err, result[result.length-1]);
+      if (result[0].fieldCount != null) {
+        result = result[result.length - 1];
+      }
+      callback(err, result);
     });
 };
 
@@ -227,7 +234,10 @@ exports.getEntries = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id, c.id, p.id ASC;', function (err, result) {
-      callback(err, result[result.length-1]);
+      if (result[0].fieldCount != null) {
+        result = result[result.length - 1];
+      }
+      callback(err, result);
     });
 };
 

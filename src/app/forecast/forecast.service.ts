@@ -40,8 +40,10 @@ export class ForecastService {
               private datePipe: DatePipe) {
   }
 
+  private apiBase = document.location.protocol + '//' + window.location.hostname + ':3000/resource';
+
   getProjects(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/project' + params)
+    return this.http.get(this.apiBase + '/project' + params)
       .map((response: Response) => {
         this.projects.next(response.json());
         return response.json();
@@ -50,7 +52,7 @@ export class ForecastService {
   }
 
   removeEmployeeFromProject(projectId, assignmentId) {
-    return this.http.delete('http://onboarding.productops.com:3000/resource/project/' + projectId + '/assignments/' + assignmentId)
+    return this.http.delete(this.apiBase + '/project' + projectId + '/assignments/' + assignmentId)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -58,13 +60,13 @@ export class ForecastService {
   addEmployeeToProject(projectId, employeeId) {
     const body = JSON.stringify({user: {id: employeeId}});
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.post('http://onboarding.productops.com:3000/resource/project/' + projectId + '/assignments', body, {headers: headers})
+    return this.http.post(this.apiBase + '/project/' + projectId + '/assignments', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getEmployees(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/person' + params)
+    return this.http.get(this.apiBase + '/person' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -72,7 +74,7 @@ export class ForecastService {
   putEmployees(employee) {
     const body = JSON.stringify(employee);
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.put('http://onboarding.productops.com:3000/resource/person', body, {headers: headers})
+    return this.http.put(this.apiBase + '/person', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -80,7 +82,7 @@ export class ForecastService {
   addFakeEmployee(name, projectId) {
     const body = JSON.stringify({name: name, project_id: projectId});
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.post('http://onboarding.productops.com:3000/resource/person/fake', body, {headers: headers})
+    return this.http.post(this.apiBase + '/person/fake', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -88,13 +90,13 @@ export class ForecastService {
   putFakeEmployees(employee) {
     const body = JSON.stringify(employee);
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.put('http://onboarding.productops.com:3000/resource/person/fake', body, {headers: headers})
+    return this.http.put(this.apiBase + '/person/fake', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getClients(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/client' + params)
+    return this.http.get(this.apiBase + '/client' + params)
       .map((response: Response) => {
         this.clients.next(response.json());
         return response.json();
@@ -103,32 +105,32 @@ export class ForecastService {
   }
 
   getAssignments(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/assignment' + params)
+    return this.http.get(this.apiBase + '/assignment' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getEntries(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/entry' + params)
+    return this.http.get(this.apiBase + '/entry' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getMembers(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/member' + params)
+    return this.http.get(this.apiBase + '/member' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getTimeEntries(params) {
-    return this.http.get('http://onboarding.productops.com:3000/resource/time' + params)
+    return this.http.get(this.apiBase + '/time' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   getResources(params) {
     params = (!isUndefined(params) ? params : '?active=1');
-    return this.http.get('http://onboarding.productops.com:3000/resource/data' + params)
+    return this.http.get(this.apiBase + '/data' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
