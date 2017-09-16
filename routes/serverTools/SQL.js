@@ -183,6 +183,7 @@ exports.getAssignments = function (req, callback) {
     id = '\'' + id + '\'';
   }
 
+
   connection.query(
     'DROP TABLE IF EXISTS all_assignments;' +
     'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
@@ -460,21 +461,22 @@ exports.deactivateAssignment = function (req, callback) {
  */
 
 exports.deleteFakeAssignment = function (req, callback) {
-  if (isNaN(req.params.id)) {
-    req.params.id = '\'' + req.params.id + '\'';
+  console.log(req.params);
+  if (isNaN(req.params.assignment_id)) {
+    req.params.assignment_id = '\'' + req.params.assignment_id + '\'';
   }
 
-  connection.query('DELETE FROM assignments_fake WHERE id = ' + req.params.id, function (err, result) {
+  connection.query('DELETE FROM assignments_fake WHERE id = ' + req.params.assignment_id, function (err, result) {
     callback(err, result);
   });
 };
 
 exports.deleteFakeEmployee = function (req, callback) {
-  if (isNaN(req.params.id)) {
-    req.params.id = '\'' + req.params.id + '\'';
+  if (isNaN(req.params.employee_id)) {
+    req.params.employee_id = '\'' + req.params.employee_id + '\'';
   }
 
-  connection.query('DELETE FROM employees_fake WHERE id = ' + req.params.id, function (err, result) {
+  connection.query('DELETE FROM employees_fake WHERE id = ' + req.params.employee_id, function (err, result) {
     callback(err, result);
   });
 };
