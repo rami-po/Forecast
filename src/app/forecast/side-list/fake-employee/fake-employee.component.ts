@@ -3,11 +3,13 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {ForecastService} from "../../forecast.service";
 import {StatusMessageDialogComponent} from "../../status-message/status-message.component";
 import {isNullOrUndefined} from "util";
+import {SideListService} from "../side-list.service";
 
 @Component({
   selector: 'app-fake-employee-prompt',
   templateUrl: './fake-employee.component.html',
-  styleUrls: ['./fake-employee.component.scss']
+  styleUrls: ['./fake-employee.component.scss'],
+  providers: [SideListService]
 })
 export class FakeEmployeeComponent implements OnInit {
 
@@ -26,7 +28,8 @@ export class FakeEmployeeComponent implements OnInit {
 
   constructor(public dialogRef: MdDialogRef<FakeEmployeeComponent>,
               private dialog: MdDialog,
-              private forecastService: ForecastService) {
+              private forecastService: ForecastService,
+              private sideListService: SideListService) {
   }
 
   ngOnInit() {
@@ -120,6 +123,4 @@ export class FakeEmployeeComponent implements OnInit {
       }
     );
   }
-
-
 }

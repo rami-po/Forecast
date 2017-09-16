@@ -109,7 +109,7 @@ export class GraphService {
           project => {
             this.budget = project.result[0].cost_budget;
             // REMOVE THIS!!
-            this.budget = 3800;
+            // this.budget = 3800;
             console.log('?' + params);
             this.forecastService.getResources('?' + params).subscribe(
               dataTC => {

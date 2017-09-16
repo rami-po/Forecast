@@ -52,7 +52,7 @@ export class ForecastService {
   }
 
   removeEmployeeFromProject(projectId, assignmentId) {
-    return this.http.delete(this.apiBase + '/project' + projectId + '/assignments/' + assignmentId)
+    return this.http.delete(this.apiBase + '/project/' + projectId + '/assignments/' + assignmentId)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -144,13 +144,13 @@ export class ForecastService {
   }
 
   deleteFakeAssignment(id) {
-    return this.http.delete('http://onboarding.productops.com:3000/resource/assignment/fake/' + id)
+    return this.http.delete(this.apiBase + '/assignment/fake/' + id)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   deleteFakeEmployee(id) {
-    return this.http.delete('http://onboarding.productops.com:3000/resource/person/fake/' + id)
+    return this.http.delete(this.apiBase + '/person/fake/' + id)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
