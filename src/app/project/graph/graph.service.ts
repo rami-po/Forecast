@@ -63,16 +63,19 @@ export class GraphService {
 
     if (!isNullOrUndefined(arrayWeekAndBudget) &&
         !isNullOrUndefined(arrayNotes) && arrayWeekAndBudget.length === arrayNotes.length) {
+      let lastBudget = 0;
       for (let i = 0; i < arrayWeekAndBudget.length; i++) {
         const weekAndBudget = arrayWeekAndBudget[i].substring(1, arrayWeekAndBudget[i].length - 1);
         const colonIndex = weekAndBudget.indexOf(':');
-        const notes = arrayNotes[i].substring(2, arrayNotes[i].length - 2);
+        const budget = Number(weekAndBudget.substring(colonIndex + 2).replace(/,/, ''));
+        const notes = arrayNotes[i].substring(2, arrayNotes[i].length - 2).replace(/(?:\r\n|\r|\n)/g, ' | ');
         const date = new Date(weekAndBudget.substring(0, colonIndex));
         data.push({
           endWeek: this.datePipe.transform(this.forecastService.getMonday(date), 'MM-dd-yyyy'),
-          budget: weekAndBudget.substring(colonIndex + 2).replace(/,/, ''),
+          budget: budget + lastBudget,
           notes: notes
         });
+        lastBudget = budget;
       }
     }
     return data;
@@ -132,7 +135,6 @@ export class GraphService {
           project => {
             const budgetData = this.parse(project.result[0].notes);
             this.budget = project.result[0].cost_budget;
-            console.log(budgetData);
             // REMOVE THIS!!
             // this.budget = 3800;
             console.log('?' + params);
@@ -186,7 +188,7 @@ export class GraphService {
                       actualData.push(actualCap);
                       forecastData.push(forecastCap);
                       const endWeek = (!isNullOrUndefined(budgetData[budgetIndex]) ? new Date(budgetData[budgetIndex].endWeek) : null);
-                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() > new Date(labels[i]).getTime()) {
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() >= new Date(labels[i]).getTime()) {
                         breakPointData[budgetIndex].push(Number(budgetData[budgetIndex].budget));
                       }
 
@@ -216,7 +218,7 @@ export class GraphService {
                         forecastData.push(forecastCap);
                       }
                       const endWeek = (!isNullOrUndefined(budgetData[budgetIndex]) ? new Date(budgetData[budgetIndex].endWeek) : null);
-                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() > new Date(labels[i]).getTime()) {
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() >= new Date(labels[i]).getTime()) {
                         breakPointData[budgetIndex].push(Number(budgetData[budgetIndex].budget));
                       }
                       if (!isNullOrUndefined(endWeek) && endWeek.getTime() === new Date(this.weeks[i]).getTime()) {

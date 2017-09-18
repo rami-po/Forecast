@@ -140,10 +140,13 @@ export class GraphComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       data => {
+        for (let i = 2; i <= this.data.datasets.length; i++) {
+         this.data.datasets.splice(2, 1);
+        }
         this.data.datasets[0].data = data[0].data;
         this.data.datasets[1].data = data[1].data;
         for (let i = 2; i < data.length; i++) {
-          this.data.datasets.push({
+          this.data.datasets[i] = {
             label: data[i].label,
             data: data[i].data,
             backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -153,7 +156,7 @@ export class GraphComponent implements OnInit, OnDestroy {
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: 'rgba(244, 67, 54, .8)',
             lineTension: 0
-          });
+          };
         }
 
         this.chart.chart.update();
