@@ -124,7 +124,7 @@ exports.getProjects = function (req, callback) {
   connection.query(
     getFakes +
     'SELECT DISTINCT p.id, p.client_id, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
-    'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget ' +
+    'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
     'LEFT OUTER JOIN ' + assignments + ' a ON p.id = a.project_id ' +

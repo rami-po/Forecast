@@ -54,13 +54,36 @@ export class GraphService {
     }
   }
 
+  parse(projectNotes): any {
+    projectNotes += '\n[';
+    const data = [];
+
+    const arrayWeekAndBudget = projectNotes.match(/\[(.*?)]/g);
+    const arrayNotes = projectNotes.match(/]([\s\S]*?)\[/g);
+
+    if (!isNullOrUndefined(arrayWeekAndBudget) &&
+        !isNullOrUndefined(arrayNotes) && arrayWeekAndBudget.length === arrayNotes.length) {
+      for (let i = 0; i < arrayWeekAndBudget.length; i++) {
+        const weekAndBudget = arrayWeekAndBudget[i].substring(1, arrayWeekAndBudget[i].length - 1);
+        const colonIndex = weekAndBudget.indexOf(':');
+        const notes = arrayNotes[i].substring(2, arrayNotes[i].length - 2);
+        const date = new Date(weekAndBudget.substring(0, colonIndex));
+        data.push({
+          endWeek: this.datePipe.transform(this.forecastService.getMonday(date), 'MM-dd-yyyy'),
+          budget: weekAndBudget.substring(colonIndex + 2).replace(/,/, ''),
+          notes: notes
+        });
+      }
+    }
+    return data;
+  }
+
   initializeGraph(params) {
 
     const labels = [];
     const allData = [
       {data: [], label: 'Actual'},
-      {data: [], label: 'Forecast'},
-      {data: [], label: 'Breakpoint'}
+      {data: [], label: 'Forecast'}
     ];
     const actualData = [];
     const forecastData = [];
@@ -68,19 +91,19 @@ export class GraphService {
 
     console.log(params);
 
-    this.forecastService.getEmployees('?' + params).subscribe(
-      employeesData => {
-        const employees = employeesData.result;
-        for (const employee of employees) {
-          console.log('?' + params + '&userid=' + employee.id);
-          this.forecastService.getTimeEntries('?' + params + '&userid=' + employee.id).subscribe(
-            timeEntriesData => {
-              console.log(timeEntriesData.result);
-            }
-          );
-        }
-      }
-    );
+    // this.forecastService.getEmployees('?' + params).subscribe(
+    //   employeesData => {
+    //     const employees = employeesData.result;
+    //     for (const employee of employees) {
+    //       console.log('?' + params + '&userid=' + employee.id);
+    //       this.forecastService.getTimeEntries('?' + params + '&userid=' + employee.id).subscribe(
+    //         timeEntriesData => {
+    //           console.log(timeEntriesData.result);
+    //         }
+    //       );
+    //     }
+    //   }
+    // );
 
     this.forecastService.getTimeEntries('?' + params).subscribe(
       timeEntries => {
@@ -107,7 +130,9 @@ export class GraphService {
         const index = params.indexOf('project');
         this.forecastService.getProjects('/' + params.substring(index + 10)).subscribe(
           project => {
+            const budgetData = this.parse(project.result[0].notes);
             this.budget = project.result[0].cost_budget;
+            console.log(budgetData);
             // REMOVE THIS!!
             // this.budget = 3800;
             console.log('?' + params);
@@ -152,13 +177,30 @@ export class GraphService {
                 this.forecastService.getResources('?' + params + '&active=1&cost=1').subscribe(
                   resources => {
 
+                    breakPointData.push([]);
+                    let budgetIndex = 0;
                     for (let i = 0; new Date(labels[i]).getTime() < new Date(this.datePipe.transform(this.weeks[0], 'MM-dd-yyyy')).getTime(); i++) {
                       actualCap += (!isNullOrUndefined(totalCapacities[labels[i]]) ? totalCapacities[labels[i]] : 0);
                       forecastCap += (!isNullOrUndefined(totalCapacities[labels[i]]) ? totalCapacities[labels[i]] : 0);
                       // forecastCap = (!isNullOrUndefined(fcTotalCapacities[labels[i]]) ? fcTotalCapacities[labels[i]] + forecastCap : forecastCap);
                       actualData.push(actualCap);
                       forecastData.push(forecastCap);
-                      breakPointData.push(this.budget);
+                      const endWeek = (!isNullOrUndefined(budgetData[budgetIndex]) ? new Date(budgetData[budgetIndex].endWeek) : null);
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() > new Date(labels[i]).getTime()) {
+                        breakPointData[budgetIndex].push(Number(budgetData[budgetIndex].budget));
+                      }
+
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() === new Date(labels[i]).getTime()) {
+                        budgetIndex++;
+                        breakPointData.push([]);
+                        for (let j = 0; j < breakPointData[budgetIndex - 1].length; j++) {
+                          breakPointData[budgetIndex].push(null);
+                        }
+                        if (!isNullOrUndefined(budgetData[budgetIndex])) {
+                          breakPointData[budgetIndex - 1].push(Number(budgetData[budgetIndex].budget));
+                        }
+
+                      }
                     }
 
                     console.log('g');
@@ -173,7 +215,20 @@ export class GraphService {
                       } else {
                         forecastData.push(forecastCap);
                       }
-                      breakPointData.push(this.budget);
+                      const endWeek = (!isNullOrUndefined(budgetData[budgetIndex]) ? new Date(budgetData[budgetIndex].endWeek) : null);
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() > new Date(labels[i]).getTime()) {
+                        breakPointData[budgetIndex].push(Number(budgetData[budgetIndex].budget));
+                      }
+                      if (!isNullOrUndefined(endWeek) && endWeek.getTime() === new Date(this.weeks[i]).getTime()) {
+                        budgetIndex++;
+                        breakPointData.push([]);
+                        for (let j = 0; j < breakPointData[budgetIndex - 1].length; j++) {
+                          breakPointData[budgetIndex].push(null);
+                        }
+                        if (!isNullOrUndefined(budgetData[budgetIndex])) {
+                          breakPointData[budgetIndex - 1].push(Number(budgetData[budgetIndex].budget));
+                        }
+                      }
                     }
 
                     console.log('h');
@@ -181,7 +236,12 @@ export class GraphService {
                     this.lineChartLabels.next(labels);
                     allData[0].data = actualData;
                     allData[1].data = forecastData;
-                    allData[2].data = breakPointData;
+                    for (let i = breakPointData.length - 1; i >= 0; i--) {
+                      if (breakPointData[i].length > 0) {
+                        allData.push({data: breakPointData[i], label: budgetData[i].notes});
+                      }
+                    }
+                    // allData[2].data = breakPointData;
                     this.lineChartData.next(allData);
 
                     this.localLineChartLabels = labels;
