@@ -88,7 +88,15 @@ router.put('/person/fake', function (req, res, next) {
 });
 
 router.post('/person/fake', function (req, res, next) {
-  const employee = {id: uuidv4(), first_name: req.body.name, last_name: '', capacity: 144000, is_active: 1, is_contractor: 0};
+  const employee = {
+    id: uuidv4(),
+    first_name: req.body.name,
+    last_name: '',
+    capacity: 144000,
+    is_active: 1,
+    is_contractor: 0,
+    tier_id: 1
+  };
   const assignment = {id: uuidv4(), user_id: employee.id, project_id: req.body.project_id, deactivated: 0};
   SQL.addFakeEmployee(employee, function (err, result) {
     if (err) {
@@ -170,7 +178,7 @@ router.get('/project', function (req, res, next) {
   });
 });
 
-router.get('/project/:id*', function (req, res, next) {
+router.get('/project/:id', function (req, res, next) {
   SQL.getProjects(req, function (err, result) {
     if (err) {
       return res.status(500).json({
@@ -189,6 +197,22 @@ router.get('/project/:id*', function (req, res, next) {
 router.get('/project/:id/entries*', function (req, res, next) {
   console.log(req.params.id + ' ' + req.query.person);
   console.log(req.query);
+});
+
+router.get('/project/:id/start', function (req, res, next) {
+  SQL.getStartTime(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
 });
 
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
@@ -241,7 +265,7 @@ router.delete('/project/:project_id/assignments_fake/:assignment_id', function (
   });
 });
 
-router.post('/project/:project_id/assignments', function(req, res, next) {
+router.post('/project/:project_id/assignments', function (req, res, next) {
   harvest.addEmployeeToProject(req, function (status, result) {
     if (status === 201 || status === 404) {
       req.params['assignment_id'] = result.id;
@@ -449,7 +473,7 @@ router.get('/data', function (req, res, next) {
             if (totalCost[date] == null) {
               totalCost[date] = 0;
             }
-            totalCost[date] += result[i].capacity *  result[i].cost;
+            totalCost[date] += result[i].capacity * result[i].cost;
           }
 
         });
@@ -477,6 +501,161 @@ router.get('/data', function (req, res, next) {
     }
   });
 });
+
+router.get('/data/graph', function (req, res, next) {
+  req.params['projectid'] = req.query['projectid'];
+  SQL.getStartTime(req, function (err, date) {
+    if (!err) {
+      tools.getNearestMonday(new Date(date[0].start), function (monday) {
+        SQL.getPeople(req, function (err, employees) {
+          if (!err) {
+            array = [];
+            let numberOfWeeks = 0;
+            const mondayTemp = new Date(monday);
+            while (mondayTemp.getTime() <= new Date(req.query.endweek).getTime()) {
+              numberOfWeeks++;
+              mondayTemp.setDate(mondayTemp.getDate() + 7);
+            }
+            asyncLoop(numberOfWeeks, function (loop) {
+              let projectCost = 0;
+              asyncLoop(employees.length, function (loop) {
+                getProjectCost(req, monday, projectCost, employees[loop.iteration()], function (cost) {
+                  projectCost += cost;
+                  loop.next();
+                });
+              }, function () {
+                array.push({week: monday.toISOString().slice(0, 10), cost: projectCost});
+                if (monday.getTime() < new Date(req.query.endweek).getTime()) {
+                  monday.setDate(monday.getDate() + 7);
+                }
+                loop.next();
+              });
+            }, function () {
+              return res.status(200).json({
+                message: 'Success!',
+                result: array
+              });
+            });
+          }
+        });
+      });
+    }
+  });
+});
+
+const async = require('async');
+
+function getProjectCost(req, monday, projectCost, employee, callback) {
+  async.parallel({
+    projectHours: function (callback) {
+      req.query['userid'] = employee.id;
+      const weekAfterMonday = new Date(monday);
+      weekAfterMonday.setDate(weekAfterMonday.getDate() + 6)
+      req.query['from'] = monday.toISOString().slice(0, 10);
+      req.query['to'] = weekAfterMonday.toISOString().slice(0,10);
+      SQL.getHours(req, function (err, projectHours) {
+        if (!err) {
+          callback(null, projectHours);
+        } else {
+          console.log('project hours');
+          console.log(err);
+        }
+      });
+    },
+    totalHours: function (callback) {
+      const projectId = req.query['projectid'];
+      delete req.query['projectid'];
+      SQL.getHours(req, function (err, totalHours) {
+        if (!err) {
+          callback(null, totalHours);
+        } else {
+          console.log('total hours');
+          console.log(err);
+        }
+      });
+    }
+  }, function (err, results) {
+    if (err) {
+      console.log(err);
+    } else {
+      const totalHours = results.totalHours[0].hours;
+      const projectHours = results.projectHours[0].hours;
+      if (totalHours >= employee.capacity / 3600) {
+        projectCost += (projectHours / totalHours) * employee.cost;
+      } else {
+        projectCost += (projectHours / (employee.capacity / 3600)) * employee.cost;
+      }
+      callback(projectHours);
+    }
+  });
+
+  // let projectCost = 0;
+  // let i = 0;
+  // for (const employee of employees) {
+  //   console.log(employees.length);
+  //   console.log(i);
+  //   req.params['id'] = employee.id;
+  //   SQL.getTier(req, function (err, tier) {
+  //     if (!err) {
+  //       req.query['userid'] = employee.id;
+  //       req.query['from'] = monday.toISOString().slice(0, 10);
+  //       req.query['to'] = req.query.endweek;
+  //       SQL.getHours(req, function (err, projectHours) {
+  //         if (!err) {
+  //           const projectId = req.query['projectid'];
+  //           delete req.query['projectid'];
+  //           SQL.getHours(req, function (err, totalHours) {
+  //             if (!err) {
+  //               if (totalHours.hours >= employee.capacity / 3600) {
+  //                 projectCost += (projectHours.hours / totalHours.hours) * tier.cost;
+  //               } else {
+  //                 projectCost += (projectHours.hours / (employee.capacity / 3600)) * tier.cost;
+  //               }
+  //               i++;
+  //               if (i === employees.length) {
+  //                 console.log('hm');
+  //                 callback(projectCost);
+  //               }
+  //             }
+  //           });
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
+}
+
+function asyncLoop(iterations, func, callback) {
+  let index = 0;
+  let done = false;
+  const loop = {
+    next: function () {
+      if (done) {
+        return;
+      }
+
+      if (index < iterations) {
+        index++;
+        func(loop);
+
+      } else {
+        done = true;
+        callback();
+      }
+    },
+
+    iteration: function () {
+      return index - 1;
+    },
+
+    break: function () {
+      done = true;
+      callback();
+    }
+  };
+  loop.next();
+  return loop;
+}
 
 router.put('/data', function (req, res, next) {
   SQL.updateData(req, function (err, result) {
@@ -514,8 +693,60 @@ router.get('/time', function (req, res, next) {
   });
 });
 
+router.get('/time/all', function (req, res, next) {
+  SQL.getAllTimeEntries(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.get('/time/hours', function (req, res, next) {
+  SQL.getHours(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 router.get('/time/:id', function (req, res, next) {
   SQL.getTimeEntries(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+/*
+ * TIER ROUTES
+ */
+
+router.get('/tier/:id', function (req, res, next) {
+  SQL.getTier(req, function (err, result) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',

@@ -76,11 +76,12 @@ exports.getPeople = function (req, callback) {
   const query =
     getFakes +
     `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, 
-    e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity 
+    e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity, t.cost  
     FROM clients c 
     LEFT OUTER JOIN projects p ON c.id = p.client_id 
     LEFT OUTER JOIN ` + assignments + ` a ON p.id = a.project_id 
     LEFT OUTER JOIN ` + employees + ` e ON e.id = a.user_id 
+    LEFT OUTER JOIN tiers t ON t.id = e.tier_id 
     WHERE a.deactivated = 0 
     AND p.active = 1 
     AND e.is_active = ` + isActive + ` 
@@ -307,6 +308,23 @@ exports.getData = function (req, callback) {
   //   });
 };
 
+exports.getTier = function (req, callback) {
+  let id = (req.params.id !== undefined ? req.params.id : 'e.id');
+
+  if (id.indexOf('-') !== -1) {
+    id = '\'' + id + '\'';
+  }
+
+  connection.query(
+    'SELECT t.id, t.cost, e.id AS user_id FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as e ' +
+    'RIGHT OUTER JOIN tiers t ON e.tier_id = t.id ' +
+    'WHERE e.id = ' + id + ' ', function (err, result) {
+      callback(err, result);
+    }
+  );
+
+}
+
 exports.getMembers = function (req, callback) {
   connection.query("SELECT e.id, e.first_name, e.last_name, e.capacity, a.is_project_manager " +
     "FROM employees e " +
@@ -335,6 +353,68 @@ exports.getTimeEntries = function (req, callback) {
     'ORDER BY t.spent_at ASC', function (err, result) {
     callback(err, result);
   })
+};
+
+exports.getAllTimeEntries = function (req, callback) {
+  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
+  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+
+  if (isNaN(userId) && userId !== 't.user_id') {
+    userId = '\'' + userId + '\'';
+  }
+
+  connection.query(
+    'SELECT * FROM ' +
+    '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
+    'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
+    'WHERE t.project_id = ' + projectId + ' ' +
+    'AND t.user_id = ' + userId + ' ' +
+    'ORDER BY t.spent_at ASC', function (err, result) {
+    callback(err, result);
+  })
+};
+
+exports.getHours = function (req, callback) {
+  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
+  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
+  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+
+  const between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
+
+  if (isNaN(userId) && userId !== 't.user_id') {
+    userId = '\'' + userId + '\'';
+  }
+
+  connection.query('SELECT COALESCE(SUM(t.hours), 0) AS hours FROM ' +
+    '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
+    'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
+    'WHERE t.project_id = ' + projectId + ' ' +
+    'AND t.user_id = ' + userId + ' ' +
+    between
+    , function (err, result) {
+    callback(err, result);
+  })
+};
+
+exports.getStartTime = function (req, callback) {
+  const projectId = (req.params.id !== undefined ? req.params.id : 't.project_id');
+  const userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+
+  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
+  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+
+  const between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
+
+  connection.query('SELECT MIN(t.spent_at) AS start FROM ' +
+    '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
+    'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
+    'WHERE t.project_id = ' + projectId + ' ' +
+    'AND t.user_id = ' + userId + ' ' +
+    between, function (err, result) {
+    callback(err, result);
+  });
+
 };
 
 /*
@@ -375,12 +455,12 @@ exports.addEmployee = function (employee, callback) {
 };
 
 exports.addFakeEmployee = function (employee, callback) {
-  connection.query("INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity) " + "VALUES ('" +
+  connection.query("INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity, tier_id) " + "VALUES ('" +
     employee.id + "', '" + employee.first_name + "', '" + employee.last_name + "', '" + employee.is_contractor + "', '" +
-    employee.is_active + "', '" + employee.capacity + "') " +
+    employee.is_active + "', '" + employee.capacity + "', '" + employee.tier_id + "') " +
     "ON DUPLICATE KEY UPDATE first_name='" + employee.first_name + "', last_name='" +
     employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
-    "capacity='" + employee.capacity + "'; " /*+
+    "capacity='" + employee.capacity + "', tier_id='" + employee.tier_id + "'; " /*+
 
    "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" +
    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +

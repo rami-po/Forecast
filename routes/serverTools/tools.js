@@ -9,6 +9,13 @@ exports.getMonday = function(callback) {
   callback(date);
 };
 
+exports.getNearestMonday = function(date, callback) {
+  while (date.getDay() !== 0) {
+    date.setDate(date.getDate() - 1);
+  }
+  callback(date);
+};
+
 exports.convertDate = function(date, callback) {
   const mm = date.getMonth() + 1; // getMonth() is zero-based
   const dd = date.getDate();
@@ -17,5 +24,4 @@ exports.convertDate = function(date, callback) {
     (mm > 9 ? '' : '0') + mm,
     (dd > 9 ? '' : '0') + dd
   ].join('-'));
-
 };
