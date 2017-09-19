@@ -164,7 +164,8 @@ export class SideListComponent implements OnInit {
                     () => {
                       this.forecastService.deleteFakeEmployee(entry.employee_id).subscribe(
                         () => {
-                          this.forecastService.updateRollUps(this.params);
+                          this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                          // this.forecastService.updateRollUps(this.params);
                         }
                       );
                     }
@@ -174,7 +175,8 @@ export class SideListComponent implements OnInit {
                     assignment => {
                       this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
                         () => {
-                          this.forecastService.updateRollUps(this.params);
+                          this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                          // this.forecastService.updateRollUps(this.params);
                         }
                       );
                     }
