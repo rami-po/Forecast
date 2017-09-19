@@ -10,6 +10,7 @@ import {MdDialog, MdIconRegistry} from "@angular/material";
 import {StatusMessageDialogComponent} from "../status-message/status-message.component";
 import {Subject} from "rxjs/Subject";
 import {FakeEmployeeComponent} from "./fake-employee/fake-employee.component";
+import * as io from 'socket.io-client';
 
 @Component({
   selector: 'app-side-list',
@@ -29,6 +30,7 @@ export class SideListComponent implements OnInit {
   private timerSubscription;
   private timerSubscription2;
   public realEmployees;
+  private socket;
 
   constructor(private forecastService: ForecastService,
               private iconRegistry: MdIconRegistry,
@@ -37,6 +39,7 @@ export class SideListComponent implements OnInit {
     iconRegistry
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
+    this.socket = io(window.location.hostname + ':3000');
   }
 
 
@@ -106,7 +109,8 @@ export class SideListComponent implements OnInit {
         if (confirmed) {
           this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
             () => {
-              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+              // this.forecastService.updateRollUps(this.params);
             }
           );
         }
@@ -124,7 +128,9 @@ export class SideListComponent implements OnInit {
           this.forecastService.addFakeEmployee(dialog.componentInstance.inputText,
             this.params.substring(this.params.indexOf('project') + 10)).subscribe(
             () => {
-              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+              // this.socket.broadcast.emit('updateRollUps', params); // everyone gets it, but the sender
+              // this.forecastService.updateRollUps(this.params);
             }
           );
         }
@@ -144,7 +150,8 @@ export class SideListComponent implements OnInit {
         if (confirmed) {
           this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
             data => {
-              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+              // this.forecastService.updateRollUps(this.params);
             }
           );
         }

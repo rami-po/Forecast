@@ -9,9 +9,11 @@ import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
+import * as io from 'socket.io-client';
 
 @Injectable()
 export class ForecastService {
+  private socket;
 
   public static NUMBER_OF_WEEKS = 20;
 
@@ -38,6 +40,7 @@ export class ForecastService {
 
   constructor(private http: Http,
               private datePipe: DatePipe) {
+    this.socket = io(window.location.hostname + ':3000');
   }
 
   private apiBase = document.location.protocol + '//' + window.location.hostname + ':3000/resource';
@@ -234,6 +237,16 @@ export class ForecastService {
         );
       }
     );
+  }
+
+  getUpdateMessages() {
+    let observable = new Observable(observer => {
+      this.socket.on('updateRollUps', (data) => {
+        console.log('received message to update roll ups: ' + data);
+        observer.next(data);
+      });
+    });
+    return observable;
   }
 
 }
