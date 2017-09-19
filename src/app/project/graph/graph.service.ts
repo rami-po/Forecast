@@ -134,7 +134,7 @@ export class GraphService {
         this.forecastService.getProjects('/' + params.substring(index + 10)).subscribe(
           project => {
             const budgetData = this.parse(project.result[0].notes);
-            this.budget = project.result[0].cost_budget;
+            // this.budget = project.result[0].cost_budget;
             // REMOVE THIS!!
             // this.budget = 3800;
             console.log('?' + params);

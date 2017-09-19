@@ -128,6 +128,24 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  getHours(params) {
+    return this.http.get(this.apiBase + '/time/hours' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  getTier(params) {
+    return this.http.get(this.apiBase + '/tier' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  getGraphData(params) {
+    return this.http.get(this.apiBase + '/data/graph' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getResources(params) {
     params = (!isUndefined(params) ? params : '?active=1');
     return this.http.get(this.apiBase + '/data' + params)

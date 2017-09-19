@@ -14,23 +14,23 @@ export class CapacityRowComponent implements OnInit {
   public filteredCapacities;
   private subscriptions = [];
 
-  constructor(private mainService: ForecastService) {
+  constructor(private forecastService: ForecastService) {
   }
 
   ngOnInit() {
-    this.mainService.getResources('?active=1').subscribe(
+    this.forecastService.getResources('?active=1').subscribe(
       data => {
-        this.mainService.resources.next(data);
+        this.forecastService.resources.next(data);
       }
     );
 
-    this.subscriptions.push(this.mainService.resources$.subscribe(
+    this.subscriptions.push(this.forecastService.resources$.subscribe(
       data => {
         this.totalCapacities = data.totalCapacities;
       }
     ));
 
-    this.subscriptions.push(this.mainService.filteredResources$.subscribe(
+    this.subscriptions.push(this.forecastService.filteredResources$.subscribe(
       data => {
         this.filteredCapacities = data.totalCapacities;
       }
