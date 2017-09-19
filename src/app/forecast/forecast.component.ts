@@ -96,6 +96,7 @@ export class ForecastComponent implements OnInit {
     // listen for update messages from the server, and then update roll ups when received
     this.forecastService.getUpdateMessages().subscribe(
       params => {
+        /*
         console.log('lastparams: ' + this.lastParams);
         console.log('update params: ' + params);
         // only update roll ups when update params are same as last params (page the user is on)
@@ -103,6 +104,8 @@ export class ForecastComponent implements OnInit {
           console.log('params match. updating roll ups')
           this.forecastService.updateRollUps(params);
         }
+        */
+        this.forecastService.updateRollUps(this.lastParams);
       });
   }
 
