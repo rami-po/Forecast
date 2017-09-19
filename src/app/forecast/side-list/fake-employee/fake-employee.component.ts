@@ -4,11 +4,13 @@ import {ForecastService} from "../../forecast.service";
 import {StatusMessageDialogComponent} from "../../status-message/status-message.component";
 import {isNullOrUndefined} from "util";
 import * as io from 'socket.io-client';
+import {SideListService} from "../side-list.service";
 
 @Component({
   selector: 'app-fake-employee-prompt',
   templateUrl: './fake-employee.component.html',
-  styleUrls: ['./fake-employee.component.scss']
+  styleUrls: ['./fake-employee.component.scss'],
+  providers: [SideListService]
 })
 export class FakeEmployeeComponent implements OnInit {
 
@@ -26,11 +28,12 @@ export class FakeEmployeeComponent implements OnInit {
   public params;
   private socket;
 
-  constructor(public dialogRef: MdDialogRef<FakeEmployeeComponent>,
-              private dialog: MdDialog,
-              private forecastService: ForecastService) {
+  constructor(public dialogRef:MdDialogRef<FakeEmployeeComponent>,
+              private dialog:MdDialog,
+              private forecastService:ForecastService,
+              private sideListService:SideListService) {
     this.socket = io(window.location.hostname + ':3000');
-  }
+}
 
   ngOnInit() {
   }
@@ -124,6 +127,4 @@ export class FakeEmployeeComponent implements OnInit {
       }
     );
   }
-
-
 }

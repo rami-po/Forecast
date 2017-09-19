@@ -55,7 +55,7 @@ export class ForecastService {
   }
 
   removeEmployeeFromProject(projectId, assignmentId) {
-    return this.http.delete(this.apiBase + '/project' + projectId + '/assignments/' + assignmentId)
+    return this.http.delete(this.apiBase + '/project/' + projectId + '/assignments/' + assignmentId)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -141,19 +141,19 @@ export class ForecastService {
   updateResources(employeeId, fakeEmployeeId, projectId) {
     const body = JSON.stringify({employee_id: employeeId, project_id: projectId, fake_employee_id: fakeEmployeeId});
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.put('http://onboarding.productops.com:3000/resource/data', body, {headers: headers})
+    return this.http.put(this.apiBase + '/data', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   deleteFakeAssignment(id) {
-    return this.http.delete('http://onboarding.productops.com:3000/resource/assignment/fake/' + id)
+    return this.http.delete(this.apiBase + '/assignment/fake/' + id)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
   deleteFakeEmployee(id) {
-    return this.http.delete('http://onboarding.productops.com:3000/resource/person/fake/' + id)
+    return this.http.delete(this.apiBase + '/person/fake/' + id)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }

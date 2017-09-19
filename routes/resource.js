@@ -114,7 +114,7 @@ router.post('/person/fake', function (req, res, next) {
   });
 });
 
-router.delete('/person/fake/:id', function (req, res, next) {
+router.delete('/person/fake/:employee_id', function (req, res, next) {
   SQL.deleteFakeEmployee(req, function (err, result) {
     if (err) {
       return res.status(500).json({
@@ -217,7 +217,28 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
 });
 
 router.delete('/project/:project_id/assignments_fake/:assignment_id', function (req, res, next) {
-
+  SQL.deleteFakeAssignment(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      SQL.deleteFakeEmployee(req, function (err, result) {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error!',
+            err: err
+          });
+        } else {
+          return res.status(200).json({
+            message: 'Success!',
+            result: result
+          });
+        }
+      })
+    }
+  });
 });
 
 router.post('/project/:project_id/assignments', function(req, res, next) {
@@ -342,7 +363,7 @@ router.get('/assignment/:id', function (req, res, next) {
   });
 });
 
-router.delete('/assignment/fake/:id', function (req, res, next) {
+router.delete('/assignment/fake/:assignment_id', function (req, res, next) {
   SQL.deleteFakeAssignment(req, function (err, result) {
     if (err) {
       return res.status(500).json({

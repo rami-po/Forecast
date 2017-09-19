@@ -44,7 +44,8 @@ export class GraphComponent implements OnInit, OnDestroy {
         pointBackgroundColor: 'rgba(33, 150, 243, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(33, 150, 243, .8)'
+        pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
+        lineTension: null
       },
       {
         label: 'Forecast',
@@ -54,18 +55,10 @@ export class GraphComponent implements OnInit, OnDestroy {
         pointBackgroundColor: 'rgba(255, 152, 0, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(255, 152, 0, .8)'
-      },
-      {
-        label: 'Breakpoint',
-        data: [],
-        backgroundColor: 'rgba(0, 0, 0, 0)',
-        borderColor: 'rgba(244, 67, 54, 1)',
-        pointBackgroundColor: 'rgba(244, 67, 54, 0)',
-        pointBorderColor: 'rgba(0, 0, 0, 0)',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(244, 67, 54, .8)'
+        pointHoverBorderColor: 'rgba(255, 152, 0, .8)',
+        lineTension: null
       }
+
     ]
   };
   options = {
@@ -147,9 +140,25 @@ export class GraphComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       data => {
+        for (let i = 2; i <= this.data.datasets.length; i++) {
+         this.data.datasets.splice(2, 1);
+        }
         this.data.datasets[0].data = data[0].data;
         this.data.datasets[1].data = data[1].data;
-        this.data.datasets[2].data = data[2].data;
+        for (let i = 2; i < data.length; i++) {
+          this.data.datasets[i] = {
+            label: data[i].label,
+            data: data[i].data,
+            backgroundColor: 'rgba(0, 0, 0, 0)',
+            borderColor: 'rgba(244, 67, 54, 1)',
+            pointBackgroundColor: 'rgba(244, 67, 54, 0)',
+            pointBorderColor: 'rgba(0, 0, 0, 0)',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(244, 67, 54, .8)',
+            lineTension: 0
+          };
+        }
+
         this.chart.chart.update();
       }
     ));

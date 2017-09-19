@@ -100,6 +100,7 @@ export class ForecastComponent implements OnInit {
         console.log('update params: ' + params);
         // only update roll ups when update params are same as last params (page the user is on)
         if (params === this.lastParams) {
+          console.log('params match. updating roll ups')
           this.forecastService.updateRollUps(params);
         }
       });

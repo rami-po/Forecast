@@ -116,7 +116,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       lineChartData => {
-        this.budget = lineChartData[2].data[lineChartData[2].data.length - 1];
+        this.budget = lineChartData[lineChartData.length - 1].data[lineChartData[lineChartData.length - 1].data.length - 1];
         this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
         this.budgetSpent = Number(this.budget) - Number(this.internalCost);
         this.remaining = this.budget - this.budgetSpent;

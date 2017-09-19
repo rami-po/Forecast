@@ -11,11 +11,13 @@ import {StatusMessageDialogComponent} from "../status-message/status-message.com
 import {Subject} from "rxjs/Subject";
 import {FakeEmployeeComponent} from "./fake-employee/fake-employee.component";
 import * as io from 'socket.io-client';
+import {SideListService} from "./side-list.service";
 
 @Component({
   selector: 'app-side-list',
   templateUrl: './side-list.component.html',
-  styleUrls: ['./side-list.component.scss']
+  styleUrls: ['./side-list.component.scss'],
+  providers: [SideListService]
 })
 export class SideListComponent implements OnInit {
 
@@ -35,7 +37,8 @@ export class SideListComponent implements OnInit {
   constructor(private forecastService: ForecastService,
               private iconRegistry: MdIconRegistry,
               private sanitizer: DomSanitizer,
-              private dialog: MdDialog) {
+              private dialog: MdDialog,
+              private sideListService: SideListService) {
     iconRegistry
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
@@ -102,18 +105,23 @@ export class SideListComponent implements OnInit {
       this.addFakeUser(dialog);
       return null;
     }
-    dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
-    ' to the project: ' + this.entries[0][0].project_name + '.'];
-    dialog.afterClosed().subscribe(
-      confirmed => {
-        if (confirmed) {
-          this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
-            () => {
-              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
-              // this.forecastService.updateRollUps(this.params);
+
+    this.forecastService.getProjects('/' + this.params.substring(this.params.indexOf('project') + 10)).subscribe(
+      project => {
+        dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
+        ' to the project: ' + project.result[0].name + '.'];
+        dialog.afterClosed().subscribe(
+          confirmed => {
+            if (confirmed) {
+              this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
+                () => {
+                  this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                  // this.forecastService.updateRollUps(this.params);
+                }
+              );
             }
-          );
-        }
+          }
+        );
       }
     );
   }
@@ -148,8 +156,36 @@ export class SideListComponent implements OnInit {
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {
+          if (entry.last_name === '') { // employee is fake
+            this.forecastService.getAssignments('?employeeId=' + entry.employee_id).subscribe(
+              allAssignments => {
+                if (allAssignments.result.length === 1) {
+                  this.forecastService.deleteFakeAssignment(allAssignments.result[0].id).subscribe(
+                    () => {
+                      this.forecastService.deleteFakeEmployee(entry.employee_id).subscribe(
+                        () => {
+                          this.forecastService.updateRollUps(this.params);
+                        }
+                      );
+                    }
+                  );
+                } else {
+                  this.forecastService.getAssignments('?employeeId=' + entry.employee_id + '&projectId=' + entry.project_id).subscribe(
+                    assignment => {
+                      this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
+                        () => {
+                          this.forecastService.updateRollUps(this.params);
+                        }
+                      );
+                    }
+                  );
+                }
+              }
+            );
+            return null;
+          }
           this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
-            data => {
+            () => {
               this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
               // this.forecastService.updateRollUps(this.params);
             }
@@ -158,6 +194,8 @@ export class SideListComponent implements OnInit {
       }
     );
   }
+
+
 
   transformUser(employee) {
     console.log(employee);
