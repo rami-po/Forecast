@@ -94,18 +94,33 @@ export class ForecastComponent implements OnInit {
     );
 
     // listen for update messages from the server, and then update roll ups when received
+    // should only update when the current view is affected by the update:
+    //   0) when the current view is the main view (all projects)
+    //   1) when a new fake user has been created
+    //   2) when the current view and the update have the same project ID
+    //   3) when the current view and the update have different project IDs, but the same employee ID
     this.forecastService.getUpdateMessages().subscribe(
-      params => {
-        /*
-        console.log('lastparams: ' + this.lastParams);
-        console.log('update params: ' + params);
-        // only update roll ups when update params are same as last params (page the user is on)
-        if (params === this.lastParams) {
-          console.log('params match. updating roll ups')
-          this.forecastService.updateRollUps(params);
+      message => {
+        // TODO - we need a better way to determine the project ID. we shouldn't have to parse it out of the params. what happens if the url format changes?
+        let projectId = this.lastParams.substring(this.lastParams.indexOf('project') + 10);
+        let employees = this.forecastService.employees.getValue();
+        let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
+        if (projectId === '') {
+          // the current view is of all projects. any change requires an update
+          this.forecastService.updateRollUps(this.lastParams);
         }
-        */
-        this.forecastService.updateRollUps(this.lastParams);
+        else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee') {
+          // adding or deleting a fake employee requires an update, regardless of the project
+          this.forecastService.updateRollUps(this.lastParams);
+        }
+        else if (projectId === (message as any).projectId) {
+          // a change occurred in the current project. an update is required
+          this.forecastService.updateRollUps(this.lastParams);
+        }
+        else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
+          // an employee in the current project has an updated entry in another project. we need to update this view.
+          this.forecastService.updateRollUps(this.lastParams);
+        }
       });
   }
 

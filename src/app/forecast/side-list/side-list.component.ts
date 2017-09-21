@@ -42,7 +42,7 @@ export class SideListComponent implements OnInit {
     iconRegistry
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
-    this.socket = io(window.location.hostname + ':3000');
+    this.socket = this.forecastService.socket;
   }
 
 
@@ -115,7 +115,7 @@ export class SideListComponent implements OnInit {
             if (confirmed) {
               this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
                 () => {
-                  this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                  this.socket.emit('userUpdatedRollUps', { projectId: project.result[0].id, employeeId: employee.id }); // everyone gets it, including the sender
                   // this.forecastService.updateRollUps(this.params);
                 }
               );
@@ -136,8 +136,7 @@ export class SideListComponent implements OnInit {
           this.forecastService.addFakeEmployee(dialog.componentInstance.inputText,
             this.params.substring(this.params.indexOf('project') + 10)).subscribe(
             () => {
-              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
-              // this.socket.broadcast.emit('updateRollUps', params); // everyone gets it, but the sender
+              this.socket.emit('userUpdatedRollUps', 'addFakeEmployee'); // everyone gets it, including the sender
               // this.forecastService.updateRollUps(this.params);
             }
           );
@@ -164,7 +163,7 @@ export class SideListComponent implements OnInit {
                     () => {
                       this.forecastService.deleteFakeEmployee(entry.employee_id).subscribe(
                         () => {
-                          this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                          this.socket.emit('userUpdatedRollUps', 'deleteFakeEmployee'); // everyone gets it, including the sender
                           // this.forecastService.updateRollUps(this.params);
                         }
                       );
@@ -175,7 +174,7 @@ export class SideListComponent implements OnInit {
                     assignment => {
                       this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
                         () => {
-                          this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                          this.socket.emit('userUpdatedRollUps', { projectId: entry.project_id, employeeId: entry.employee_id } ); // everyone gets it, including the sender
                           // this.forecastService.updateRollUps(this.params);
                         }
                       );
@@ -188,7 +187,7 @@ export class SideListComponent implements OnInit {
           }
           this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
             () => {
-              this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+              this.socket.emit('userUpdatedRollUps', { projectId: entry.project_id, employeeId: entry.employee_id }); // everyone gets it, including the sender
               // this.forecastService.updateRollUps(this.params);
             }
           );
