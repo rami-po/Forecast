@@ -131,6 +131,12 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  getAllTimeEntries(params) {
+    return this.http.get(this.apiBase + '/time/all' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getHours(params) {
     return this.http.get(this.apiBase + '/time/hours' + params)
       .map((response: Response) => response.json())
@@ -139,12 +145,6 @@ export class ForecastService {
 
   getTier(params) {
     return this.http.get(this.apiBase + '/tier' + params)
-      .map((response: Response) => response.json())
-      .catch((error: Response) => Observable.throw(error.json()));
-  }
-
-  getGraphData(params) {
-    return this.http.get(this.apiBase + '/data/graph' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -192,6 +192,13 @@ export class ForecastService {
       monday.setDate(monday.getDate() + 7);
     }
     return weeks;
+  }
+
+  getGraphData(params, body) {
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.post(this.apiBase + '/data/graph' + params, body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
   }
 
   updateRollUps(params) {

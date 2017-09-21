@@ -502,46 +502,64 @@ router.get('/data', function (req, res, next) {
   });
 });
 
-router.get('/data/graph', function (req, res, next) {
-  req.params['projectid'] = req.query['projectid'];
-  SQL.getStartTime(req, function (err, date) {
-    if (!err) {
-      tools.getNearestMonday(new Date(date[0].start), function (monday) {
-        SQL.getPeople(req, function (err, employees) {
-          if (!err) {
-            array = [];
-            let numberOfWeeks = 0;
-            const mondayTemp = new Date(monday);
-            while (mondayTemp.getTime() <= new Date(req.query.endweek).getTime()) {
-              numberOfWeeks++;
-              mondayTemp.setDate(mondayTemp.getDate() + 7);
-            }
-            asyncLoop(numberOfWeeks, function (loop) {
-              let projectCost = 0;
-              asyncLoop(employees.length, function (loop) {
-                getProjectCost(req, monday, projectCost, employees[loop.iteration()], function (cost) {
-                  projectCost += cost;
-                  loop.next();
-                });
-              }, function () {
-                array.push({week: monday.toISOString().slice(0, 10), cost: projectCost});
-                if (monday.getTime() < new Date(req.query.endweek).getTime()) {
-                  monday.setDate(monday.getDate() + 7);
-                }
-                loop.next();
-              });
-            }, function () {
-              return res.status(200).json({
-                message: 'Success!',
-                result: array
-              });
-            });
-          }
-        });
+router.post('/data/graph', function (req, res, next) {
+  SQL.getGraphData(req, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
       });
     }
-  });
+  })
 });
+
+// router.get('/data/graph', function (req, res, next) {
+//   req.params['projectid'] = req.query['projectid'];
+//   SQL.getStartTime(req, function (err, date) {
+//     if (!err) {
+//       tools.getNearestMonday(new Date(date[0].start), function (monday) {
+//         SQL.getPeople(req, function (err, employees) {
+//           if (!err) {
+//             array = [];
+//             let numberOfWeeks = 0;
+//             const mondayTemp = new Date(monday);
+//             while (mondayTemp.getTime() <= new Date(req.query.endweek).getTime()) {
+//               numberOfWeeks++;
+//               mondayTemp.setDate(mondayTemp.getDate() + 7);
+//             }
+//             asyncLoop(numberOfWeeks, function (loop) {
+//               let projectCost = 0;
+//               asyncLoop(employees.length, function (loop) {
+//                 console.log('!');
+//                 getProjectCost(req, monday, projectCost, employees[loop.iteration()], function (cost) {
+//                   projectCost += cost;
+//                   loop.next();
+//                 });
+//               }, function () {
+//                 console.log('YO');
+//                 array.push({week: monday.toISOString().slice(0, 10), cost: projectCost});
+//                 if (monday.getTime() < new Date(req.query.endweek).getTime()) {
+//                   monday.setDate(monday.getDate() + 7);
+//                 }
+//                 loop.next();
+//               });
+//             }, function () {
+//               return res.status(200).json({
+//                 message: 'Success!',
+//                 result: array
+//               });
+//             });
+//           }
+//         });
+//       });
+//     }
+//   });
+// });
 
 const async = require('async');
 

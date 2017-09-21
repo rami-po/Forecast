@@ -73,19 +73,18 @@ exports.getPeople = function (req, callback) {
     employees = 'employees';
   }
 
+  const activeQuery = (isActive === '1' ? 'AND e.is_active = 1 AND a.deactivated = 0 AND p.active = 1 ' : '')
+
   const query =
     getFakes +
     `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, 
-    e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity, t.cost  
+    e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity
     FROM clients c 
     LEFT OUTER JOIN projects p ON c.id = p.client_id 
     LEFT OUTER JOIN ` + assignments + ` a ON p.id = a.project_id 
     LEFT OUTER JOIN ` + employees + ` e ON e.id = a.user_id 
-    LEFT OUTER JOIN tiers t ON t.id = e.tier_id 
-    WHERE a.deactivated = 0 
-    AND p.active = 1 
-    AND e.is_active = ` + isActive + ` 
-    AND e.is_contractor = ` + isContractor + ` 
+    WHERE e.is_contractor = ` + isContractor + ` ` +
+    activeQuery + `
     AND p.id = ` + projectId + ` 
     AND c.id = ` + clientId + ` 
     AND e.id = ` + employeeId + ` 
@@ -260,23 +259,24 @@ exports.getData = function (req, callback) {
   tools.getMonday(function (date) {
     tools.convertDate(date, function (convertedDate) {
       monday = convertedDate;
+
+      const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
+
+      connection.query(
+        'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
+        costJoin +
+        'WHERE r.project_id = ' + projectId + ' ' +
+        'AND r.client_id = ' + clientId + ' ' +
+        'AND r.employee_id = ' + employeeId + ' ' +
+        'AND r.capacity <> \'\' ' +
+        active +
+        'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;', function (err, result) {
+          callback(err, result);
+        }
+      );
     });
   });
 
-  const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
-
-  connection.query(
-    'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
-    costJoin +
-    'WHERE r.project_id = ' + projectId + ' ' +
-    'AND r.client_id = ' + clientId + ' ' +
-    'AND r.employee_id = ' + employeeId + ' ' +
-    'AND r.capacity <> \'\' ' +
-    active +
-    'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;', function (err, result) {
-      callback(err, result);
-    }
-  );
 
   // connection.query(
   //   'DROP TABLE IF EXISTS all_assignments;' +
@@ -308,6 +308,48 @@ exports.getData = function (req, callback) {
   //   });
 };
 
+exports.getGraphData = function (req, callback) {
+
+  let whereStatement = 'WHERE (';
+
+  for (let i = 0; i < req.body.employees.length; i++) {
+    const employee = req.body.employees[i];
+    if (i === 0) {
+      whereStatement += 't.user_id = ' + employee.id;
+    } else {
+      whereStatement += ' OR t.user_id = ' + employee.id;
+    }
+  }
+  whereStatement += ') ';
+
+  let havingStatement = 'HAVING (case when (MAX(case when project_id = ' + req.body.projectId + ' then 1 else 0 end) = 1) then 1 end) ';
+  let projectFilter = 'AND project_id = ' + req.body.projectId + ' ';
+
+  if (req.query.all === '1') {
+    projectFilter = '';
+  } else {
+    havingStatement = '';
+  }
+
+  let monday;
+  tools.getMonday(function (date) {
+    tools.convertDate(date, function (convertedDate) {
+      monday = convertedDate;
+      connection.query(`SELECT t.user_id, e.capacity / 3600 AS capacity, date_format(t.spent_at, "%x-%v") AS week_of, SUM(t.hours) AS hours FROM 
+  (SELECT user_id, project_id, spent_at, hours FROM timeEntries WHERE spent_at < '` + monday +  `' 
+  UNION ALL 
+  SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t 
+  RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + ` 
+  GROUP BY date_format(t.spent_at, "%x-%v"), t.user_id ` + havingStatement + `
+  ORDER BY t.spent_at ASC`, function (err, result) {
+        callback(err, result);
+      });
+    });
+  });
+
+
+};
+
 exports.getTier = function (req, callback) {
   let id = (req.params.id !== undefined ? req.params.id : 'e.id');
 
@@ -323,7 +365,7 @@ exports.getTier = function (req, callback) {
     }
   );
 
-}
+};
 
 exports.getMembers = function (req, callback) {
   connection.query("SELECT e.id, e.first_name, e.last_name, e.capacity, a.is_project_manager " +
@@ -339,9 +381,20 @@ exports.getTimeEntries = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 't.id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
   let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\'' : '');
+
+  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
+  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+
+  let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
 
   if (isNaN(userId) && userId !== 't.user_id') {
     userId = '\'' + userId + '\'';
+  }
+
+  if (between !== '' && since !== '') {
+    between = '';
+    since = '';
   }
 
   connection.query('SELECT t.id, t.user_id, t.project_id, t.task_id, t.notes, t.spent_at, t.hours, ti.cost, e.capacity FROM timeEntries t ' +
@@ -350,6 +403,7 @@ exports.getTimeEntries = function (req, callback) {
     'WHERE t.id = ' + id + ' ' +
     'AND t.project_id = ' + projectId + ' ' +
     'AND t.user_id = ' + userId + ' ' +
+    since + between +
     'ORDER BY t.spent_at ASC', function (err, result) {
     callback(err, result);
   })
@@ -358,20 +412,38 @@ exports.getTimeEntries = function (req, callback) {
 exports.getAllTimeEntries = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
   let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\' ' : '');
+
+  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
+  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+
+  let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to + ' ' : '');
 
   if (isNaN(userId) && userId !== 't.user_id') {
     userId = '\'' + userId + '\'';
   }
 
-  connection.query(
-    'SELECT * FROM ' +
-    '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
-    'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
-    'WHERE t.project_id = ' + projectId + ' ' +
-    'AND t.user_id = ' + userId + ' ' +
-    'ORDER BY t.spent_at ASC', function (err, result) {
-    callback(err, result);
-  })
+  if (between !== '' && since !== '') {
+    between = '';
+    since = '';
+  }
+
+  let monday;
+  tools.getMonday(function (date) {
+    tools.convertDate(date, function (convertedDate) {
+      monday = convertedDate;
+      connection.query(
+        'SELECT * FROM ' +
+        '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
+        'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of > \'' + monday + '\') as t ' +
+        'WHERE t.project_id = ' + projectId + ' ' +
+        'AND t.user_id = ' + userId + ' ' +
+        since + between +
+        'ORDER BY t.spent_at ASC', function (err, result) {
+          callback(err, result);
+        })
+    });
+  });
 };
 
 exports.getHours = function (req, callback) {
@@ -393,25 +465,17 @@ exports.getHours = function (req, callback) {
     'AND t.user_id = ' + userId + ' ' +
     between
     , function (err, result) {
-    callback(err, result);
-  })
+      callback(err, result);
+    })
 };
 
 exports.getStartTime = function (req, callback) {
   const projectId = (req.params.id !== undefined ? req.params.id : 't.project_id');
-  const userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
-
-  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
-  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
-
-  const between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
 
   connection.query('SELECT MIN(t.spent_at) AS start FROM ' +
     '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
     'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
-    'WHERE t.project_id = ' + projectId + ' ' +
-    'AND t.user_id = ' + userId + ' ' +
-    between, function (err, result) {
+    'WHERE t.project_id = ' + projectId, function (err, result) {
     callback(err, result);
   });
 
