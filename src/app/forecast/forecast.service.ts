@@ -9,9 +9,11 @@ import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
+import * as io from 'socket.io-client';
 
 @Injectable()
 export class ForecastService {
+  private socket;
 
   public static NUMBER_OF_WEEKS = 20;
 
@@ -38,6 +40,7 @@ export class ForecastService {
 
   constructor(private http: Http,
               private datePipe: DatePipe) {
+    this.socket = io(window.location.hostname + ':3000');
   }
 
   private apiBase = document.location.protocol + '//' + window.location.hostname + ':3000/resource';
@@ -128,6 +131,12 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  getAllTimeEntries(params) {
+    return this.http.get(this.apiBase + '/time/all' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getHours(params) {
     return this.http.get(this.apiBase + '/time/hours' + params)
       .map((response: Response) => response.json())
@@ -136,12 +145,6 @@ export class ForecastService {
 
   getTier(params) {
     return this.http.get(this.apiBase + '/tier' + params)
-      .map((response: Response) => response.json())
-      .catch((error: Response) => Observable.throw(error.json()));
-  }
-
-  getGraphData(params) {
-    return this.http.get(this.apiBase + '/data/graph' + params)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -156,7 +159,7 @@ export class ForecastService {
   updateResources(employeeId, fakeEmployeeId, projectId) {
     const body = JSON.stringify({employee_id: employeeId, project_id: projectId, fake_employee_id: fakeEmployeeId});
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.put('http://onboarding.productops.com:3000/resource/data', body, {headers: headers})
+    return this.http.put(this.apiBase + '/data', body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
@@ -189,6 +192,13 @@ export class ForecastService {
       monday.setDate(monday.getDate() + 7);
     }
     return weeks;
+  }
+
+  getGraphData(params, body) {
+    const headers = new Headers({'Content-Type': 'application/json'});
+    return this.http.post(this.apiBase + '/data/graph' + params, body, {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
   }
 
   updateRollUps(params) {
@@ -252,6 +262,16 @@ export class ForecastService {
         );
       }
     );
+  }
+
+  getUpdateMessages() {
+    let observable = new Observable(observer => {
+      this.socket.on('updateRollUps', (data) => {
+        console.log('received message to update roll ups: ' + data);
+        observer.next(data);
+      });
+    });
+    return observable;
   }
 
 }

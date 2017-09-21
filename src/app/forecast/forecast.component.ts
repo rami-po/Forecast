@@ -41,7 +41,6 @@ export class ForecastComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.side = document.getElementById('side');
     this.header = document.getElementById('header');
     this.capacityHeader = document.getElementById('capacity-header');
@@ -93,6 +92,21 @@ export class ForecastComponent implements OnInit {
         this.clients.splice(0, 0, {id: '', name: 'All'});
       }
     );
+
+    // listen for update messages from the server, and then update roll ups when received
+    this.forecastService.getUpdateMessages().subscribe(
+      params => {
+        /*
+        console.log('lastparams: ' + this.lastParams);
+        console.log('update params: ' + params);
+        // only update roll ups when update params are same as last params (page the user is on)
+        if (params === this.lastParams) {
+          console.log('params match. updating roll ups')
+          this.forecastService.updateRollUps(params);
+        }
+        */
+        this.forecastService.updateRollUps(this.lastParams);
+      });
   }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
@@ -105,5 +119,4 @@ export class ForecastComponent implements OnInit {
     this.header.scrollLeft = $event.srcElement.scrollLeft;
     this.capacityHeader.scrollLeft = $event.srcElement.scrollLeft;
   }
-
 }

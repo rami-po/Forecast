@@ -19,7 +19,7 @@ export class StatusMessageDialogComponent implements OnInit {
   public inputText;
 
   constructor(
-    public dialogRef: MdDialogRef<StatusMessageDialogComponent>,
+    public dialogRef: MdDialogRef<StatusMessageDialogComponent>
   ) { }
 
   ngOnInit() { }

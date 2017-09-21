@@ -3,6 +3,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {ForecastService} from "../../forecast.service";
 import {StatusMessageDialogComponent} from "../../status-message/status-message.component";
 import {isNullOrUndefined} from "util";
+import * as io from 'socket.io-client';
 import {SideListService} from "../side-list.service";
 
 @Component({
@@ -25,12 +26,14 @@ export class FakeEmployeeComponent implements OnInit {
   public fakeEmployee;
   public realEmployees;
   public params;
+  private socket;
 
-  constructor(public dialogRef: MdDialogRef<FakeEmployeeComponent>,
-              private dialog: MdDialog,
-              private forecastService: ForecastService,
-              private sideListService: SideListService) {
-  }
+  constructor(public dialogRef:MdDialogRef<FakeEmployeeComponent>,
+              private dialog:MdDialog,
+              private forecastService:ForecastService,
+              private sideListService:SideListService) {
+    this.socket = io(window.location.hostname + ':3000');
+}
 
   ngOnInit() {
   }
@@ -113,7 +116,8 @@ export class FakeEmployeeComponent implements OnInit {
               () => {
                 this.forecastService.deleteFakeEmployee(this.fakeEmployee.id).subscribe(
                   () => {
-                    this.forecastService.updateRollUps(this.params);
+                    this.socket.emit('userUpdatedRollUps', this.params); // everyone gets it, including the sender
+                    // this.forecastService.updateRollUps(this.params);
                   }
                 );
               }
