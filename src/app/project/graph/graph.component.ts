@@ -37,17 +37,6 @@ export class GraphComponent implements OnInit, OnDestroy {
     labels: [],
     datasets: [
       {
-        label: 'Actual',
-        data: [],
-        backgroundColor: 'rgba(33, 150, 243, .4)',
-        borderColor: 'rgba(33, 150, 243, 1)',
-        pointBackgroundColor: 'rgba(33, 150, 243, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
-        lineTension: null
-      },
-      {
         label: 'Forecast',
         data: [],
         backgroundColor: 'rgba(255, 152, 0, .2)',
@@ -57,8 +46,18 @@ export class GraphComponent implements OnInit, OnDestroy {
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgba(255, 152, 0, .8)',
         lineTension: null
+      },
+      {
+        label: 'Actual',
+        data: [],
+        backgroundColor: 'rgba(33, 150, 243, .4)',
+        borderColor: 'rgba(33, 150, 243, 1)',
+        pointBackgroundColor: 'rgba(33, 150, 243, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
+        lineTension: null
       }
-
     ]
   };
   options = {
@@ -73,6 +72,9 @@ export class GraphComponent implements OnInit, OnDestroy {
           beginAtZero: true
         }
       }]
+    },
+    legend: {
+      display: false
     },
     zoom: {
       enabled: false,
