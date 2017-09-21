@@ -170,7 +170,8 @@ export class EntryComponent implements OnInit, OnDestroy {
               }
             );
 
-            this.graphService.updateGraph(week);
+            // this.graphService.updateGraph(week);
+            this.graphService.initializeGraph(this.params);
             this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
                 for (let i = 0; i < resources.totalCapacities.length; i++) {

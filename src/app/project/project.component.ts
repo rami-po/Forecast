@@ -3,7 +3,7 @@ import {
   ViewChild,
   AfterViewChecked,
 } from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectService} from './project.service';
 import {ForecastService} from '../forecast/forecast.service';
 import {isUndefined} from 'util';
@@ -48,6 +48,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
               private forecastService: ForecastService,
               public graphService: GraphService,
               private dialog: MdDialog,
+              private router: Router,
               private iconRegistry: MdIconRegistry,
               private sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
@@ -64,6 +65,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.isGraphShowing = false;
     }
+    // this.router.navigate(['/project', id])
     this.forecastService.params.next(params);
     this.parentMenu.closeMenu();
   }
@@ -73,6 +75,12 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+
+    this.route.params.subscribe(
+      params => {
+        // this.forecastService.params.next(params.id);
+      }
+    );
 
     this.forecastService.getProjects('?active=1').subscribe(
       data => {
