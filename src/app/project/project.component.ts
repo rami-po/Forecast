@@ -11,6 +11,7 @@ import {GraphService} from './graph/graph.service';
 import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
 import {MdDialog, MdIconRegistry, MdMenu, MdMenuTrigger} from '@angular/material';
 import {DomSanitizer} from "@angular/platform-browser";
+import {Location} from '@angular/common';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() public projectId;
   @Input() public tableEnabled = true;
   private lastParams = '';
-  public params = '';
+  public params: any;
   public budget;
   public internalCost;
   public budgetSpent;
@@ -50,7 +51,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
               private dialog: MdDialog,
               private router: Router,
               private iconRegistry: MdIconRegistry,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              private location: Location) {
     iconRegistry.addSvgIcon(
       'drop-down',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_arrow_drop_down_white_48px.svg'));
@@ -58,15 +60,16 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   filter(id, name) {
     this.filterName = name;
-    let params = '';
+    let path = '';
     if (id !== '') {
       this.isGraphShowing = name.indexOf('All Projects') === -1;
-      params = (name.indexOf('All Projects') === -1 ? '&projectId=' : '&clientId=') + id;
+      path = (name.indexOf('All Projects') === -1 ? 'project' : 'client');
+      // type = (name.indexOf('All Projects') === -1 ? 'projectId=' : 'clientId=') + id;
     } else {
       this.isGraphShowing = false;
     }
-    // this.router.navigate(['/project', id])
-    this.forecastService.params.next(params);
+    // this.forecastService.params.next(type);
+    this.router.navigate(['/' + path + '/' + id]);
     this.parentMenu.closeMenu();
   }
 
@@ -76,26 +79,6 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
 
-    this.route.url.subscribe(
-      urlSegments => {
-        if (urlSegments.length > 1) {
-          const path = urlSegments[0].path;
-          const id = urlSegments[1].path;
-          if (path === 'project') {
-            this.forecastService.params.next(id);
-          } else if (path === 'client') {
-
-          }
-        }
-      }
-    );
-
-    this.route.params.subscribe(
-      params => {
-        // this.forecastService.params.next(params.id);
-      }
-    );
-
     this.forecastService.getProjects('?active=1').subscribe(
       data => {
         data.result.splice(0, 0, {id: '', name: 'All'});
@@ -104,23 +87,9 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
-    this.forecastService.getClients('?active=1').subscribe(
+    this.forecastService.getClientsAndProjects().subscribe(
       data => {
-        // data.result.splice(0, 0, {id: '', name: 'All'});
-        this.forecastService.clients.next(data.result);
-        this.clients = data.result;
-        for (let i = 0; i < this.clients.length; i++) {
-          this.forecastService.getProjects('?clientId=' + this.clients[i].id + '&active=1').subscribe(
-            projects => {
-              if (projects.result.length > 1) {
-                projects.result.splice(0, 0, {id: this.clients[i].id, name: 'All Projects'});
-              }
-              if (projects.result.length > 0) {
-                this.filterList.push({name: this.clients[i].name, id: this.clients[i].id, projects: projects.result});
-              }
-            }
-          );
-        }
+        this.filterList = data.result;
       }
     );
 
@@ -128,10 +97,37 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       params => {
         this.params = params;
         if (this.params !== this.lastParams) {
+          if (this.params.id !== '') {
+            this.forecastService.getClients('/' + this.params.id).subscribe(
+              client => {
+                if (client.result.length <= 0) {
+                  this.forecastService.getProjectAndClient(this.params.id).subscribe(
+                    project => {
+                      this.forecastService.current.next(project.result[0]);
+                      const projectName = project.result[0].name;
+                      const clientName = project.result[0].client_name;
+                      this.filterName = clientName + ' - ' + projectName;
+                      // this.location.replaceState('/project/' + this.params.id + '/' +
+                      //   clientName.toLowerCase().replace(/ /g, '_') + '/' +
+                      //   projectName.toLowerCase().replace(/ /g, '_'));
+                    }
+                  );
+                } else {
+                  this.forecastService.current.next(client.result[0]);
+                  const clientName = client.result[0].name;
+                  this.filterName = clientName;
+                  // this.location.replaceState('/client/' + this.params.id + '/' +
+                  //   clientName.toLowerCase().replace(/ /g, '_'));
+                }
+              }
+            );
+          }
+
           this.lastParams = this.params;
           if (this.isGraphShowing) {
             this.graphService.initializeGraph(this.params);
           }
+          this.forecastService.updateRollUps(params);
         }
       }
     );
@@ -148,6 +144,19 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     ));
 
+    this.route.url.subscribe(
+      urlSegments => {
+        if (urlSegments.length > 1) {
+          const path = urlSegments[0].path;
+          const id = urlSegments[1].path;
+          this.isGraphShowing = (path === 'project');
+          this.forecastService.params.next({
+            id: id,
+            path: path
+          });
+        }
+      }
+    );
 
     // this.route.queryParams.subscribe(
     //   params => {

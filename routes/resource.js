@@ -215,6 +215,22 @@ router.get('/project/:id/start', function (req, res, next) {
   });
 });
 
+router.get('/project/:id/client', function (req, res, next) {
+  SQL.getProjectAndClient(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
   harvest.removeEmployeeFromProject(req, function (status, result) {
     if (status === 200 || status === 404) {
@@ -335,7 +351,7 @@ router.get('/client', function (req, res, next) {
   });
 });
 
-router.get('/client/:id*', function (req, res, next) {
+router.get('/client/:id', function (req, res, next) {
   SQL.getClients(req, function (err, result) {
     if (err) {
       return res.status(500).json({
@@ -350,6 +366,46 @@ router.get('/client/:id*', function (req, res, next) {
     }
   });
 });
+
+router.get('/clients/projects', function (req, res, next) {
+  req.query = {};
+  req.query['active'] = 1;
+  const filterList = [];
+  SQL.getClients(req, (err, clients) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    }
+    let count = 0;
+    for (const client of clients) {
+      req.query['clientid'] = client.id;
+      SQL.getProjects(req, (err, projects) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error!',
+            err: err
+          });
+        }
+        if (projects.length > 1) {
+          projects.splice(0, 0, {id: client.id, name: 'All Projects'});
+        }
+        if (projects.length > 0) {
+          filterList.push({name: client.name, id: client.id, projects: projects});
+        }
+        count++;
+        if (count > clients.length - 1) {
+          return res.status(200).json({
+            message: 'Success!',
+            result: filterList
+          });
+        }
+      })
+    }
+  });
+});
+
 
 /*
  * ASSIGNMENT ROUTES
@@ -570,7 +626,7 @@ function getProjectCost(req, monday, projectCost, employee, callback) {
       const weekAfterMonday = new Date(monday);
       weekAfterMonday.setDate(weekAfterMonday.getDate() + 6)
       req.query['from'] = monday.toISOString().slice(0, 10);
-      req.query['to'] = weekAfterMonday.toISOString().slice(0,10);
+      req.query['to'] = weekAfterMonday.toISOString().slice(0, 10);
       SQL.getHours(req, function (err, projectHours) {
         if (!err) {
           callback(null, projectHours);
@@ -783,40 +839,46 @@ router.get('/tier/:id', function (req, res, next) {
  * ROLLUP ROUTES
  */
 
-// router.get('/rollups', function (req, res, next) {
-//   let rollUps = [];
-//
-//   SQL.getPeople(req, (err, data) => {
-//     if (err) {
-//
-//     } else {
-//       const employees = data;
-//       for (let i = 0; i < employees.length; i++) {
-//         employees[i].opened = false;
-//       }
-//       for (const employee of employees) {
-//         req.query['employeeid'] = employee.id;
-//         SQL.getEntries(req, (err, entries) => {
-//           if (err) {
-//             console.log('reerer')
-//           } else {
-//             console.log('d')
-//             if (entries.length > 0) {
-//               console.log('e')
-//               rollUps.push(entries);
-//             } else {
-//               console.log('f')
-//               const index = employees.indexOf(employee);
-//               employees.splice(index, 1);
-//             }
-//           }
-//         });
-//       }
-//       console.log('gilbert');
-//       console.log(rollUps);
-//       console.log(employees);
-//     }
-//   });
-// });
+router.get('/rollups', function (req, res, next) {
+  SQL.getPeople(req, (err, employees) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    }
+    const rollUps = [];
+    let count = 0;
+    req.query = {};
+    for (const employee of employees) {
+      req.query['employeeid'] = employee.id;
+      employee.opened = false;
+      rollUps.push('');
+      SQL.getEntries(req, (err, entries) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error!',
+            err: err
+          });
+        }
+        if (entries.length > 0) {
+          rollUps.splice(count, 1, entries);
+        } else {
+          const index = employees.indexOf(employee);
+          employees.splice(index, 1);
+        }
+        count++;
+        if (count > employees.length - 1) {
+          return res.status(200).json({
+            message: 'Success!',
+            employees: employees,
+            rollUps: rollUps
+          });
+        }
+      })
+    }
+  });
+});
+
 
 module.exports = router;

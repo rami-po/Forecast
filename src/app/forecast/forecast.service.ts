@@ -11,6 +11,7 @@ import {isNullOrUndefined, isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import * as io from 'socket.io-client';
+import {Router} from "@angular/router";
 
 @Injectable()
 export class ForecastService {
@@ -33,15 +34,19 @@ export class ForecastService {
   public projects = new Subject<any>();
   projects$ = this.clients.asObservable();
 
+  public current = new BehaviorSubject<any>(null);
+  current$ = this.current.asObservable();
+
   // employees needs to be a BehaviorSubject so that we can use the getValue method
   public employees = new BehaviorSubject<any>(null);
   employees$ = this.employees.asObservable();
 
   public params = new Subject<any>();
-  params$ = this.params.asObservable().startWith('');
+  params$ = this.params.asObservable().startWith({id: '', path: ''});
 
   constructor(private http: Http,
-              private datePipe: DatePipe) {
+              private datePipe: DatePipe,
+              private router: Router) {
     this.socket = io(window.location.hostname + ':3000');
   }
 
@@ -53,6 +58,18 @@ export class ForecastService {
         this.projects.next(response.json());
         return response.json();
       })
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  getProjectAndClient(projectId) {
+    return this.http.get(this.apiBase + '/project/' + projectId + '/client')
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  getClientsAndProjects() {
+    return this.http.get(this.apiBase + '/clients/projects')
+      .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
@@ -158,6 +175,12 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  getRollUps(params) {
+    return this.http.get(this.apiBase + '/rollups' + params)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   updateResources(employeeId, fakeEmployeeId, projectId) {
     const body = JSON.stringify({employee_id: employeeId, project_id: projectId, fake_employee_id: fakeEmployeeId});
     const headers = new Headers({'Content-Type': 'application/json'});
@@ -207,63 +230,70 @@ export class ForecastService {
     const rollUps = [];
     const rollUps2 = [];
 
-    this.getEmployees('?active=1' + params).subscribe(
+    // this.getEmployees('?active=1&' + params.path + 'Id=' + params.id).subscribe(
+    //   data => {
+    //     const employees = data.result;
+    //     if (employees.length <= 0) {
+    //       this.router.navigate(['/404']);
+    //     }
+    //     // this.getEntries('').subscribe(
+    //     //   entries => {
+    //     //     let j = 0;
+    //     //     for (let i = 0; i < employees.length; i++) {
+    //     //       const employee = employees[i];
+    //     //       employee.opened = false;
+    //     //       rollUps2.push('');
+    //     //       const entriesTemp = [];
+    //     //       while (j < entries.result.length) {
+    //     //         const entry = entries.result[j];
+    //     //         if (employee.id === entry.employee_id) {
+    //     //           entriesTemp.push(entry);
+    //     //           j++;
+    //     //         } else {
+    //     //           rollUps2.splice(i, 1, entriesTemp);
+    //     //           break;
+    //     //         }
+    //     //       }
+    //     //     }
+    //     //   }
+    //     // );
+    //
+    //     for (let i = 0; i < employees.length; i++) {
+    //       const employee = employees[i];
+    //       employee.opened = false;
+    //       rollUps.push('');
+    //       this.getEntries('?employeeid=' + employee.id /* + params */).subscribe(
+    //         entries => {
+    //           if (entries.result.length > 0) {
+    //             rollUps.splice(i, 1, entries.result);
+    //           } else {
+    //             const index = employees.indexOf(employee);
+    //             employees.splice(index, 1);
+    //           }
+    //         }
+    //       );
+    //     }
+
+    this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
       data => {
-        const employees = data.result;
-        // this.getEntries('').subscribe(
-        //   entries => {
-        //     let j = 0;
-        //     for (let i = 0; i < employees.length; i++) {
-        //       const employee = employees[i];
-        //       employee.opened = false;
-        //       rollUps2.push('');
-        //       const entriesTemp = [];
-        //       while (j < entries.result.length) {
-        //         const entry = entries.result[j];
-        //         if (employee.id === entry.employee_id) {
-        //           entriesTemp.push(entry);
-        //           j++;
-        //         } else {
-        //           rollUps2.splice(i, 1, entriesTemp);
-        //           break;
-        //         }
-        //       }
-        //     }
-        //   }
-        // );
-
-        for (let i = 0; i < employees.length; i++) {
-          const employee = employees[i];
-          employee.opened = false;
-          rollUps.push('');
-          this.getEntries('?employeeid=' + employee.id /* + params */).subscribe(
-            entries => {
-              if (entries.result.length > 0) {
-                rollUps.splice(i, 1, entries.result);
-              } else {
-                const index = employees.indexOf(employee);
-                employees.splice(index, 1);
-              }
-            }
-          );
-        }
-
-        this.employees.next(employees);
-        this.rollUps.next(rollUps);
-
+        this.employees.next(data.employees);
+        this.rollUps.next(data.rollUps);
         this.getResources('?active=1').subscribe(
           resources => {
             this.resources.next(resources);
           }
         );
 
-        this.getResources('?' + params.substring(1) + '&active=1').subscribe(
+        this.getResources('?' + params.path + 'Id=' + params.id + '&active=1').subscribe(
           resources => {
             this.filteredResources.next(resources);
           }
         );
       }
     );
+
+    //   }
+    // );
   }
 
   getUpdateMessages() {

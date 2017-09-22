@@ -11,10 +11,10 @@
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
         <div class="project-client"
-             [style.font-weight]="params.substring(params.indexOf('project') + 10) === entry.project_id + '' ? 'bold' : 'normal'">
+             [style.font-weight]="params.id === entry.project_id + '' ? 'bold' : 'normal'">
           {{entry.client_name}}</div>
         <div class="project-client"
-             [style.font-weight]="params.substring(params.indexOf('project') + 10) === entry.project_id + '' ? 'bold' : 'normal'">
+             [style.font-weight]="params.id === entry.project_id + '' ? 'bold' : 'normal'">
           {{entry.project_name}}</div>
         <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name">
           <md-icon svgIcon="delete"></md-icon>

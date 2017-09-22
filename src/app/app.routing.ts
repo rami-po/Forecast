@@ -7,6 +7,7 @@ import {CompanyComponent} from './company/company.component';
 import {ProjectComponent} from './project/project.component';
 import {BobComponent} from './bob/bob.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
+import {NotFoundComponent} from "./not-found/not-found.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -14,7 +15,7 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
 const APP_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: '/main',
+    redirectTo: '/all',
     pathMatch: 'full'
   },
   {
@@ -38,16 +39,16 @@ const APP_ROUTES: Routes = [
     component: CompanyComponent
   },
   {
-    path: 'main',
+    path: 'all',
     component: ProjectComponent
   },
   {
     path: 'project/:id',
-    component: ProjectComponent
+    component: ProjectComponent,
   },
   {
     path: 'client/:id',
-    component: ProjectComponent
+    component: ProjectComponent,
   },
   {
     path: 'bob',
@@ -56,6 +57,14 @@ const APP_ROUTES: Routes = [
   {
     path: 'test',
     component: CapacityRowComponent
+  },
+  {
+    path: '404',
+    component: NotFoundComponent
+  },
+  {
+    path: '**',
+    redirectTo: '/404'
   }
 ];
 

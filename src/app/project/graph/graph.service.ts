@@ -135,10 +135,12 @@ export class GraphService {
       {data: [], label: 'Forecast'}
     ];
 
-    this.forecastService.getEmployees('?' + params).subscribe(
+    console.log(params);
+
+    this.forecastService.getEmployees('?projectId=' + params.id).subscribe(
       employees => {
         employees = employees.result;
-        const body = {employees: employees, projectId: params.substring(11)};
+        const body = {employees: employees, projectId: params.id};
         this.forecastService.getGraphData('?all=1', JSON.stringify(body)).subscribe(
           allGraphData => { allGraphData = allGraphData.result;
             this.forecastService.getGraphData('', JSON.stringify(body)).subscribe(

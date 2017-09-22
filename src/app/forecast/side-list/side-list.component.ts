@@ -48,22 +48,10 @@ export class SideListComponent implements OnInit {
 
   ngOnInit() {
 
-    this.forecastService.rollUps$.subscribe(
-      data => {
-        this.entries = data;
-      }
-    );
-
     this.forecastService.employees$.subscribe(
       data => {
         this.employees = data;
         this.getUnassignedEmployees();
-      }
-    );
-
-    this.forecastService.params$.subscribe(
-      data => {
-        this.params = data;
       }
     );
 
@@ -73,7 +61,6 @@ export class SideListComponent implements OnInit {
         this.realEmployees = data.result;
       }
     );
-
   }
 
   getUnassignedEmployees() {
@@ -106,14 +93,14 @@ export class SideListComponent implements OnInit {
       return null;
     }
 
-    this.forecastService.getProjects('/' + this.params.substring(this.params.indexOf('project') + 10)).subscribe(
+    this.forecastService.getProjects('/' + this.params.id).subscribe(
       project => {
         dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
         ' to the project: ' + project.result[0].name + '.'];
         dialog.afterClosed().subscribe(
           confirmed => {
             if (confirmed) {
-              this.forecastService.addEmployeeToProject(this.params.substring(this.params.indexOf('project') + 10), employee.id).subscribe(
+              this.forecastService.addEmployeeToProject(this.params.id, employee.id).subscribe(
                 () => {
                   this.socket.emit('userUpdatedRollUps', { projectId: project.result[0].id, employeeId: employee.id }); // everyone gets it, including the sender
                   // this.forecastService.updateRollUps(this.params);
@@ -133,8 +120,7 @@ export class SideListComponent implements OnInit {
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {
-          this.forecastService.addFakeEmployee(dialog.componentInstance.inputText,
-            this.params.substring(this.params.indexOf('project') + 10)).subscribe(
+          this.forecastService.addFakeEmployee(dialog.componentInstance.inputText, this.params.id).subscribe(
             () => {
               this.socket.emit('userUpdatedRollUps', 'addFakeEmployee'); // everyone gets it, including the sender
               // this.forecastService.updateRollUps(this.params);

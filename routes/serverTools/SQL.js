@@ -47,28 +47,16 @@ exports.get = function (req) {
 };
 
 exports.getPeople = function (req, callback) {
-  let employeeId = (req.params.id ? req.params.id : 'a.user_id');
+  let employeeId = (req.params.id ? '\'' + req.params.id + '\'' : 'a.user_id');
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
   const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
   const isActive = (req.query.active ? req.query.active : 'e.is_active');
 
-
-  if (isNaN(employeeId) && employeeId !== 'a.user_id') {
-    employeeId = '\'' + employeeId + '\'';
-  }
-
-  let getFakes =
-    `DROP TABLE IF EXISTS all_assignments;
-    DROP TABLE IF EXISTS all_employees;
-    CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x;
-    CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y;`;
-
-  let assignments = 'all_assignments';
-  let employees = 'all_employees';
+  let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
+  let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
 
   if (req.query.real === '1') {
-    getFakes = '';
     assignments = 'assignments';
     employees = 'employees';
   }
@@ -76,7 +64,6 @@ exports.getPeople = function (req, callback) {
   const activeQuery = (isActive === '1' ? 'AND e.is_active = 1 AND a.deactivated = 0 AND p.active = 1 ' : '')
 
   const query =
-    getFakes +
     `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, 
     e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity
     FROM clients c 
@@ -91,9 +78,6 @@ exports.getPeople = function (req, callback) {
     ORDER BY CASE last_name <> '' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;`;
 
   connection.query(query, function (err, result) {
-    if (result[0].fieldCount != null) {
-      result = result[result.length - 1];
-    }
     callback(err, result);
   });
 
@@ -106,23 +90,15 @@ exports.getProjects = function (req, callback) {
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
   const active = (req.query.active !== undefined ? req.query.active : 'p.active');
 
-  let getFakes =
-    'DROP TABLE IF EXISTS all_assignments;' +
-    'DROP TABLE IF EXISTS all_employees;' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ';
-
-  let assignments = 'all_assignments';
-  let employees = 'all_employees';
+  let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
+  let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
 
   if (req.query.real === '1') {
-    getFakes = '';
     assignments = 'assignments';
     employees = 'employees';
   }
 
   connection.query(
-    getFakes +
     'SELECT DISTINCT p.id, p.client_id, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
     'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes ' +
     'FROM clients c ' +
@@ -136,9 +112,6 @@ exports.getProjects = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY p.name', function (err, result) {
-      if (result[0].fieldCount != null) {
-        result = result[result.length - 1];
-      }
       callback(err, result);
     });
 };
@@ -159,6 +132,15 @@ exports.getProjects2 = function (req, callback) {
 
 };
 
+exports.getProjectAndClient = function (req, callback) {
+  connection.query('SELECT p.id, p.client_id, p.active, p.name, p.cost_budget, p.billable, p.budget_by, p.state, ' +
+    'p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes, p.code, c.name as client_name, c.active as client_active ' +
+    'FROM projects p RIGHT OUTER JOIN clients c ON p.client_id = c.id WHERE p.id = ' +
+    req.params.id, function (err, result) {
+    callback(err, result);
+  });
+};
+
 exports.getClients = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 'c.id');
   const active = (req.query.active !== undefined ? req.query.active : 'c.active');
@@ -174,27 +156,17 @@ exports.getClients = function (req, callback) {
 
 exports.getAssignments = function (req, callback) {
 
-  let id = (req.params.id !== undefined ? req.params.id : 'id');
+  let id = (req.params.id !== undefined ? '\'' + req.params.id + '\'' : 'id');
   const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'user_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'project_id');
   const deactivated = (req.query.deactivated ? req.query.deactivated : 'deactivated');
 
-  if (isNaN(id) && id !== 'id') {
-    id = '\'' + id + '\'';
-  }
-
-
   connection.query(
-    'DROP TABLE IF EXISTS all_assignments;' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
-    'SELECT * FROM all_assignments ' +
+    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) ' +
     'WHERE deactivated = ' + deactivated + ' ' +
     'AND id = ' + id + ' ' +
     'AND project_id = ' + projectId + ' ' +
     'AND user_id = ' + employeeId, function (err, result) {
-      if (result != null) {
-        result = result[2];
-      }
       callback(err, result);
     });
 };
@@ -213,21 +185,17 @@ exports.getDates = function (req) {
 exports.getEntries = function (req, callback) {
 
   const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
-  const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
+  const employeeId = (req.query.employeeid !== undefined ? '\'' + req.query.employeeid + '\'' : 'a.user_id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
 
   connection.query(
-    'DROP TABLE IF EXISTS all_assignments;' +
-    'DROP TABLE IF EXISTS all_employees;' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_assignments SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as x; ' +
-    'CREATE TEMPORARY TABLE IF NOT EXISTS all_employees SELECT * FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as y; ' +
     'SELECT a.id as id, c.id AS client_id, c.name AS client_name, ' +
     'p.id AS project_id, p.name AS project_name, ' +
     'e.id AS employee_id, e.first_name, e.last_name ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN all_assignments a ON p.id = a.project_id ' +
-    'LEFT OUTER JOIN all_employees e ON e.id = a.user_id ' +
+    'LEFT OUTER JOIN (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) a ON p.id = a.project_id ' +
+    'LEFT OUTER JOIN (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) e ON e.id = a.user_id ' +
     'WHERE a.deactivated = 0 ' +
     'AND p.active = 1 ' +
     'AND e.is_active = 1 ' +
@@ -235,9 +203,6 @@ exports.getEntries = function (req, callback) {
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
     'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, c.name, p.name, e.id, c.id, p.id ASC;', function (err, result) {
-      if (result[0].fieldCount != null) {
-        result = result[result.length - 1];
-      }
       callback(err, result);
     });
 };
@@ -315,9 +280,9 @@ exports.getGraphData = function (req, callback) {
   for (let i = 0; i < req.body.employees.length; i++) {
     const employee = req.body.employees[i];
     if (i === 0) {
-      whereStatement += 't.user_id = ' + employee.id;
+      whereStatement += 't.user_id = \'' + employee.id + '\'';
     } else {
-      whereStatement += ' OR t.user_id = ' + employee.id;
+      whereStatement += ' OR t.user_id = \'' + employee.id + '\'';
     }
   }
   whereStatement += ') ';
@@ -336,7 +301,7 @@ exports.getGraphData = function (req, callback) {
     tools.convertDate(date, function (convertedDate) {
       monday = convertedDate;
       connection.query(`SELECT t.user_id, e.capacity / 3600 AS capacity, date_format(t.spent_at, "%x-%v") AS week_of, SUM(t.hours) AS hours FROM 
-  (SELECT user_id, project_id, spent_at, hours FROM timeEntries WHERE spent_at < '` + monday +  `' 
+  (SELECT user_id, project_id, spent_at, hours FROM timeEntries WHERE spent_at < '` + monday + `' 
   UNION ALL 
   SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t 
   RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + ` 
@@ -380,17 +345,13 @@ exports.getMembers = function (req, callback) {
 exports.getTimeEntries = function (req, callback) {
   const id = (req.params.id !== undefined ? req.params.id : 't.id');
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
   let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\'' : '');
 
   const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
   const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
 
   let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
-
-  if (isNaN(userId) && userId !== 't.user_id') {
-    userId = '\'' + userId + '\'';
-  }
 
   if (between !== '' && since !== '') {
     between = '';
@@ -411,17 +372,13 @@ exports.getTimeEntries = function (req, callback) {
 
 exports.getAllTimeEntries = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
   let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\' ' : '');
 
   const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
   const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
 
   let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to + ' ' : '');
-
-  if (isNaN(userId) && userId !== 't.user_id') {
-    userId = '\'' + userId + '\'';
-  }
 
   if (between !== '' && since !== '') {
     between = '';
@@ -448,23 +405,18 @@ exports.getAllTimeEntries = function (req, callback) {
 
 exports.getHours = function (req, callback) {
   const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? req.query.userid : 't.user_id');
+  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
   const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
   const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
 
   const between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
-
-  if (isNaN(userId) && userId !== 't.user_id') {
-    userId = '\'' + userId + '\'';
-  }
 
   connection.query('SELECT COALESCE(SUM(t.hours), 0) AS hours FROM ' +
     '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
     'SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement) as t ' +
     'WHERE t.project_id = ' + projectId + ' ' +
     'AND t.user_id = ' + userId + ' ' +
-    between
-    , function (err, result) {
+    between, function (err, result) {
       callback(err, result);
     })
 };
@@ -578,13 +530,9 @@ exports.updateCapacity = function (req, callback) {
 };
 
 exports.updateData = function (req, callback) {
-  if (isNaN(req.body.employee_id)) {
-    req.body.employee_id = '\'' + req.body.employee_id + '\'';
-  }
+  req.body.employee_id = '\'' + req.body.employee_id + '\'';
+  req.body.fake_employee_id = '\'' + req.body.fake_employee_id + '\'';
 
-  if (isNaN(req.body.fake_employee_id)) {
-    req.body.fake_employee_id = '\'' + req.body.fake_employee_id + '\'';
-  }
 
   connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + req.body.employee_id +
     ' AND project_id = ' + req.body.project_id + ';UPDATE resourceManagement SET employee_id = ' + req.body.employee_id +
@@ -605,22 +553,13 @@ exports.deactivateAssignment = function (req, callback) {
  */
 
 exports.deleteFakeAssignment = function (req, callback) {
-  console.log(req.params);
-  if (isNaN(req.params.assignment_id)) {
-    req.params.assignment_id = '\'' + req.params.assignment_id + '\'';
-  }
-
-  connection.query('DELETE FROM assignments_fake WHERE id = ' + req.params.assignment_id, function (err, result) {
+  connection.query('DELETE FROM assignments_fake WHERE id = \'' + req.params.assignment_id + '\'', function (err, result) {
     callback(err, result);
   });
 };
 
 exports.deleteFakeEmployee = function (req, callback) {
-  if (isNaN(req.params.employee_id)) {
-    req.params.employee_id = '\'' + req.params.employee_id + '\'';
-  }
-
-  connection.query('DELETE FROM employees_fake WHERE id = ' + req.params.employee_id, function (err, result) {
+  connection.query('DELETE FROM employees_fake WHERE id = \'' + req.params.employee_id + '\'', function (err, result) {
     callback(err, result);
   });
 };

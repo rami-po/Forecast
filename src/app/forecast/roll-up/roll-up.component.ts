@@ -66,8 +66,9 @@ export class RollUpComponent implements OnInit {
           }
         }
 
-        if (this.params !== '') {
-          this.forecastService.getResources('?employeeId=' + this.employee.id + this.params + '&active=1').subscribe(
+        if (this.params.id !== '') {
+          this.forecastService.getResources('?employeeId=' + this.employee.id + '&' +
+            this.params.path + 'Id=' + this.params.id + '&active=1').subscribe(
             filteredResources => {
               const filteredCapacities = filteredResources.totalCapacities;
               this.filteredCapacities = filteredCapacities;
@@ -75,9 +76,11 @@ export class RollUpComponent implements OnInit {
               for (let resourcesIndex = 0; resourcesIndex < this.totalCapacities.length; resourcesIndex++) {
                 if (filteredResourcesIndex < filteredCapacities.length &&
                   this.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
-                  this.totalCapacities[resourcesIndex].capacity =
-                    filteredCapacities[filteredResourcesIndex].capacity + ' / ' +
-                    this.totalCapacities[resourcesIndex].capacity;
+                  const filteredCapacity = filteredCapacities[filteredResourcesIndex].capacity;
+                  const totalCapacity = this.totalCapacities[resourcesIndex].capacity;
+                  this.totalCapacities[resourcesIndex].capacity = (filteredCapacity === totalCapacity ?
+                    filteredCapacity :
+                    filteredCapacity + ' / ' + totalCapacity);
                   filteredResourcesIndex++;
                 } else {
                   this.totalCapacities[resourcesIndex].capacity = '0 / ' + this.totalCapacities[resourcesIndex].capacity;

@@ -35,6 +35,7 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
 import {StatusMessageDialogComponent} from "./forecast/status-message/status-message.component";
 import {RollUpService} from "./forecast/roll-up/roll-up.service";
 import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-employee.component";
+import {NotFoundComponent} from "./not-found/not-found.component";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-emp
     ProjectComponent,
     CompanyComponent,
     GraphComponent,
+    NotFoundComponent,
     MilestonePromptComponent,
     RollUpComponent,
     BobComponent,

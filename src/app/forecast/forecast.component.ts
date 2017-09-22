@@ -68,16 +68,16 @@ export class ForecastComponent implements OnInit {
         this.employees = data;
       }
     );
-
-    this.forecastService.params$.subscribe(
-      params => {
-        this.params = params;
-        if (this.params !== this.lastParams) {
-          this.lastParams = this.params;
-          this.forecastService.updateRollUps(params);
-        }
-      }
-    );
+    //
+    // this.forecastService.params$.subscribe(
+    //   params => {
+    //     this.params = params;
+    //     if (this.params !== this.lastParams) {
+    //       this.lastParams = this.params;
+    //       this.forecastService.updateRollUps(params);
+    //     }
+    //   }
+    // );
 
     this.forecastService.getProjects('?active=1').subscribe(
       data => {
@@ -102,7 +102,7 @@ export class ForecastComponent implements OnInit {
     this.forecastService.getUpdateMessages().subscribe(
       message => {
         // TODO - we need a better way to determine the project ID. we shouldn't have to parse it out of the params. what happens if the url format changes?
-        let projectId = this.lastParams.substring(this.lastParams.indexOf('project') + 10);
+        let projectId = this.lastParams.id;
         let employees = this.forecastService.employees.getValue();
         let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
         if (projectId === '') {

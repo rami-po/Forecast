@@ -78,7 +78,7 @@ export class EntryComponent implements OnInit, OnDestroy {
       return this.totalCapacities[index].capacity;
     }
     const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 / 0'), color: color});
+    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params.id === '' ? 0 : '0' /* prev: '0 / 0' */), color: color});
     return this.totalCapacities[index].capacity;
 
   }
@@ -93,7 +93,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return this.totalCapacities[index].color;
       }
       const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 / 0'), color: color});
+      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params.id === '' ? 0 : '0' /* prev: '0 / 0' */), color: color});
       return this.totalCapacities[index].color;
     } else {
       // it is an editable cell
@@ -164,14 +164,16 @@ export class EntryComponent implements OnInit, OnDestroy {
                 this.forecastService.resources.next(data);
               }
             );
-            this.forecastService.getResources('?' + this.params.substring(1) + '&active=1').subscribe(
+            this.forecastService.getResources('?' + this.params.path + 'Id=' + this.params.id + '&active=1').subscribe(
               data => {
                 this.forecastService.filteredResources.next(data);
               }
             );
 
             // this.graphService.updateGraph(week);
-            this.graphService.initializeGraph(this.params);
+            if (this.params.id !== '') {
+              this.graphService.initializeGraph(this.params);
+            }
             this.forecastService.socket.emit('broadcastUpdatedRollUps', { projectId: this.entry.projectId, employeeId: this.entry.employeeId }); // everyone but the sender gets it
             this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
@@ -186,17 +188,20 @@ export class EntryComponent implements OnInit, OnDestroy {
                   }
                 }
 
-                if (this.params !== '') {
-                  this.forecastService.getResources('?employeeId=' + this.entry.employeeId + this.params + '&active=1').subscribe(
+                if (this.params.id !== '') {
+                  this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&' +
+                    this.params.path + 'Id=' + this.params.id + '&active=1').subscribe(
                     filteredResources => {
                       const filteredCapacities = filteredResources.totalCapacities;
                       let filteredResourcesIndex = 0;
                       for (let resourcesIndex = 0; resourcesIndex < resources.totalCapacities.length; resourcesIndex++) {
                         if (filteredResourcesIndex < filteredCapacities.length &&
                           resources.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
-                          resources.totalCapacities[resourcesIndex].capacity =
-                            filteredCapacities[filteredResourcesIndex].capacity + ' / ' +
-                            resources.totalCapacities[resourcesIndex].capacity;
+                          const filteredCapacity = filteredCapacities[filteredResourcesIndex].capacity;
+                          const totalCapacity = resources.totalCapacities[resourcesIndex].capacity;
+                          resources.totalCapacities[resourcesIndex].capacity = (filteredCapacity === totalCapacity ?
+                            filteredCapacity :
+                            filteredCapacity + ' / ' + totalCapacity);
                           filteredResourcesIndex++;
                         }
                       }
