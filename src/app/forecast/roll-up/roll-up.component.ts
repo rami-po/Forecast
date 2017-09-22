@@ -76,11 +76,11 @@ export class RollUpComponent implements OnInit {
                 if (filteredResourcesIndex < filteredCapacities.length &&
                   this.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
                   this.totalCapacities[resourcesIndex].capacity =
-                    filteredCapacities[filteredResourcesIndex].capacity + ' (' +
-                    this.totalCapacities[resourcesIndex].capacity + ')';
+                    filteredCapacities[filteredResourcesIndex].capacity + ' / ' +
+                    this.totalCapacities[resourcesIndex].capacity;
                   filteredResourcesIndex++;
                 } else {
-                  this.totalCapacities[resourcesIndex].capacity = '0 (' + this.totalCapacities[resourcesIndex].capacity + ')';
+                  this.totalCapacities[resourcesIndex].capacity = '0 / ' + this.totalCapacities[resourcesIndex].capacity;
                 }
               }
               this.isDataAvailable = true;

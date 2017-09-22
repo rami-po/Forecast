@@ -78,7 +78,7 @@ export class EntryComponent implements OnInit, OnDestroy {
       return this.totalCapacities[index].capacity;
     }
     const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 (0)'), color: color});
+    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 / 0'), color: color});
     return this.totalCapacities[index].capacity;
 
   }
@@ -93,7 +93,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return this.totalCapacities[index].color;
       }
       const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 (0)'), color: color});
+      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params === '' ? 0 : '0 / 0'), color: color});
       return this.totalCapacities[index].color;
     } else {
       // it is an editable cell
@@ -172,6 +172,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
             // this.graphService.updateGraph(week);
             this.graphService.initializeGraph(this.params);
+            this.forecastService.socket.emit('broadcastUpdatedRollUps', { projectId: this.entry.projectId, employeeId: this.entry.employeeId }); // everyone but the sender gets it
             this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
               resources => {
                 for (let i = 0; i < resources.totalCapacities.length; i++) {
@@ -194,8 +195,8 @@ export class EntryComponent implements OnInit, OnDestroy {
                         if (filteredResourcesIndex < filteredCapacities.length &&
                           resources.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
                           resources.totalCapacities[resourcesIndex].capacity =
-                            filteredCapacities[filteredResourcesIndex].capacity + ' (' +
-                            resources.totalCapacities[resourcesIndex].capacity + ')';
+                            filteredCapacities[filteredResourcesIndex].capacity + ' / ' +
+                            resources.totalCapacities[resourcesIndex].capacity;
                           filteredResourcesIndex++;
                         }
                       }

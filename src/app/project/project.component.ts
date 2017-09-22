@@ -76,6 +76,20 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
 
+    this.route.url.subscribe(
+      urlSegments => {
+        if (urlSegments.length > 1) {
+          const path = urlSegments[0].path;
+          const id = urlSegments[1].path;
+          if (path === 'project') {
+            this.forecastService.params.next(id);
+          } else if (path === 'client') {
+
+          }
+        }
+      }
+    );
+
     this.route.params.subscribe(
       params => {
         // this.forecastService.params.next(params.id);

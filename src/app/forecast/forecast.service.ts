@@ -9,11 +9,12 @@ import 'rxjs/add/operator/toPromise';
 import {DatePipe} from '@angular/common';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import * as io from 'socket.io-client';
 
 @Injectable()
 export class ForecastService {
-  private socket;
+  public socket;
 
   public static NUMBER_OF_WEEKS = 20;
 
@@ -32,7 +33,8 @@ export class ForecastService {
   public projects = new Subject<any>();
   projects$ = this.clients.asObservable();
 
-  public employees = new Subject<any>();
+  // employees needs to be a BehaviorSubject so that we can use the getValue method
+  public employees = new BehaviorSubject<any>(null);
   employees$ = this.employees.asObservable();
 
   public params = new Subject<any>();
