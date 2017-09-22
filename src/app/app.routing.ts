@@ -46,6 +46,10 @@ const APP_ROUTES: Routes = [
     component: ProjectComponent
   },
   {
+    path: 'client/:id',
+    component: ProjectComponent
+  },
+  {
     path: 'bob',
     component: BobComponent
   },

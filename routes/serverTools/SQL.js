@@ -234,7 +234,7 @@ exports.getEntries = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id, c.id, p.id ASC;', function (err, result) {
+    'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, c.name, p.name, e.id, c.id, p.id ASC;', function (err, result) {
       if (result[0].fieldCount != null) {
         result = result[result.length - 1];
       }
