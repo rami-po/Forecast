@@ -27,17 +27,17 @@
 </md-toolbar>
 
 <div *ngIf="isGraphShowing" class="graph-data-wrapper">
-  <app-graph [params]="params"></app-graph>
   <div class="data-wrapper">
-    <p><b>Budget:</b> ${{budget}}</p>
-    <p><b>Internal Cost to Date:</b> ${{internalCost}}</p>
-    <p><b>Budget Spent:</b> ${{budgetSpent}}</p>
-    <p><b>Projected Profit:</b> ${{projectedProfit}}</p>
-    <p><b>Project Profit Margin:</b> {{projectedProfitMargin | number:'2.2-2'}}%</p>
+    <div class="data"><b>Budget: </b> ${{budget}}</div>
+    <div class="data"><b>Internal Cost to Date: </b> ${{internalCost}}</div>
+    <div class="data"><b>Budget Spent: </b> ${{budgetSpent}}</div>
+    <div class="data"><b>Projected Profit: </b> ${{projectedProfit}}</div>
+    <div class="data"><b>Project Profit Margin: </b> {{projectedProfitMargin | number:'2.2-2'}}%</div>
   </div>
+  <app-graph [params]="params"></app-graph>
 </div>
 
 
 <div class="forecast-wrapper">
-  <app-forecast [height]="height" [isProjectView]="isGraphShowing" [forecastHeight]="forecastHeight"></app-forecast>
+  <app-forecast [height]="height" [isProjectView]="isGraphShowing" [params]="params" [forecastHeight]="forecastHeight"></app-forecast>
 </div>
