@@ -33,7 +33,9 @@ export class EntryComponent implements OnInit, OnDestroy {
   public timerSubscription;
   @Input() public entry: Entry;
   @Input() public data;
+  @Input() public forecast;
   @Input() public row;
+  @Input() public test;
   @Input() public totalCapacities;
   @Input() public filteredCapacities;
   @Input() public employeeCapacity;
@@ -49,6 +51,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
   }
 
   ngOnDestroy() {
@@ -66,79 +69,55 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   public getCapacity(week, index): string {
-    if (!isNullOrUndefined(this.data[index]) && this.data[index].week === week) {
-      return this.data[index].capacity;
+    if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
+      return this.forecast.data[index].capacity;
     }
-    this.data.splice(index, 0, {week: week, capacity: 0});
-    return this.data[index].capacity;
+    this.forecast.data.splice(index, 0, {
+      employee_id: this.entry.employeeId,
+      project_id: this.entry.projectId,
+      client_id: this.entry.clientId,
+      week_of: week,
+      capacity: '0'
+    });
+    return '0';
   }
 
-  public getTotal(week, index): string {
-    if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
-      return this.totalCapacities[index].capacity;
+  public getTotal(week, index) {
+    let value = 0;
+    if (!isNullOrUndefined(this.test[index]) && this.test[index].week_of.slice(0, 10) === week) {
+      value = this.test[index].hours;
+    } else {
+      this.test.splice(index, 0, {week_of: week, hours: 0});
     }
-    const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-    this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params.id === '' ? 0 : '0' /* prev: '0 / 0' */), color: color});
-    return this.totalCapacities[index].capacity;
-
-  }
-
-  getDifference(employeeCap, capacity) {
-    return capacity - employeeCap;
+    if (this.params.id !== '') {
+      if (value === this.employeeCapacity) {
+        return value;
+      }
+      return value + ' / ' + this.employeeCapacity;
+    }
+    return value;
   }
 
   getColor(week, index) {
-    if (!isNullOrUndefined(this.totalCapacities)) {
-      if (!isNullOrUndefined(this.totalCapacities[index]) && this.totalCapacities[index].week === week) {
-        return this.totalCapacities[index].color;
-      }
-      const color = (this.employeeCapacity === 0 ? 'white' : '#EF9A9A');
-      this.totalCapacities.splice(index, 0, {week: week, capacity: (this.params.id === '' ? 0 : '0' /* prev: '0 / 0' */), color: color});
-      return this.totalCapacities[index].color;
-    } else {
-      // it is an editable cell
+    if (isNullOrUndefined(this.test)) {
       return 'white';
     }
-  }
-
-
-  isYellow(index) {
-    if (!isNullOrUndefined(this.totalCapacities[index])) {
-      if (this.totalCapacities[index].color === 'yellow') {
-        return true;
+    if (!isNullOrUndefined(this.test[index]) && this.test[index].week_of.slice(0, 10) === week) {
+      if (this.test[index].hours < this.employeeCapacity) {
+        return '#EF9A9A';
+      } else if (this.test[index].hours > this.employeeCapacity) {
+        return '#FFF59D';
+      }
+    } else {
+      if (0 < this.employeeCapacity) {
+        return '#EF9A9A';
       }
     }
-    return false;
-    // const difference = this.getDifference(index);
-    // // return ((difference <= 10 && difference > 5) || (difference >= -10 && difference < -5));
-    // return difference > 0;
-  }
-
-  isRed(index) {
-    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
-      if (this.totalCapacities[index].color === 'red') {
-        return true;
-      }
-    }
-    return false;
-    // const difference = this.getDifference(index);
-    // // return (difference > 20 || difference < -20);
-    // return difference < 0;
-  }
-
-  isDefault(index) {
-    if (!isNullOrUndefined(this.totalCapacities) && !isNullOrUndefined(this.totalCapacities[index])) {
-      if (this.totalCapacities[index].color === 'default') {
-        return true;
-      }
-    }
-    return false;
-    // const difference = this.getDifference(index);
-    // return difference === 0;
+    return 'white';
   }
 
   getTextColor() {
-    if (isNullOrUndefined(this.totalCapacities)) {
+    if (isNullOrUndefined(this.test)) {
       return 'rgb(33, 150, 243)';
     }
     return 'black';
@@ -156,17 +135,16 @@ export class EntryComponent implements OnInit, OnDestroy {
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
 
-        const boxNumber = columnNumber + (this.row * ForecastService.NUMBER_OF_WEEKS);
-        this.entryService.updateResourceManagement(this.entry, week, Number(value), boxNumber).subscribe(
-          callback => {
-            this.forecastService.getResources('?active=1').subscribe(
-              data => {
-                this.forecastService.resources.next(data);
+        this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
+          () => {
+            this.forecastService.getResources('?active=1&slim=1').subscribe(
+              resources => {
+                this.forecastService.resources.next(resources.result);
               }
             );
-            this.forecastService.getResources('?' + this.params.path + 'Id=' + this.params.id + '&active=1').subscribe(
-              data => {
-                this.forecastService.filteredResources.next(data);
+            this.forecastService.getResources('?' + this.params.path + 'Id=' + this.params.id + '&active=1&slim=1').subscribe(
+              resources => {
+                this.forecastService.filteredResources.next(resources.result);
               }
             );
 
@@ -174,56 +152,14 @@ export class EntryComponent implements OnInit, OnDestroy {
             if (this.params.id !== '') {
               this.graphService.initializeGraph(this.params);
             }
-            this.forecastService.socket.emit('broadcastUpdatedRollUps', { projectId: this.entry.projectId, employeeId: this.entry.employeeId }); // everyone but the sender gets it
-            this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1').subscribe(
-              resources => {
-                for (let i = 0; i < resources.totalCapacities.length; i++) {
-                  const difference = this.getDifference(this.employeeCapacity / 3600, resources.totalCapacities[i].capacity);
-                  if (difference === 0) {
-                    (resources.totalCapacities[i])['color'] = 'white';
-                  } else if (difference > 0) {
-                    (resources.totalCapacities[i])['color'] = '#FFF59D';
-                  } else if (difference < 0) {
-                    (resources.totalCapacities[i])['color'] = '#EF9A9A';
-                  }
-                }
+            this.forecastService.socket.emit('broadcastUpdatedRollUps', {
+              projectId: this.entry.projectId,
+              employeeId: this.entry.employeeId
+            }); // everyone but the sender gets it
 
-                if (this.params.id !== '') {
-                  this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&' +
-                    this.params.path + 'Id=' + this.params.id + '&active=1').subscribe(
-                    filteredResources => {
-                      const filteredCapacities = filteredResources.totalCapacities;
-                      let filteredResourcesIndex = 0;
-                      for (let resourcesIndex = 0; resourcesIndex < resources.totalCapacities.length; resourcesIndex++) {
-                        if (filteredResourcesIndex < filteredCapacities.length &&
-                          resources.totalCapacities[resourcesIndex].week === filteredCapacities[filteredResourcesIndex].week) {
-                          const filteredCapacity = filteredCapacities[filteredResourcesIndex].capacity;
-                          const totalCapacity = resources.totalCapacities[resourcesIndex].capacity;
-                          resources.totalCapacities[resourcesIndex].capacity = (filteredCapacity === totalCapacity ?
-                            filteredCapacity :
-                            filteredCapacity + ' / ' + totalCapacity);
-                          filteredResourcesIndex++;
-                        }
-                      }
-                      this.rollUpComponent.totalCapacities = resources.totalCapacities;
-                    }
-                  );
-                } else {
-                  this.rollUpComponent.totalCapacities = resources.totalCapacities;
-                }
-
-                this.forecastService.getResources('?employeeId=' + this.entry.employeeId +
-                  '&projectId=' + this.entry.projectId + '&active=1').subscribe(
-                  data => {
-                    this.data.length = 0;
-                    for (let i = 0; i < data.result.length; i++) {
-                      this.data.push({
-                        week: data.result[i].week_of.substring(0, 10),
-                        capacity: data.result[i].capacity
-                      });
-                    }
-                  }
-                );
+            this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1&slim=1').subscribe(
+              data => {
+                this.rollUpComponent.headerData = data.result;
               }
             );
           }
