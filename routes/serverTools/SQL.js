@@ -64,17 +64,17 @@ exports.getPeople = function (req, callback) {
   const activeQuery = (isActive === '1' ? 'AND e.is_active = 1 AND a.deactivated = 0 AND p.active = 1 ' : '')
 
   const query =
-    `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, 
+    `SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor,
     e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity
-    FROM clients c 
-    LEFT OUTER JOIN projects p ON c.id = p.client_id 
-    LEFT OUTER JOIN ` + assignments + ` a ON p.id = a.project_id 
-    LEFT OUTER JOIN ` + employees + ` e ON e.id = a.user_id 
+    FROM clients c
+    LEFT OUTER JOIN projects p ON c.id = p.client_id
+    LEFT OUTER JOIN ` + assignments + ` a ON p.id = a.project_id
+    LEFT OUTER JOIN ` + employees + ` e ON e.id = a.user_id
     WHERE e.is_contractor = ` + isContractor + ` ` +
     activeQuery + `
-    AND p.id = ` + projectId + ` 
-    AND c.id = ` + clientId + ` 
-    AND e.id = ` + employeeId + ` 
+    AND p.id = ` + projectId + `
+    AND c.id = ` + clientId + `
+    AND e.id = ` + employeeId + `
     ORDER BY CASE last_name <> '' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;`;
 
   connection.query(query, function (err, result) {
@@ -162,7 +162,7 @@ exports.getAssignments = function (req, callback) {
   const deactivated = (req.query.deactivated ? req.query.deactivated : 'deactivated');
 
   connection.query(
-    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) ' +
+    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) AS all_assignments ' +
     'WHERE deactivated = ' + deactivated + ' ' +
     'AND id = ' + id + ' ' +
     'AND project_id = ' + projectId + ' ' +
@@ -300,11 +300,11 @@ exports.getGraphData = function (req, callback) {
   tools.getMonday(function (date) {
     tools.convertDate(date, function (convertedDate) {
       monday = convertedDate;
-      connection.query(`SELECT t.user_id, e.capacity / 3600 AS capacity, date_format(t.spent_at, "%x-%v") AS week_of, SUM(t.hours) AS hours FROM 
-  (SELECT user_id, project_id, spent_at, hours FROM timeEntries WHERE spent_at < '` + monday + `' 
-  UNION ALL 
-  SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t 
-  RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + ` 
+      connection.query(`SELECT t.user_id, e.capacity / 3600 AS capacity, date_format(t.spent_at, "%x-%v") AS week_of, SUM(t.hours) AS hours FROM
+  (SELECT user_id, project_id, spent_at, hours FROM timeEntries WHERE spent_at < '` + monday + `'
+  UNION ALL
+  SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t
+  RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + `
   GROUP BY date_format(t.spent_at, "%x-%v"), t.user_id ` + havingStatement + `
   ORDER BY t.spent_at ASC`, function (err, result) {
         callback(err, result);
