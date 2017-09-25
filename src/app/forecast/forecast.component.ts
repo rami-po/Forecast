@@ -24,7 +24,7 @@ export class ForecastComponent implements OnInit {
   private capacityHeader;
   private table;
   private forecast;
-  @Input() public params = '';
+  @Input() public params: any;
   @Input() public height = '85.9vh';
   @Input() public forecastHeight = '100vh';
   @Input() public isProjectView = false;
@@ -59,6 +59,7 @@ export class ForecastComponent implements OnInit {
     this.forecastService.rollUps$.subscribe(
       data => {
         this.rollUps = data;
+        console.log(data);
         this.isDataAvailable = true;
       }
     );
@@ -102,31 +103,26 @@ export class ForecastComponent implements OnInit {
     this.forecastService.getUpdateMessages().subscribe(
       message => {
         // TODO - we need a better way to determine the project ID. we shouldn't have to parse it out of the params. what happens if the url format changes?
-        let projectId = this.lastParams.id;
+        let projectId = this.params.id;
         let employees = this.forecastService.employees.getValue();
         let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
         if (projectId === '') {
           // the current view is of all projects. any change requires an update
-          this.forecastService.updateRollUps(this.lastParams);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee') {
           // adding or deleting a fake employee requires an update, regardless of the project
-          this.forecastService.updateRollUps(this.lastParams);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (projectId === (message as any).projectId) {
           // a change occurred in the current project. an update is required
-          this.forecastService.updateRollUps(this.lastParams);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
           // an employee in the current project has an updated entry in another project. we need to update this view.
-          this.forecastService.updateRollUps(this.lastParams);
+          this.forecastService.updateRollUps(this.params);
         }
       });
-  }
-
-  getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
-           projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {
-    return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity, boxNumber);
   }
 
   onScroll($event) {

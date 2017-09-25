@@ -88,10 +88,14 @@ export class SideListComponent implements OnInit {
     const dialog = this.dialog.open(StatusMessageDialogComponent);
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
+    dialog.componentInstance.title = 'Are you sure?';
+    console.log('br0?');
     if (employee.id === 'fake_id') {
       this.addFakeUser(dialog);
       return null;
     }
+
+    console.log('o');
 
     this.forecastService.getProjects('/' + this.params.id).subscribe(
       project => {
@@ -225,6 +229,7 @@ export class SideListComponent implements OnInit {
   openConsole(employee) {
     const dialog = this.dialog.open(FakeEmployeeComponent);
     dialog.componentInstance.title = employee.first_name;
+    dialog.componentInstance.dismissible = true;
     dialog.componentInstance.custom = true;
     dialog.componentInstance.input = true;
     dialog.componentInstance.realEmployees = this.realEmployees;

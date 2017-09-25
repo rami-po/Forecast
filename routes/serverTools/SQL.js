@@ -162,7 +162,7 @@ exports.getAssignments = function (req, callback) {
   const deactivated = (req.query.deactivated ? req.query.deactivated : 'deactivated');
 
   connection.query(
-    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) ' +
+    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as all_assignments ' +
     'WHERE deactivated = ' + deactivated + ' ' +
     'AND id = ' + id + ' ' +
     'AND project_id = ' + projectId + ' ' +
@@ -220,6 +220,7 @@ exports.getData = function (req, callback) {
       'LEFT OUTER JOIN tiers t on t.id = e.tier_id ';
   }
 
+
   let monday;
   tools.getMonday(function (date) {
     tools.convertDate(date, function (convertedDate) {
@@ -227,15 +228,30 @@ exports.getData = function (req, callback) {
 
       const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
-      connection.query(
-        'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
+      let entryQuery = 'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
         costJoin +
         'WHERE r.project_id = ' + projectId + ' ' +
         'AND r.client_id = ' + clientId + ' ' +
         'AND r.employee_id = ' + employeeId + ' ' +
         'AND r.capacity <> \'\' ' +
         active +
-        'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;', function (err, result) {
+        // 'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;' +
+        'ORDER BY r.week_of ASC;';
+      let sumFilter = '';
+      if (req.query.slim === '1') {
+        entryQuery = '';
+        sumFilter = 'AND r.project_id = ' + projectId + ' AND r.client_id = ' + clientId + ' ';
+      }
+
+      connection.query(
+        entryQuery +
+        'SELECT SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+        'WHERE r.employee_id = ' + employeeId + ' ' +
+        sumFilter +
+        'AND r.capacity <> \'\' ' +
+        active +
+        'GROUP BY r.week_of ' +
+        'ORDER BY r.week_of ASC;', function (err, result) {
           callback(err, result);
         }
       );
@@ -417,8 +433,8 @@ exports.getHours = function (req, callback) {
     'WHERE t.project_id = ' + projectId + ' ' +
     'AND t.user_id = ' + userId + ' ' +
     between, function (err, result) {
-      callback(err, result);
-    })
+    callback(err, result);
+  })
 };
 
 exports.getStartTime = function (req, callback) {

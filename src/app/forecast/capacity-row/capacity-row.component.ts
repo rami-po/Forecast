@@ -10,6 +10,7 @@ import {isUndefined} from 'util';
 export class CapacityRowComponent implements OnInit {
 
   @Input() public weeks;
+  @Input() public params;
   public totalCapacities;
   public filteredCapacities;
   private subscriptions = [];
@@ -18,41 +19,35 @@ export class CapacityRowComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.forecastService.getResources('?active=1').subscribe(
-      data => {
-        this.forecastService.resources.next(data);
-      }
-    );
 
     this.subscriptions.push(this.forecastService.resources$.subscribe(
       data => {
-        this.totalCapacities = data.totalCapacities;
+        this.totalCapacities = data;
       }
     ));
 
     this.subscriptions.push(this.forecastService.filteredResources$.subscribe(
       data => {
-        this.filteredCapacities = data.totalCapacities;
+        this.filteredCapacities = data;
       }
     ));
   }
 
   getTotalCapacity(week, index) {
-    if (!isUndefined(this.totalCapacities) && !isUndefined(this.totalCapacities[index])) {
-      if (this.totalCapacities[index].week !== week) {
-        this.totalCapacities.splice(index, 0, {week: week, capacity: 0});
-      }
-      return this.totalCapacities[index].capacity;
+    if (!isUndefined(this.totalCapacities) && !isUndefined(this.totalCapacities[index]) &&
+      this.totalCapacities[index].week_of.slice(0, 10) === week) {
+      return this.totalCapacities[index].hours;
     }
     return '0';
   }
 
   getFilteredCapacity(week, index) {
-    if (!isUndefined(this.filteredCapacities) && !isUndefined(this.filteredCapacities[index])) {
-      if (this.filteredCapacities[index].week !== week) {
-        this.filteredCapacities.splice(index, 0, {week: week, capacity: 0});
+    if (this.params.id !== '') {
+      if (!isUndefined(this.filteredCapacities) && !isUndefined(this.filteredCapacities[index]) &&
+        this.filteredCapacities[index].week_of.slice(0, 10) === week) {
+        return this.filteredCapacities[index].hours;
       }
-      return this.filteredCapacities[index].capacity;
+      return '0';
     }
     return '0';
   }
