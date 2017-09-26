@@ -131,10 +131,10 @@ export class GraphService {
   initializeGraph(params) {
     const labels = [];
     const allData = [
-      {data: [], label: 'Forecast (cost)'},
-      {data: [], label: 'Actual (cost)'},
-      {data: [], label: 'Forecast (revenue)'},
-      {data: [], label: 'Actual (revenue)'}
+      {data: [], label: 'Cost (Forecast)'},
+      {data: [], label: 'Cost (Actual)'},
+      {data: [], label: 'Revenue (Forecast)'},
+      {data: [], label: 'Revenue (Actual)'}
     ];
 
     console.log(params);
