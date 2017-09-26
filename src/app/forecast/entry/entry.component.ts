@@ -42,6 +42,8 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public isOpened = false;
   @Input() private params;
 
+  private isSubscribed = false;
+
 
   constructor(public entryService: EntryService,
               public graphService: GraphService,
@@ -123,56 +125,71 @@ export class EntryComponent implements OnInit, OnDestroy {
     return 'black';
   }
 
-  type(value: string, week, columnNumber) {
+  send(value: string, week) {
+    if (this.isSubscribed) {
+
+      this.timerSubscription.unsubscribe();
+      this.isSubscribed = false;
+
+      console.log('sent');
+
+      this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
+        () => {
+          this.forecastService.getResources('?active=1&slim=1').subscribe(
+            resources => {
+              this.forecastService.resources.next(resources.result);
+            }
+          );
+          this.forecastService.getResources('?' + this.params.path + 'Id=' + this.params.id + '&active=1&slim=1').subscribe(
+            resources => {
+              this.forecastService.filteredResources.next(resources.result);
+            }
+          );
+
+          // this.graphService.updateGraph(week);
+          if (this.params.id !== '') {
+            this.graphService.initializeGraph(this.params);
+          }
+          this.forecastService.socket.emit('broadcastUpdatedRollUps', {
+            id: this.entry.projectId,
+            employeeId: this.entry.employeeId
+          }); // everyone but the sender gets it
+          this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1&slim=1').subscribe(
+            data => {
+              this.rollUpComponent.headerData = data.result;
+              for (let i = 0; i < this.forecast.data.length; i++) {
+                if (this.forecast.data[i].week_of.slice(0, 10) === week) {
+                  this.forecast.data.splice(i, 1, {
+                    employee_id: this.entry.employeeId,
+                    project_id: this.entry.projectId,
+                    client_id: this.entry.clientId,
+                    week_of: week,
+                    capacity: value
+                  });
+                  break;
+                }
+              }
+            }
+          );
+        }
+      );
+    }
+  }
+
+  type(value: string, week) {
     console.log('sending...');
     if (!isNaN(Number(value))) {
       if (!isNullOrUndefined(this.timerSubscription) && week === this.lastWeek) {
         console.log('changed...');
         this.timerSubscription.unsubscribe();
+        this.isSubscribed = false;
       }
       this.lastWeek = week;
       const timer = Observable.timer(2000);
       this.timerSubscription = timer.subscribe(t => {
-        console.log('sent');
-
-        this.entryService.updateResourceManagement(this.entry, week, Number(value)).subscribe(
-          () => {
-            this.forecastService.getResources('?active=1&slim=1').subscribe(
-              resources => {
-                this.forecastService.resources.next(resources.result);
-              }
-            );
-            this.forecastService.getResources('?' + this.params.path + 'Id=' + this.params.id + '&active=1&slim=1').subscribe(
-              resources => {
-                this.forecastService.filteredResources.next(resources.result);
-              }
-            );
-
-            // this.graphService.updateGraph(week);
-            if (this.params.id !== '') {
-              this.graphService.initializeGraph(this.params);
-            }
-            this.forecastService.socket.emit('broadcastUpdatedRollUps', { id: this.entry.projectId, employeeId: this.entry.employeeId }); // everyone but the sender gets it
-            this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1&slim=1').subscribe(
-              data => {
-                this.rollUpComponent.headerData = data.result;
-                for (let i = 0; i < this.forecast.data.length; i++) {
-                  if (this.forecast.data[i].week_of.slice(0, 10) === week) {
-                    this.forecast.data.splice(i, 1, {
-                      employee_id: this.entry.employeeId,
-                      project_id: this.entry.projectId,
-                      client_id: this.entry.clientId,
-                      week_of: week,
-                      capacity: value
-                    });
-                    break;
-                  }
-                }
-              }
-            );
-          }
-        );
+        this.send(value, week);
       });
+      this.isSubscribed = true;
     } else {
       console.log('not a number...');
     }

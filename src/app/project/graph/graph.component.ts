@@ -37,7 +37,7 @@ export class GraphComponent implements OnInit, OnDestroy {
     labels: [],
     datasets: [
       {
-        label: 'Forecast (cost)',
+        label: 'Cost (Forecast)',
         data: [],
         backgroundColor: 'rgba(255, 100, 0, .2)',
         borderColor: 'rgba(255, 100, 0, 1)',
@@ -49,7 +49,7 @@ export class GraphComponent implements OnInit, OnDestroy {
         hidden: false
       },
       {
-        label: 'Actual (cost)',
+        label: 'Cost (Actual)',
         data: [],
         backgroundColor: 'rgba(255, 152, 0, .2)',
         borderColor: 'rgba(255, 152, 0, 1)',
@@ -61,7 +61,7 @@ export class GraphComponent implements OnInit, OnDestroy {
         hidden: false
       },
       {
-        label: 'Forecast (revenue)',
+        label: 'Revenue (Forecast)',
         data: [],
         backgroundColor: 'rgba(9, 103, 179, .2)',
         borderColor: 'rgba(9, 103, 179, 1)',
@@ -73,7 +73,7 @@ export class GraphComponent implements OnInit, OnDestroy {
         hidden: false
       },
       {
-        label: 'Actual (revenue)',
+        label: 'Revenue (Actual)',
         data: [],
         backgroundColor: 'rgba(33, 150, 243, .4)',
         borderColor: 'rgba(33, 150, 243, 1)',
