@@ -47,11 +47,12 @@ exports.get = function (req) {
 };
 
 exports.getPeople = function (req, callback) {
-  let employeeId = (req.params.id ? '\'' + req.params.id + '\'' : 'a.user_id');
-  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
-  const isContractor = (req.query.iscontractor ? req.query.iscontractor : 'e.is_contractor');
-  const isActive = (req.query.active ? req.query.active : 'e.is_active');
+  let employeeId = (req.params.id ? mysql.escape(req.params.id) : 'a.user_id');
+  const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'p.client_id');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 'a.project_id');
+  const isContractor = (req.query.iscontractor ? mysql.escape(req.query.iscontractor) : 'e.is_contractor');
+
+  const isActive = (req.query.active ? req.query.active : '');
 
   let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
   let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
@@ -84,11 +85,10 @@ exports.getPeople = function (req, callback) {
 };
 
 exports.getProjects = function (req, callback) {
-
-  const projectId = (req.params.id !== undefined ? req.params.id : 'a.project_id');
-  let employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'a.user_id');
-  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
-  const active = (req.query.active !== undefined ? req.query.active : 'p.active');
+  const projectId = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'a.project_id');
+  let employeeId = (req.query.employeeid !== undefined ? mysql.escape(req.query.employeeid) : 'a.user_id');
+  const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'p.client_id');
+  const active = (req.query.active !== undefined ? mysql.escape(req.query.active) : 'p.active');
 
   let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
   let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
@@ -117,10 +117,9 @@ exports.getProjects = function (req, callback) {
 };
 
 exports.getProjects2 = function (req, callback) {
-
-  const id = (req.params.id !== undefined ? req.params.id : 'p.id');
-  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
-  const active = (req.query.active !== undefined ? req.query.active : 'p.active');
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'p.id');
+  const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'p.client_id');
+  const active = (req.query.active !== undefined ? mysql.escape(req.query.active) : 'p.active');
 
   connection.query('SELECT * FROM projects p ' +
     'WHERE p.id = ' + id + ' ' +
@@ -136,14 +135,14 @@ exports.getProjectAndClient = function (req, callback) {
   connection.query('SELECT p.id, p.client_id, p.active, p.name, p.cost_budget, p.billable, p.budget_by, p.state, ' +
     'p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes, p.code, c.name as client_name, c.active as client_active ' +
     'FROM projects p RIGHT OUTER JOIN clients c ON p.client_id = c.id WHERE p.id = ' +
-    req.params.id, function (err, result) {
+    mysql.escape(req.params.id), function (err, result) {
     callback(err, result);
   });
 };
 
 exports.getClients = function (req, callback) {
-  const id = (req.params.id !== undefined ? req.params.id : 'c.id');
-  const active = (req.query.active !== undefined ? req.query.active : 'c.active');
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'c.id');
+  const active = (req.query.active !== undefined ? mysql.escape(req.query.active) : 'c.active');
 
   connection.query('SELECT * FROM clients c ' +
     'WHERE c.id = ' + id + ' ' +
@@ -155,14 +154,13 @@ exports.getClients = function (req, callback) {
 };
 
 exports.getAssignments = function (req, callback) {
-
-  let id = (req.params.id !== undefined ? '\'' + req.params.id + '\'' : 'id');
-  const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'user_id');
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'project_id');
-  const deactivated = (req.query.deactivated ? req.query.deactivated : 'deactivated');
+  let id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'id');
+  const employeeId = (req.query.employeeid !== undefined ? mysql.escape(req.query.employeeid) : 'user_id');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 'project_id');
+  const deactivated = (req.query.deactivated ? mysql.escape(req.query.deactivated) : 'deactivated');
 
   connection.query(
-    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) AS all_assignments ' +
+    'SELECT * FROM (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as all_assignments ' +
     'WHERE deactivated = ' + deactivated + ' ' +
     'AND id = ' + id + ' ' +
     'AND project_id = ' + projectId + ' ' +
@@ -173,9 +171,9 @@ exports.getAssignments = function (req, callback) {
 
 exports.getDates = function (req) {
   if (req.params.id != null && req.params.length > 0) {
-    var query = 'SELECT * FROM resourceManagement WHERE week_of=\'' + req.params.id + '\'';
+    var query = 'SELECT * FROM resourceManagement WHERE week_of=' + mysql.escape(req.params.id);
     if (req.query.person != null) {
-      query += ' AND person_id=\'' + req.query.person.id + '\'';
+      query += ' AND person_id=' + mysql.escape(req.query.person.id);
     }
   } else {
     connection.query('SELECT week_of FROM resourceManagement');
@@ -183,10 +181,9 @@ exports.getDates = function (req) {
 };
 
 exports.getEntries = function (req, callback) {
-
-  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'p.client_id');
-  const employeeId = (req.query.employeeid !== undefined ? '\'' + req.query.employeeid + '\'' : 'a.user_id');
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'a.project_id');
+  const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'p.client_id');
+  const employeeId = (req.query.employeeid !== undefined ? mysql.escape(req.query.employeeid) : 'a.user_id');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 'a.project_id');
 
   connection.query(
     'SELECT a.id as id, c.id AS client_id, c.name AS client_name, ' +
@@ -208,9 +205,9 @@ exports.getEntries = function (req, callback) {
 };
 
 exports.getData = function (req, callback) {
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 'r.project_id');
-  const employeeId = (req.query.employeeid !== undefined ? req.query.employeeid : 'r.employee_id');
-  const clientId = (req.query.clientid !== undefined ? req.query.clientid : 'r.client_id');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 'r.project_id');
+  const employeeId = (req.query.employeeid !== undefined ? mysql.escape(req.query.employeeid) : 'r.employee_id');
+  const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'r.client_id');
   let cost = '';
   let costJoin = '';
   if (req.query.cost === '1') {
@@ -220,6 +217,7 @@ exports.getData = function (req, callback) {
       'LEFT OUTER JOIN tiers t on t.id = e.tier_id ';
   }
 
+
   let monday;
   tools.getMonday(function (date) {
     tools.convertDate(date, function (convertedDate) {
@@ -227,15 +225,30 @@ exports.getData = function (req, callback) {
 
       const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
-      connection.query(
-        'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
+      let entryQuery = 'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
         costJoin +
         'WHERE r.project_id = ' + projectId + ' ' +
         'AND r.client_id = ' + clientId + ' ' +
         'AND r.employee_id = ' + employeeId + ' ' +
         'AND r.capacity <> \'\' ' +
         active +
-        'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;', function (err, result) {
+        // 'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;' +
+        'ORDER BY r.week_of ASC;';
+      let sumFilter = '';
+      if (req.query.slim === '1') {
+        entryQuery = '';
+        sumFilter = 'AND r.project_id = ' + projectId + ' AND r.client_id = ' + clientId + ' ';
+      }
+
+      connection.query(
+        entryQuery +
+        'SELECT SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+        'WHERE r.employee_id = ' + employeeId + ' ' +
+        sumFilter +
+        'AND r.capacity <> \'\' ' +
+        active +
+        'GROUP BY r.week_of ' +
+        'ORDER BY r.week_of ASC;', function (err, result) {
           callback(err, result);
         }
       );
@@ -280,15 +293,15 @@ exports.getGraphData = function (req, callback) {
   for (let i = 0; i < req.body.employees.length; i++) {
     const employee = req.body.employees[i];
     if (i === 0) {
-      whereStatement += 't.user_id = \'' + employee.id + '\'';
+      whereStatement += 't.user_id = ' + mysql.escape(employee.id);
     } else {
-      whereStatement += ' OR t.user_id = \'' + employee.id + '\'';
+      whereStatement += ' OR t.user_id = ' + mysql.escape(employee.id);
     }
   }
   whereStatement += ') ';
 
-  let havingStatement = 'HAVING (case when (MAX(case when project_id = ' + req.body.projectId + ' then 1 else 0 end) = 1) then 1 end) ';
-  let projectFilter = 'AND project_id = ' + req.body.projectId + ' ';
+  let havingStatement = 'HAVING (case when (MAX(case when project_id = ' + mysql.escape(req.body.projectId) + ' then 1 else 0 end) = 1) then 1 end) ';
+  let projectFilter = 'AND project_id = ' + mysql.escape(req.body.projectId) + ' ';
 
   if (req.query.all === '1') {
     projectFilter = '';
@@ -316,16 +329,12 @@ exports.getGraphData = function (req, callback) {
 };
 
 exports.getTier = function (req, callback) {
-  let id = (req.params.id !== undefined ? req.params.id : 'e.id');
-
-  if (id.indexOf('-') !== -1) {
-    id = '\'' + id + '\'';
-  }
+  let id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'e.id');
 
   connection.query(
     'SELECT t.id, t.cost, e.id AS user_id FROM (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) as e ' +
     'RIGHT OUTER JOIN tiers t ON e.tier_id = t.id ' +
-    'WHERE e.id = ' + id + ' ', function (err, result) {
+    'WHERE e.id = ' + id, function (err, result) {
       callback(err, result);
     }
   );
@@ -335,7 +344,7 @@ exports.getTier = function (req, callback) {
 exports.getMembers = function (req, callback) {
   connection.query("SELECT e.id, e.first_name, e.last_name, e.capacity, a.is_project_manager " +
     "FROM employees e " +
-    "RIGHT OUTER JOIN assignments a ON a.project_id = " + req.params.id + " AND e.id = a.user_id " +
+    "RIGHT OUTER JOIN assignments a ON a.project_id = " + mysql.escape(req.params.id) + " AND e.id = a.user_id " +
     "WHERE a.deactivated = 0 " +
     "AND e.is_active = 1", function (err, result) {
     callback(err, result);
@@ -343,13 +352,13 @@ exports.getMembers = function (req, callback) {
 };
 
 exports.getTimeEntries = function (req, callback) {
-  const id = (req.params.id !== undefined ? req.params.id : 't.id');
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
-  let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\'' : '');
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 't.id');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 't.project_id');
+  let userId = (req.query.userid !== undefined ? mysql.escape(req.query.userid) : 't.user_id');
+  let since = (req.query.since ? 'and t.spent_at >= ' + mysql.escape(req.query.since) + ' ' : '');
 
-  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
-  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+  const from = (req.query.from ? mysql.escape(req.query.from) : null);
+  const to = (req.query.to ? mysql.escape(req.query.to) : null);
 
   let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
 
@@ -371,12 +380,12 @@ exports.getTimeEntries = function (req, callback) {
 };
 
 exports.getAllTimeEntries = function (req, callback) {
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
-  let since = (req.query.since ? 'and t.spent_at >= \'' + req.query.since + '\' ' : '');
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 't.project_id');
+  let userId = (req.query.userid !== undefined ? mysql.escape(req.query.userid) : 't.user_id');
+  let since = (req.query.since ? 'and t.spent_at >= ' + mysql.escape(req.query.since) + ' ' : '');
 
-  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
-  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+  const from = (req.query.from ? mysql.escape(req.query.from) : null);
+  const to = (req.query.to ? mysql.escape(req.query.to) : null);
 
   let between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to + ' ' : '');
 
@@ -404,10 +413,10 @@ exports.getAllTimeEntries = function (req, callback) {
 };
 
 exports.getHours = function (req, callback) {
-  const projectId = (req.query.projectid !== undefined ? req.query.projectid : 't.project_id');
-  let userId = (req.query.userid !== undefined ? '\'' + req.query.userid + '\'' : 't.user_id');
-  const from = (req.query.from ? '\'' + req.query.from + '\'' : null);
-  const to = (req.query.to ? '\'' + req.query.to + '\'' : null);
+  const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 't.project_id');
+  let userId = (req.query.userid !== undefined ? mysql.escape(req.query.userid) : 't.user_id');
+  const from = (req.query.from ? mysql.escape(req.query.from) : null);
+  const to = (req.query.to ? mysql.escape(req.query.to) : null);
 
   const between = (from !== null && to !== null ? 'AND t.spent_at BETWEEN ' + from + ' AND ' + to : '');
 
@@ -417,12 +426,12 @@ exports.getHours = function (req, callback) {
     'WHERE t.project_id = ' + projectId + ' ' +
     'AND t.user_id = ' + userId + ' ' +
     between, function (err, result) {
-      callback(err, result);
-    })
+    callback(err, result);
+  })
 };
 
 exports.getStartTime = function (req, callback) {
-  const projectId = (req.params.id !== undefined ? req.params.id : 't.project_id');
+  const projectId = (req.params.id !== undefined ? mysql.escape(req.params.id) : 't.project_id');
 
   connection.query('SELECT MIN(t.spent_at) AS start FROM ' +
     '(SELECT user_id, project_id, spent_at, hours FROM timeEntries UNION ALL ' +
@@ -440,10 +449,10 @@ exports.getStartTime = function (req, callback) {
 exports.createEntry = function (req, callback) {
   console.log(req.body.employeeId);
   connection.query('INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, ' +
-    'capacity, box_number) VALUES (\'' + req.body.clientId + '\', \'' + req.body.projectId + '\', \'' +
-    req.body.employeeId + '\', \'' + req.body.weekOf + '\', \'' +
-    req.body.capacity + '\', \'' + req.body.boxNumber + '\') ' +
-    'ON DUPLICATE KEY UPDATE capacity=\'' + req.body.capacity + '\', box_number=\'' + req.body.boxNumber + '\'',
+    'capacity, box_number) VALUES (' + mysql.escape(req.body.clientId) + ', ' + mysql.escape(req.body.projectId) + ', ' +
+    mysql.escape(req.body.employeeId) + ', ' + mysql.escape(req.body.weekOf) + ', ' +
+    mysql.escape(req.body.capacity) + ', ' + mysql.escape(req.body.boxNumber) + ') ' +
+    'ON DUPLICATE KEY UPDATE capacity=' + mysql.escape(req.body.capacity) + ', box_number=' + mysql.escape(req.body.boxNumber),
     function (err, result) {
       callback(err, result);
     });
@@ -524,26 +533,22 @@ exports.addFakeAssignment = function (assignment, callback) {
  */
 
 exports.updateCapacity = function (req, callback) {
-  connection.query('UPDATE employees SET capacity = ' + req.body.capacity + ' WHERE id = ' + req.body.id, function (err, result) {
+  connection.query('UPDATE employees SET capacity = ' + mysql.escape(req.body.capacity) + ' WHERE id = ' + mysql.escape(req.body.id), function (err, result) {
     callback(err, result);
   });
 };
 
 exports.updateData = function (req, callback) {
-  req.body.employee_id = '\'' + req.body.employee_id + '\'';
-  req.body.fake_employee_id = '\'' + req.body.fake_employee_id + '\'';
-
-
-  connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + req.body.employee_id +
-    ' AND project_id = ' + req.body.project_id + ';UPDATE resourceManagement SET employee_id = ' + req.body.employee_id +
-    ' WHERE employee_id = ' + req.body.fake_employee_id + ' AND project_id = ' + req.body.project_id,
+  connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.employee_id) +
+    ' AND project_id = ' + mysql.escape(req.body.project_id) + ';UPDATE resourceManagement SET employee_id = ' + mysql.escape(req.body.employee_id) +
+    ' WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' AND project_id = ' + mysql.escape(req.body.project_id),
     function (err, result) {
       callback(err, result);
     })
 };
 
 exports.deactivateAssignment = function (req, callback) {
-  connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + req.params.assignment_id + ' AND project_id = ' + req.params.project_id, function (err, result) {
+  connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + mysql.escape(req.params.assignment_id) + ' AND project_id = ' + mysql.escape(req.params.project_id), function (err, result) {
     callback(err, result);
   });
 };
@@ -553,13 +558,13 @@ exports.deactivateAssignment = function (req, callback) {
  */
 
 exports.deleteFakeAssignment = function (req, callback) {
-  connection.query('DELETE FROM assignments_fake WHERE id = \'' + req.params.assignment_id + '\'', function (err, result) {
+  connection.query('DELETE FROM assignments_fake WHERE id = ' + mysql.escape(req.params.assignment_id), function (err, result) {
     callback(err, result);
   });
 };
 
 exports.deleteFakeEmployee = function (req, callback) {
-  connection.query('DELETE FROM employees_fake WHERE id = \'' + req.params.employee_id + '\'', function (err, result) {
+  connection.query('DELETE FROM employees_fake WHERE id = ' + mysql.escape(req.params.employee_id), function (err, result) {
     callback(err, result);
   });
 };
