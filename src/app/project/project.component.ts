@@ -132,17 +132,6 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
-    this.subscriptions.push(this.graphService.lineChartData$.subscribe(
-      lineChartData => {
-        this.budget = lineChartData[lineChartData.length - 1].data[lineChartData[lineChartData.length - 1].data.length - 1];
-        this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
-        this.budgetSpent = Number(this.budget) - Number(this.internalCost);
-        this.remaining = this.budget - this.budgetSpent;
-        const projectedInternalCost = Number(lineChartData[1].data[lineChartData[1].data.length - 1]);
-        this.projectedProfit = Number(this.budget) - projectedInternalCost;
-        this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
-      }
-    ));
 
     this.route.url.subscribe(
       urlSegments => {
@@ -157,6 +146,21 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     );
+
+
+    this.subscriptions.push(this.graphService.lineChartData$.subscribe(
+      lineChartData => {
+        this.budget = lineChartData[lineChartData.length - 1].data[lineChartData[lineChartData.length - 1].data.length - 1];
+        this.internalCost = lineChartData[0].data[lineChartData[0].data.length - 1];
+        this.budgetSpent = Number(this.budget) - Number(this.internalCost);
+        this.remaining = this.budget - this.budgetSpent;
+        const projectedInternalCost = Number(lineChartData[1].data[lineChartData[1].data.length - 1]);
+        this.projectedProfit = Number(this.budget) - projectedInternalCost;
+        this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
+      }
+    ));
+
+
 
     // this.route.queryParams.subscribe(
     //   params => {
@@ -196,6 +200,10 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     //
     //   }
     // );
+  }
+
+  subscribeToParams() {
+
   }
 
   ngOnDestroy() {

@@ -156,6 +156,18 @@ export class EntryComponent implements OnInit, OnDestroy {
             this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1&slim=1').subscribe(
               data => {
                 this.rollUpComponent.headerData = data.result;
+                for (let i = 0; i < this.forecast.data.length; i++) {
+                  if (this.forecast.data[i].week_of.slice(0, 10) === week) {
+                    this.forecast.data.splice(i, 1, {
+                      employee_id: this.entry.employeeId,
+                      project_id: this.entry.projectId,
+                      client_id: this.entry.clientId,
+                      week_of: week,
+                      capacity: value
+                    });
+                    break;
+                  }
+                }
               }
             );
           }

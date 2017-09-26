@@ -47,6 +47,7 @@ exports.get = function (req) {
 };
 
 exports.getPeople = function (req, callback) {
+
   let employeeId = (req.params.id ? mysql.escape(req.params.id) : 'a.user_id');
   const clientId = (req.query.clientid !== undefined ? mysql.escape(req.query.clientid) : 'p.client_id');
   const projectId = (req.query.projectid !== undefined ? mysql.escape(req.query.projectid) : 'a.project_id');
@@ -287,18 +288,21 @@ exports.getData = function (req, callback) {
 };
 
 exports.getGraphData = function (req, callback) {
-
   let whereStatement = 'WHERE (';
+  let whereStatement2 = 'WHERE (';
 
   for (let i = 0; i < req.body.employees.length; i++) {
     const employee = req.body.employees[i];
     if (i === 0) {
       whereStatement += 't.user_id = ' + mysql.escape(employee.id);
+      whereStatement2 += 'r.employee_id = ' + mysql.escape(employee.id);
     } else {
       whereStatement += ' OR t.user_id = ' + mysql.escape(employee.id);
+      whereStatement2 += ' OR r.employee_id = ' + mysql.escape(employee.id);
     }
   }
   whereStatement += ') ';
+  whereStatement2 += ') ';
 
   let havingStatement = 'HAVING (case when (MAX(case when project_id = ' + mysql.escape(req.body.projectId) + ' then 1 else 0 end) = 1) then 1 end) ';
   let projectFilter = 'AND project_id = ' + mysql.escape(req.body.projectId) + ' ';
@@ -319,13 +323,16 @@ exports.getGraphData = function (req, callback) {
   SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t
   RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + `
   GROUP BY date_format(t.spent_at, "%x-%v"), t.user_id ` + havingStatement + `
-  ORDER BY t.spent_at ASC`, function (err, result) {
+  ORDER BY t.spent_at ASC; 
+  SELECT r.employee_id AS user_id, e.capacity / 3600 AS capacity, date_format(r.week_of, "%x-%v") AS week_of, SUM(r.capacity) AS hours 
+  FROM resourceManagement r 
+  RIGHT OUTER JOIN employees e ON r.employee_id = e.id ` + whereStatement2 + projectFilter + `
+  GROUP BY date_format(r.week_of, "%x-%v"), r.employee_id ` + havingStatement + `
+  ORDER BY r.week_of ASC`, function (err, result) {
         callback(err, result);
       });
     });
   });
-
-
 };
 
 exports.getTier = function (req, callback) {
