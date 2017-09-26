@@ -557,7 +557,7 @@ exports.addAssignment = function (assignment, callback) {
 };
 
 exports.addFakeAssignment = function (assignment, callback) {
-  connection.query(
+  let query = '' +
     "INSERT INTO assignments_fake (id, user_id, project_id, deactivated) " +
     "VALUES (" +
     mysql.escape(assignment.id) + ", " +
@@ -567,10 +567,14 @@ exports.addFakeAssignment = function (assignment, callback) {
     "ON DUPLICATE KEY UPDATE " +
     "user_id=" + mysql.escape(assignment.user_id) + ", " +
     "project_id=" + mysql.escape(assignment.project_id) + ", " +
-    "deactivated=" + mysql.escape(assignment.deactivated) + "; ",
-    function (err, result) {
-      callback(err, result);
-    });
+    "deactivated=" + mysql.escape(assignment.deactivated);
+
+  console.log(query);
+
+  connection.query(query, function (err, result) {
+    callback(err, result);
+  });
+
 
   /* not in use
    "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" +
