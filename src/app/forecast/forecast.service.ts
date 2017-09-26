@@ -232,10 +232,6 @@ export class ForecastService {
   updateRollUps(params) {
     const rollUps = [];
 
-    // TODO - delete this.currentId and this.path after testing
-    this.currentId = params.id;
-    this.path = params.path;
-
     this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
       data => {
         this.employees.next(data.employees);
