@@ -152,11 +152,7 @@ export class EntryComponent implements OnInit, OnDestroy {
             if (this.params.id !== '') {
               this.graphService.initializeGraph(this.params);
             }
-            this.forecastService.socket.emit('broadcastUpdatedRollUps', {
-              projectId: this.entry.projectId,
-              employeeId: this.entry.employeeId
-            }); // everyone but the sender gets it
-
+            this.forecastService.socket.emit('broadcastUpdatedRollUps', { id: this.entry.projectId, employeeId: this.entry.employeeId }); // everyone but the sender gets it
             this.forecastService.getResources('?employeeId=' + this.entry.employeeId + '&active=1&slim=1').subscribe(
               data => {
                 this.rollUpComponent.headerData = data.result;

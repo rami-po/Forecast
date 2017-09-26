@@ -97,31 +97,66 @@ export class ForecastComponent implements OnInit {
     // listen for update messages from the server, and then update roll ups when received
     // should only update when the current view is affected by the update:
     //   0) when the current view is the main view (all projects)
-    //   1) when a new fake user has been created
+    //   1) when a new fake user has been added, deleted, or transformed
     //   2) when the current view and the update have the same project ID
-    //   3) when the current view and the update have different project IDs, but the same employee ID
+    //   3) when the current view is a client view, and the update is in one of the client's projects
+    //   4) when the current view and the update have different project IDs, but the same employee ID
     this.forecastService.getUpdateMessages().subscribe(
-      message => {
-        // TODO - we need a better way to determine the project ID. we shouldn't have to parse it out of the params. what happens if the url format changes?
-        let projectId = this.params.id;
+      data => {
+        let message = data as any;
+        let currentId = this.params.id;
         let employees = this.forecastService.employees.getValue();
-        let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
-        if (projectId === '') {
+        let employeeId = !isNullOrUndefined(message.employeeId) ? message.employeeId : false;
+        let clientId = !isNullOrUndefined(message.clientId) ? message.clientId : false;
+        if (currentId === '') {
           // the current view is of all projects. any change requires an update
           this.forecastService.updateRollUps(this.params);
         }
-        else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee') {
-          // adding or deleting a fake employee requires an update, regardless of the project
+        else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
+          // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
           this.forecastService.updateRollUps(this.params);
         }
-        else if (projectId === (message as any).projectId) {
-          // a change occurred in the current project. an update is required
+        else if (currentId === message.id) {
+          // a change occurred in the current project or client view. an update is required
+          this.forecastService.updateRollUps(this.params);
+        }
+        else if (clientId !== false && currentId === clientId) {
+          // a change occurred in a project of the current client view. an update is required
           this.forecastService.updateRollUps(this.params);
         }
         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
-          // an employee in the current project has an updated entry in another project. we need to update this view.
+          // an employee in the current client or project view has an updated entry in another project. we need to update this view.
           this.forecastService.updateRollUps(this.params);
         }
+        // TODO - delete this version soon
+        /*
+         let params = {id: this.forecastService.currentId, path: this.forecastService.path};
+         console.log('currentId: ' + this.forecastService.currentId);
+         let currentId = this.forecastService.currentId;
+         let employees = this.forecastService.employees.getValue();
+         let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
+         let clientId = !isNullOrUndefined((message as any).clientId) ? (message as any).clientId : false;
+         if (currentId === '') {
+         // the current view is of all projects. any change requires an update
+         this.forecastService.updateRollUps(params);
+         }
+         else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
+         // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
+         this.forecastService.updateRollUps(params);
+         }
+         else if (currentId === (message as any).id) {
+         // a change occurred in the current project or client view. an update is required
+         this.forecastService.updateRollUps(params);
+         }
+         else if (clientId !== false && currentId === clientId) {
+         // a change occurred in a project of the current client view. an update is required
+         this.forecastService.updateRollUps(params);
+         }
+         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
+         // an employee in the current client or project view has an updated entry in another project. we need to update this view.
+         this.forecastService.updateRollUps(params);
+         }
+         */
       });
   }
 

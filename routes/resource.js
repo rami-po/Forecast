@@ -863,9 +863,6 @@ router.get('/rollups', function (req, res, next) {
         }
         let count2 = 0;
         for (const entry of entries) {
-          if (entry.employee_id.indexOf('-') !== -1) {
-            entry.employee_id = '\'' + entry.employee_id + '\'';
-          }
           SQL.getData({query: {employeeid: entry.employee_id, projectid: entry.project_id, active: '1'}}, (err, data) => {
             if (err) {
               return res.status(500).json({
