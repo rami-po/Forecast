@@ -568,7 +568,8 @@ router.post('/data/graph', function (req, res, next) {
     } else {
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result[0],
+        forecast: result[1]
       });
     }
   })

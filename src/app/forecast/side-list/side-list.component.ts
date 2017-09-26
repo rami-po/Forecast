@@ -89,13 +89,10 @@ export class SideListComponent implements OnInit {
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.title = 'Are you sure?';
-    console.log('br0?');
     if (employee.id === 'fake_id') {
       this.addFakeUser(dialog);
       return null;
     }
-
-    console.log('o');
 
     this.forecastService.getProjects('/' + this.params.id).subscribe(
       project => {
