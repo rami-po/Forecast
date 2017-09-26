@@ -301,7 +301,7 @@ router.post('/project/:project_id/assignments', function (req, res, next) {
             }
           });
         } else if (status === 404) {
-          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id};
+          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id, deactivated: 0};
           SQL.addFakeAssignment(assignment, function (err, result) {
             if (err) {
               return res.status(500).json({
