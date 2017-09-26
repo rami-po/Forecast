@@ -37,9 +37,6 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
   for (var key in req.query) {
     req.query[key.toLowerCase()] = req.query[key];
-    if (key.toLowerCase() === 'employeeid' && isNaN(key)) {
-      req.query[key.toLowerCase()] = '\'' + req.query[key] + '\'';
-    }
   }
   next();
 });
