@@ -89,13 +89,10 @@ export class SideListComponent implements OnInit {
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.title = 'Are you sure?';
-    console.log('br0?');
     if (employee.id === 'fake_id') {
       this.addFakeUser(dialog);
       return null;
     }
-
-    console.log('o');
 
     this.forecastService.getProjects('/' + this.params.id).subscribe(
       project => {
@@ -106,7 +103,7 @@ export class SideListComponent implements OnInit {
             if (confirmed) {
               this.forecastService.addEmployeeToProject(this.params.id, employee.id).subscribe(
                 () => {
-                  this.socket.emit('userUpdatedRollUps', { projectId: project.result[0].id, employeeId: employee.id }); // everyone gets it, including the sender
+                  this.socket.emit('userUpdatedRollUps', { id: this.params.id, employeeId: employee.id, clientId: project.result[0].clientId }); // everyone gets it, including the sender
                   // this.forecastService.updateRollUps(this.params);
                 }
               );
@@ -146,6 +143,7 @@ export class SideListComponent implements OnInit {
       confirmed => {
         if (confirmed) {
           if (entry.last_name === '') { // employee is fake
+            console.log('deleteUser - entry: ' + JSON.stringify(entry));
             this.forecastService.getAssignments('?employeeId=' + entry.employee_id).subscribe(
               allAssignments => {
                 if (allAssignments.result.length === 1) {
@@ -164,7 +162,7 @@ export class SideListComponent implements OnInit {
                     assignment => {
                       this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
                         () => {
-                          this.socket.emit('userUpdatedRollUps', { projectId: entry.project_id, employeeId: entry.employee_id } ); // everyone gets it, including the sender
+                          this.socket.emit('userUpdatedRollUps', { id: entry.project_id, employeeId: entry.employee_id } ); // everyone gets it, including the sender
                           // this.forecastService.updateRollUps(this.params);
                         }
                       );
@@ -177,7 +175,7 @@ export class SideListComponent implements OnInit {
           }
           this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
             () => {
-              this.socket.emit('userUpdatedRollUps', { projectId: entry.project_id, employeeId: entry.employee_id }); // everyone gets it, including the sender
+              this.socket.emit('userUpdatedRollUps', { id: entry.project_id, employeeId: entry.employee_id }); // everyone gets it, including the sender
               // this.forecastService.updateRollUps(this.params);
             }
           );

@@ -301,7 +301,7 @@ router.post('/project/:project_id/assignments', function (req, res, next) {
             }
           });
         } else if (status === 404) {
-          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id};
+          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id, deactivated: 0};
           SQL.addFakeAssignment(assignment, function (err, result) {
             if (err) {
               return res.status(500).json({
@@ -568,7 +568,8 @@ router.post('/data/graph', function (req, res, next) {
     } else {
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result[0],
+        forecast: result[1]
       });
     }
   })
@@ -863,9 +864,6 @@ router.get('/rollups', function (req, res, next) {
         }
         let count2 = 0;
         for (const entry of entries) {
-          if (entry.employee_id.indexOf('-') !== -1) {
-            entry.employee_id = '\'' + entry.employee_id + '\'';
-          }
           SQL.getData({query: {employeeid: entry.employee_id, projectid: entry.project_id, active: '1'}}, (err, data) => {
             if (err) {
               return res.status(500).json({

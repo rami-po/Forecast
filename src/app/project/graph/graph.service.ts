@@ -131,8 +131,10 @@ export class GraphService {
   initializeGraph(params) {
     const labels = [];
     const allData = [
-      {data: [], label: 'Actual'},
-      {data: [], label: 'Forecast'}
+      {data: [], label: 'Forecast (cost)'},
+      {data: [], label: 'Actual (cost)'},
+      {data: [], label: 'Forecast (revenue)'},
+      {data: [], label: 'Actual (revenue)'}
     ];
 
     console.log(params);
@@ -142,53 +144,85 @@ export class GraphService {
         employees = employees.result;
         const body = {employees: employees, projectId: params.id};
         this.forecastService.getGraphData('?all=1', JSON.stringify(body)).subscribe(
-          allGraphData => { allGraphData = allGraphData.result;
+          allGraphData => {
+            allGraphData = allGraphData.result;
+            const forecastGraphData = allGraphData.forecast;
             this.forecastService.getGraphData('', JSON.stringify(body)).subscribe(
-              projectData => { projectData = projectData.result;
+              projectData => {
+                projectData = projectData.result;
+                const forecastProjectData = projectData.forecast;
                 this.forecastService.getProjects('/' + body.projectId).subscribe(
                   project => {
                     const budgetData = this.parse(project.result[0].notes);
-                    const graphData = [];
+                    const revenueData = [];
+                    const costData = [];
+                    // const forecastRevenueData = [];
                     let cost = 0;
                     let revenue = 0;
+                    // let forecastRevenue = 0;
+
+                    // for (let i = 0; i < forecastGraphData.length; i++) {
+                    //   const week = allGraphData[i].week_of.split('-');
+                    //   const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
+                    //
+                    //   if (forecastGraphData[i].hours >= forecastGraphData[i].capacity) {
+                    //     forecastRevenue += (forecastProjectData[i].hours / forecastGraphData[i].hours) * forecastGraphData[i].capacity * 20;
+                    //   } else {
+                    //     forecastRevenue += forecastProjectData[i].hours * 20;
+                    //   }
+                    //   forecastRevenue[ISOWeek] = forecastRevenue;
+                    // }
+                    // console.log(forecastRevenue);
+
                     for (let i = 0; i < allGraphData.length; i++) {
+                      const week = allGraphData[i].week_of.split('-');
+                      const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
+
                       if (allGraphData[i].hours >= allGraphData[i].capacity) {
                         cost += (projectData[i].hours / allGraphData[i].hours) * 20;
                         revenue += (projectData[i].hours / allGraphData[i].hours) * allGraphData[i].capacity * 20;
+
                       } else {
                         cost += (projectData[i].hours / projectData[i].capacity) * 20;
                         revenue += projectData[i].hours * 20;
+
                       }
-                      const week = allGraphData[i].week_of.split('-');
-                      graphData[this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10)] = revenue;
+                      revenueData[ISOWeek] = revenue;
+                      costData[ISOWeek] = cost;
                     }
                     if (budgetData.length > 0) {
                       allData.push({data: [], label: budgetData[0].notes});
                     }
-                    let budgetKey = 2;
-                    for (const key in graphData) {
-                      if (graphData.hasOwnProperty(key)) {
+                    let budgetKey = 4;
+                    for (const key in revenueData) {
+                      if (revenueData.hasOwnProperty(key)) {
                         labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
                         // ACTUAL AND FORECAST DATA
                         if (key < this.weeks[0]) { // actual
-                          allData[1].data.push(graphData[key]);
+                          allData[3].data.push(revenueData[key]);
+                          allData[1].data.push(costData[key]);
+                          allData[2].data.push(null);
                           allData[0].data.push(null);
                         } else if (key === this.weeks[0]) { // both
-                          allData[1].data.push(graphData[key]);
-                          allData[0].data.push(graphData[key]);
+                          allData[3].data.push(revenueData[key]);
+                          allData[1].data.push(costData[key]);
+                          allData[2].data.push(revenueData[key]);
+                          allData[0].data.push(costData[key]);
                         } else if (key > this.weeks[0]) { // forecast
-                          allData[0].data.push(graphData[key]);
+                          allData[2].data.push(revenueData[key]);
+                          allData[0].data.push(costData[key]);
                         }
 
                         // BREAKPOINT DATA
-                        if (budgetKey - 2 < budgetData.length) {
-                          allData[budgetKey].data.push(budgetData[budgetKey - 2].budget);
-                          if (budgetData[budgetKey - 2].endWeek === key) {
+                        if (budgetKey - 4 < budgetData.length) {
+                          allData[budgetKey].data.push(budgetData[budgetKey - 4].budget);
+                          if (budgetData[budgetKey - 4].endWeek === key) {
                             budgetKey++;
-                            if (budgetKey - 2 < budgetData.length) {
+                            if (budgetKey - 4 < budgetData.length) {
                               allData.push({
                                 data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
-                                label: budgetData[budgetKey - 2].notes});
+                                label: budgetData[budgetKey - 4].notes
+                              });
                             }
                           }
                         }

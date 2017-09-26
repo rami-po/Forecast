@@ -44,6 +44,9 @@ export class ForecastService {
   public params = new Subject<any>();
   params$ = this.params.asObservable().startWith({id: '', path: ''});
 
+  public currentId = '';
+  public path = '';
+
   constructor(private http: Http,
               private datePipe: DatePipe,
               private router: Router) {
@@ -229,6 +232,10 @@ export class ForecastService {
   updateRollUps(params) {
     const rollUps = [];
 
+    // TODO - delete this.currentId and this.path after testing
+    this.currentId = params.id;
+    this.path = params.path;
+
     this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
       data => {
         this.employees.next(data.employees);
@@ -253,12 +260,11 @@ export class ForecastService {
 
   getUpdateMessages() {
     let observable = new Observable(observer => {
-      this.socket.on('updateRollUps', (data) => {
-        console.log('received message to update roll ups: ' + data);
-        observer.next(data);
+      this.socket.on('updateRollUps', (message) => {
+        console.log('received message to update roll ups: ' + message);
+        observer.next(message);
       });
     });
     return observable;
   }
-
 }

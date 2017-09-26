@@ -37,7 +37,19 @@ export class GraphComponent implements OnInit, OnDestroy {
     labels: [],
     datasets: [
       {
-        label: 'Forecast',
+        label: 'Forecast (cost)',
+        data: [],
+        backgroundColor: 'rgba(255, 100, 0, .2)',
+        borderColor: 'rgba(255, 100, 0, 1)',
+        pointBackgroundColor: 'rgba(255, 100, 0, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(255, 100, 0, .8)',
+        lineTension: null,
+        hidden: false
+      },
+      {
+        label: 'Actual (cost)',
         data: [],
         backgroundColor: 'rgba(255, 152, 0, .2)',
         borderColor: 'rgba(255, 152, 0, 1)',
@@ -45,10 +57,23 @@ export class GraphComponent implements OnInit, OnDestroy {
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgba(255, 152, 0, .8)',
-        lineTension: null
+        lineTension: null,
+        hidden: false
       },
       {
-        label: 'Actual',
+        label: 'Forecast (revenue)',
+        data: [],
+        backgroundColor: 'rgba(9, 103, 179, .2)',
+        borderColor: 'rgba(9, 103, 179, 1)',
+        pointBackgroundColor: 'rgba(9, 103, 179, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(9, 103, 179, .8)',
+        lineTension: null,
+        hidden: false
+      },
+      {
+        label: 'Actual (revenue)',
         data: [],
         backgroundColor: 'rgba(33, 150, 243, .4)',
         borderColor: 'rgba(33, 150, 243, 1)',
@@ -56,7 +81,8 @@ export class GraphComponent implements OnInit, OnDestroy {
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
-        lineTension: null
+        lineTension: null,
+        hidden: false
       }
     ]
   };
@@ -74,7 +100,40 @@ export class GraphComponent implements OnInit, OnDestroy {
       }]
     },
     legend: {
-      display: false
+      reverse: true,
+      onClick: ($event, legendItem) => {
+        switch (legendItem.datasetIndex) {
+          case 0 :
+          case 1 :
+            this.data.datasets[0].hidden = !this.data.datasets[0].hidden;
+            this.data.datasets[1].hidden = !this.data.datasets[1].hidden;
+            this.chart.chart.update();
+            break;
+          case 2 :
+          case 3 :
+            this.data.datasets[2].hidden = !this.data.datasets[2].hidden;
+            this.data.datasets[3].hidden = !this.data.datasets[3].hidden;
+            this.chart.chart.update();
+            break;
+        }
+      },
+      labels: {
+        filter: (legendItem, chartData) => {
+          switch (legendItem.datasetIndex) {
+            case 0:
+              return true;
+            case 1:
+              return true;
+            case 2:
+              return true;
+            case 3:
+              return true;
+            default:
+              return false;
+          }
+          // return true or false based on legendItem's datasetIndex (legendItem.datasetIndex)
+        }
+      },
     },
     zoom: {
       enabled: false,
@@ -142,12 +201,14 @@ export class GraphComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       data => {
-        for (let i = 2; i <= this.data.datasets.length; i++) {
-         this.data.datasets.splice(2, 1);
+        for (let i = 4; i <= this.data.datasets.length; i++) {
+          this.data.datasets.splice(4, 1);
         }
         this.data.datasets[0].data = data[0].data;
         this.data.datasets[1].data = data[1].data;
-        for (let i = 2; i < data.length; i++) {
+        this.data.datasets[2].data = data[2].data;
+        this.data.datasets[3].data = data[3].data;
+        for (let i = 4; i < data.length; i++) {
           this.data.datasets[i] = {
             label: data[i].label,
             data: data[i].data,
@@ -157,7 +218,8 @@ export class GraphComponent implements OnInit, OnDestroy {
             pointBorderColor: 'rgba(0, 0, 0, 0)',
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: 'rgba(244, 67, 54, .8)',
-            lineTension: 0
+            lineTension: 0,
+            hidden: false
           };
         }
 
