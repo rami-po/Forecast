@@ -199,7 +199,8 @@ exports.getEntries = function (req, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, c.name, p.name, e.id, c.id, p.id ASC;', function (err, result) {
+    'ORDER BY CASE last_name <> \'\' WHEN TRUE THEN e.last_name ELSE e.first_name END, c.name, p.name, e.id, c.id, p.id ASC;',
+    function (err, result) {
       callback(err, result);
     });
 };
@@ -448,16 +449,22 @@ exports.getStartTime = function (req, callback) {
 
 exports.createEntry = function (req, callback) {
   console.log(req.body.employeeId);
-  connection.query('INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, ' +
-    'capacity, box_number) VALUES (' + mysql.escape(req.body.clientId) + ', ' + mysql.escape(req.body.projectId) + ', ' +
-    mysql.escape(req.body.employeeId) + ', ' + mysql.escape(req.body.weekOf) + ', ' +
-    mysql.escape(req.body.capacity) + ', ' + mysql.escape(req.body.boxNumber) + ') ' +
+  connection.query(
+    'INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, capacity, box_number) ' +
+    'VALUES (' +
+    mysql.escape(req.body.clientId) + ', ' +
+    mysql.escape(req.body.projectId) + ', ' +
+    mysql.escape(req.body.employeeId) + ', ' +
+    mysql.escape(req.body.weekOf) + ', ' +
+    mysql.escape(req.body.capacity) + ', ' +
+    mysql.escape(req.body.boxNumber) + ') ' +
     'ON DUPLICATE KEY UPDATE capacity=' + mysql.escape(req.body.capacity) + ', box_number=' + mysql.escape(req.body.boxNumber),
     function (err, result) {
       callback(err, result);
     });
 };
 
+// TODO - not in use?
 exports.addEmployee = function (employee, callback) {
   connection.query("INSERT INTO employees (id, email, created_at, is_admin, first_name, last_name, is_contractor, " +
     "telephone, is_active, default_hourly_rate, department, updated_at, cost_rate, capacity) " + "VALUES ('" +
@@ -480,52 +487,95 @@ exports.addEmployee = function (employee, callback) {
 };
 
 exports.addFakeEmployee = function (employee, callback) {
-  connection.query("INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity, tier_id) " + "VALUES ('" +
-    employee.id + "', '" + employee.first_name + "', '" + employee.last_name + "', '" + employee.is_contractor + "', '" +
-    employee.is_active + "', '" + employee.capacity + "', '" + employee.tier_id + "') " +
-    "ON DUPLICATE KEY UPDATE first_name='" + employee.first_name + "', last_name='" +
-    employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
-    "capacity='" + employee.capacity + "', tier_id='" + employee.tier_id + "'; " /*+
-
-   "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" +
-   employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " +
-   "capacity='" + employee.capacity + "'"*/, function (err, result) {
-    callback(err, result);
+  connection.query(
+    "INSERT INTO employees_fake (id, first_name, last_name, is_contractor, is_active, capacity, tier_id) " +
+    "VALUES (" +
+    mysql.escape(employee.id) + ', ' +
+    mysql.escape(employee.first_name) + ', ' +
+    mysql.escape(employee.last_name) + ', ' +
+    mysql.escape(employee.is_contractor) + ', ' +
+    mysql.escape(employee.is_active) + ', ' +
+    mysql.escape(employee.capacity) + ', ' +
+    mysql.escape(employee.tier_id) + ") " +
+    "ON DUPLICATE KEY UPDATE " +
+    "first_name=" + mysql.escape(employee.first_name) + ", " +
+    "last_name=" + mysql.escape(employee.last_name) + ", " +
+    "is_contractor=" + mysql.escape(employee.is_contractor) + ", " +
+    "is_active=" + mysql.escape(employee.is_active) + ", " +
+    "capacity=" + mysql.escape(employee.capacity) + ", " +
+    "tier_id=" + mysql.escape(employee.tier_id) + "; ", function (err, result) {
+      callback(err, result);
   });
+
+  /* not in use
+  "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" + employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " + "capacity='" + employee.capacity + "'"
+   */
 };
 
 exports.addAssignment = function (assignment, callback) {
-  connection.query("INSERT INTO assignments (id, user_id, project_id, is_project_manager, deactivated, hourly_rate, " +
-    "budget, created_at, updated_at, estimate, expected_weekly_hours) VALUES ('" + assignment.id + "', '" +
-    assignment.user_id + "', '" + assignment.project_id + "', '" + +assignment.is_project_manager + "', '" +
-    +assignment.deactivated + "', '" + assignment.hourly_rate + "', '" + assignment.budget + "', '" +
-    assignment.created_at + "', '" + assignment.updated_at + "', '" + assignment.estimate + "', '" +
-    assignment.expected_weekly_hours + "') ON DUPLICATE KEY UPDATE user_id='" + assignment.user_id + "', project_id='" +
-    assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
-    +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
-    "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
-    assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'; " /*+
+  // TODO - if the properties of assignment match up 1-1 to the columns in the assignment table, we could do this
+  // let columns = ['id', 'user_id', 'project_id', 'is_project_manager', 'deactived', 'hourly_rate', 'budget', 'created_at', 'update_at', 'estimate', 'expected_weekly_hours'];
+  // Object.values(assignment).forEach(function(key) { if (!columns.indexOf(key)) { delete assignment.key; }}); // do this if the properties don't exactly match up with the columns
+  // connection.query('INSERT INTO assignments SET ? ON DUPLICATE KEY UPDATE ?', [assignment, assignment], function (err, result) { callback(err, result); });
 
-   "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" + assignment.user_id + "', project_id='" +
-   assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
-   +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
-   "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
-   assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'"*/, function (err, result) {
-    callback(err, result);
-  });
-};
-
-exports.addFakeAssignment = function (assignment, callback) {
-  connection.query("INSERT INTO assignments_fake (id, user_id, project_id, deactivated) VALUES ('" +
-    assignment.id + "', '" + assignment.user_id + "', '" + assignment.project_id + "', '" + assignment.deactivated + "') " +
-    "ON DUPLICATE KEY UPDATE user_id='" +
-    assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'; " /*+
-
-     "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" +
-     assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'"*/,
+  connection.query(
+    "INSERT INTO assignments (id, user_id, project_id, is_project_manager, deactivated, hourly_rate, budget, created_at, updated_at, estimate, expected_weekly_hours) " +
+    "VALUES (" +
+    mysql.escape(assignment.id) + ", " +
+    mysql.escape(assignment.user_id) + ", " +
+    mysql.escape(assignment.project_id) + ", " +
+    mysql.escape(assignment.is_project_manager) + ", " +
+    mysql.escape(assignment.deactivated) + ", " +
+    mysql.escape(assignment.hourly_rate) + ", " +
+    mysql.escape(assignment.budget) + ", " +
+    mysql.escape(assignment.created_at) + ", " +
+    mysql.escape(assignment.updated_at) + ", " +
+    mysql.escape(assignment.estimate) + ", " +
+    mysql.escape(assignment.expected_weekly_hours) + ") " +
+    "ON DUPLICATE KEY UPDATE " +
+    "user_id=" + mysql.escape(assignment.user_id) + ", " +
+    "project_id=" + mysql.escape(assignment.project_id) + ", " +
+    "is_project_manager=" + mysql.escape(assignment.is_project_manager) + ", " +
+    "deactivated=" + mysql.escape(assignment.deactivated) + ", " +
+    "hourly_rate=" + mysql.escape(assignment.default_hourly_rate) + ", " +
+    "budget=" + mysql.escape(assignment.budget) + ", " +
+    "created_at=" + mysql.escape(assignment.created_at) + ", " +
+    "updated_at=" + mysql.escape(assignment.updated_at) + ", " +
+    "estimate=" + mysql.escape(assignment.estimate) + ", " +
+    "expected_weekly_hours=" + mysql.escape(assignment.expected_weekly_hours) + "; ",
     function (err, result) {
       callback(err, result);
     });
+
+    /* not in use
+     "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" + assignment.user_id + "', project_id='" +
+     assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
+     +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
+     "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
+     assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'"
+  */
+};
+
+exports.addFakeAssignment = function (assignment, callback) {
+  connection.query(
+    "INSERT INTO assignments_fake (id, user_id, project_id, deactivated) " +
+    "VALUES (" +
+    mysql.escape(assignment.id) + ", " +
+    mysql.escape(assignment.user_id) + ", " +
+    mysql.escape(assignment.project_id) + ", " +
+    mysql.escape(assignment.deactivated) + ") " +
+    "ON DUPLICATE KEY UPDATE " +
+    "user_id=" + mysql.escape(assignment.user_id) + ", " +
+    "project_id=" + mysql.escape(assignment.project_id) + ", " +
+    "deactivated=" + mysql.escape(assignment.deactivated) + "; ",
+    function (err, result) {
+      callback(err, result);
+    });
+
+  /* not in use
+   "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" +
+   assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'"
+  */
 };
 
 /*
@@ -533,7 +583,8 @@ exports.addFakeAssignment = function (assignment, callback) {
  */
 
 exports.updateCapacity = function (req, callback) {
-  connection.query('UPDATE employees SET capacity = ' + mysql.escape(req.body.capacity) + ' WHERE id = ' + mysql.escape(req.body.id), function (err, result) {
+  connection.query('UPDATE employees SET capacity = ' + mysql.escape(req.body.capacity) + ' WHERE id = ' + mysql.escape(req.body.id),
+    function (err, result) {
     callback(err, result);
   });
 };
@@ -548,7 +599,8 @@ exports.updateData = function (req, callback) {
 };
 
 exports.deactivateAssignment = function (req, callback) {
-  connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + mysql.escape(req.params.assignment_id) + ' AND project_id = ' + mysql.escape(req.params.project_id), function (err, result) {
+  connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + mysql.escape(req.params.assignment_id) + ' AND project_id = ' + mysql.escape(req.params.project_id),
+    function (err, result) {
     callback(err, result);
   });
 };
@@ -558,19 +610,22 @@ exports.deactivateAssignment = function (req, callback) {
  */
 
 exports.deleteFakeAssignment = function (req, callback) {
-  connection.query('DELETE FROM assignments_fake WHERE id = ' + mysql.escape(req.params.assignment_id), function (err, result) {
+  connection.query('DELETE FROM assignments_fake WHERE id = ' + mysql.escape(req.params.assignment_id),
+    function (err, result) {
     callback(err, result);
   });
 };
 
 exports.deleteFakeEmployee = function (req, callback) {
-  connection.query('DELETE FROM employees_fake WHERE id = ' + mysql.escape(req.params.employee_id), function (err, result) {
+  connection.query('DELETE FROM employees_fake WHERE id = ' + mysql.escape(req.params.employee_id),
+    function (err, result) {
     callback(err, result);
   });
 };
 
 exports.custom = function (req, callback) {
-  connection.query('ALTER TABLE tiers ALTER COLUMN cost varchar(255) COLLATE utf8_general_ci', function (err, result) {
+  connection.query('ALTER TABLE tiers ALTER COLUMN cost varchar(255) COLLATE utf8_general_ci',
+    function (err, result) {
     callback(err, result);
   });
 };
