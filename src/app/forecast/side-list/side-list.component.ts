@@ -251,6 +251,15 @@ export class SideListComponent implements OnInit {
 
   updateState(employee) {
     employee.opened = !employee.opened;
+    if (employee.opened) {
+      this.params.openEmployees.push(employee.id);
+    }
+    else {
+      let i = this.params.openEmployees.indexOf(employee.id);
+      if (i != -1) {
+        this.params.openEmployees.splice(i, 1);
+      }
+    }
   }
 
 }

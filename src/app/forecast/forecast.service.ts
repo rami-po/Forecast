@@ -42,7 +42,7 @@ export class ForecastService {
   employees$ = this.employees.asObservable();
 
   public params = new Subject<any>();
-  params$ = this.params.asObservable().startWith({id: '', path: ''});
+  params$ = this.params.asObservable().startWith({id: '', path: '', openEmployees: []});
 
   public currentId = '';
   public path = '';
@@ -234,6 +234,9 @@ export class ForecastService {
 
     this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
       data => {
+        data.employees.forEach(function(employee) {
+          employee.opened = (params.openEmployees.indexOf(employee.id) > -1);
+        });
         this.employees.next(data.employees);
         this.rollUps.next(data.rollUps);
       }
