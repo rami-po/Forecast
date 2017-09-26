@@ -517,42 +517,42 @@ router.get('/data', function (req, res, next) {
         err: err
       });
     } else {
-      const totalCapacities = {};
-      const totalCost = {};
-      for (let i = 0; i < result.length; i++) {
-        tools.convertDate(result[i].week_of, function (date) {
-          if (totalCapacities[date] == null) {
-            totalCapacities[date] = 0;
-          }
-          totalCapacities[date] += result[i].capacity;
-          if (req.query.cost === '1') {
-            if (totalCost[date] == null) {
-              totalCost[date] = 0;
-            }
-            totalCost[date] += result[i].capacity * result[i].cost;
-          }
-
-        });
-      }
-
-      const JSONArray = [];
-      for (const week in totalCapacities) {
-        const data = {
-          week: week,
-          capacity: totalCapacities[week],
-          cost: (req.query.cost === '1' ? totalCost[week] : 0)
-        };
-        JSONArray.push(data);
-      }
-
-      JSONArray.sort(function (a, b) {
-        return new Date(a.week) - new Date(b.week);
-      });
+      // const totalCapacities = {};
+      // const totalCost = {};
+      // for (let i = 0; i < result.length; i++) {
+      //   tools.convertDate(result[i].week_of, function (date) {
+      //     if (totalCapacities[date] == null) {
+      //       totalCapacities[date] = 0;
+      //     }
+      //     totalCapacities[date] += result[i].capacity;
+      //     if (req.query.cost === '1') {
+      //       if (totalCost[date] == null) {
+      //         totalCost[date] = 0;
+      //       }
+      //       totalCost[date] += result[i].capacity * result[i].cost;
+      //     }
+      //
+      //   });
+      // }
+      //
+      // const JSONArray = [];
+      // for (const week in totalCapacities) {
+      //   const data = {
+      //     week: week,
+      //     capacity: totalCapacities[week],
+      //     cost: (req.query.cost === '1' ? totalCost[week] : 0)
+      //   };
+      //   JSONArray.push(data);
+      // }
+      //
+      // JSONArray.sort(function (a, b) {
+      //   return new Date(a.week) - new Date(b.week);
+      // });
 
       return res.status(200).json({
         message: 'Success!',
         result: result,
-        totalCapacities: JSONArray
+        // totalCapacities: JSONArray
       });
     }
   });
@@ -861,19 +861,29 @@ router.get('/rollups', function (req, res, next) {
             err: err
           });
         }
-        if (entries.length > 0) {
-          rollUps.splice(count, 1, entries);
-        } else {
-          const index = employees.indexOf(employee);
-          employees.splice(index, 1);
-        }
-        count++;
-        if (count > employees.length - 1) {
-          return res.status(200).json({
-            message: 'Success!',
-            employees: employees,
-            rollUps: rollUps
-          });
+        let count2 = 0;
+        for (const entry of entries) {
+          SQL.getData({query: {employeeid: entry.employee_id, projectid: entry.project_id, active: '1'}}, (err, data) => {
+            if (err) {
+              return res.status(500).json({
+                message: 'Error!',
+                err: err
+              });
+            }
+            entry['forecast'] = {data: data[0], totals: data[1]};
+            count2++;
+            if (count2 > entries.length - 1) {
+              rollUps.splice(count, 1, entries);
+              count++;
+              if (count > employees.length - 1) {
+                return res.status(200).json({
+                  message: 'Success!',
+                  employees: employees,
+                  rollUps: rollUps
+                });
+              }
+            }
+          })
         }
       })
     }

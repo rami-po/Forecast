@@ -231,75 +231,31 @@ export class ForecastService {
 
   updateRollUps(params) {
     const rollUps = [];
-    const rollUps2 = [];
 
+    // TODO - delete this.currentId and this.path after testing
     this.currentId = params.id;
     this.path = params.path;
-
-    // this.getEmployees('?active=1&' + params.path + 'Id=' + params.id).subscribe(
-    //   data => {
-    //     const employees = data.result;
-    //     if (employees.length <= 0) {
-    //       this.router.navigate(['/404']);
-    //     }
-    //     // this.getEntries('').subscribe(
-    //     //   entries => {
-    //     //     let j = 0;
-    //     //     for (let i = 0; i < employees.length; i++) {
-    //     //       const employee = employees[i];
-    //     //       employee.opened = false;
-    //     //       rollUps2.push('');
-    //     //       const entriesTemp = [];
-    //     //       while (j < entries.result.length) {
-    //     //         const entry = entries.result[j];
-    //     //         if (employee.id === entry.employee_id) {
-    //     //           entriesTemp.push(entry);
-    //     //           j++;
-    //     //         } else {
-    //     //           rollUps2.splice(i, 1, entriesTemp);
-    //     //           break;
-    //     //         }
-    //     //       }
-    //     //     }
-    //     //   }
-    //     // );
-    //
-    //     for (let i = 0; i < employees.length; i++) {
-    //       const employee = employees[i];
-    //       employee.opened = false;
-    //       rollUps.push('');
-    //       this.getEntries('?employeeid=' + employee.id /* + params */).subscribe(
-    //         entries => {
-    //           if (entries.result.length > 0) {
-    //             rollUps.splice(i, 1, entries.result);
-    //           } else {
-    //             const index = employees.indexOf(employee);
-    //             employees.splice(index, 1);
-    //           }
-    //         }
-    //       );
-    //     }
 
     this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
       data => {
         this.employees.next(data.employees);
         this.rollUps.next(data.rollUps);
-        this.getResources('?active=1').subscribe(
-          resources => {
-            this.resources.next(resources);
-          }
-        );
-
-        this.getResources('?' + params.path + 'Id=' + params.id + '&active=1').subscribe(
-          resources => {
-            this.filteredResources.next(resources);
-          }
-        );
       }
     );
 
-    //   }
-    // );
+    this.getResources('?active=1&slim=1').subscribe(
+      resources => {
+        this.resources.next(resources.result);
+      }
+    );
+
+    if (params.id !== '') {
+      this.getResources('?' + params.path + 'Id=' + params.id + '&active=1&slim=1').subscribe(
+        resources => {
+          this.filteredResources.next(resources.result);
+        }
+      );
+    }
   }
 
   getUpdateMessages() {

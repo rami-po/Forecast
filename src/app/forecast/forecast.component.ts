@@ -24,7 +24,7 @@ export class ForecastComponent implements OnInit {
   private capacityHeader;
   private table;
   private forecast;
-  @Input() public params = '';
+  @Input() public params: any;
   @Input() public height = '85.9vh';
   @Input() public forecastHeight = '100vh';
   @Input() public isProjectView = false;
@@ -59,6 +59,7 @@ export class ForecastComponent implements OnInit {
     this.forecastService.rollUps$.subscribe(
       data => {
         this.rollUps = data;
+        console.log(data);
         this.isDataAvailable = true;
       }
     );
@@ -101,39 +102,62 @@ export class ForecastComponent implements OnInit {
     //   3) when the current view is a client view, and the update is in one of the client's projects
     //   4) when the current view and the update have different project IDs, but the same employee ID
     this.forecastService.getUpdateMessages().subscribe(
-      message => {
-        let params = {id: this.forecastService.currentId, path: this.forecastService.path};
-        console.log('currentId: ' + this.forecastService.currentId);
-        let currentId = this.forecastService.currentId;
+      data => {
+        let message = data as any;
+        let currentId = this.params.id;
         let employees = this.forecastService.employees.getValue();
-        let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
-        let clientId = !isNullOrUndefined((message as any).clientId) ? (message as any).clientId : false;
+        let employeeId = !isNullOrUndefined(message.employeeId) ? message.employeeId : false;
+        let clientId = !isNullOrUndefined(message.clientId) ? message.clientId : false;
         if (currentId === '') {
           // the current view is of all projects. any change requires an update
-          this.forecastService.updateRollUps(params);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
           // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
-          this.forecastService.updateRollUps(params);
+          this.forecastService.updateRollUps(this.params);
         }
-        else if (currentId === (message as any).id) {
+        else if (currentId === message.id) {
           // a change occurred in the current project or client view. an update is required
-          this.forecastService.updateRollUps(params);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (clientId !== false && currentId === clientId) {
           // a change occurred in a project of the current client view. an update is required
-          this.forecastService.updateRollUps(params);
+          this.forecastService.updateRollUps(this.params);
         }
         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
           // an employee in the current client or project view has an updated entry in another project. we need to update this view.
-          this.forecastService.updateRollUps(params);
+          this.forecastService.updateRollUps(this.params);
         }
+        // TODO - delete this version soon
+        /*
+         let params = {id: this.forecastService.currentId, path: this.forecastService.path};
+         console.log('currentId: ' + this.forecastService.currentId);
+         let currentId = this.forecastService.currentId;
+         let employees = this.forecastService.employees.getValue();
+         let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
+         let clientId = !isNullOrUndefined((message as any).clientId) ? (message as any).clientId : false;
+         if (currentId === '') {
+         // the current view is of all projects. any change requires an update
+         this.forecastService.updateRollUps(params);
+         }
+         else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
+         // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
+         this.forecastService.updateRollUps(params);
+         }
+         else if (currentId === (message as any).id) {
+         // a change occurred in the current project or client view. an update is required
+         this.forecastService.updateRollUps(params);
+         }
+         else if (clientId !== false && currentId === clientId) {
+         // a change occurred in a project of the current client view. an update is required
+         this.forecastService.updateRollUps(params);
+         }
+         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
+         // an employee in the current client or project view has an updated entry in another project. we need to update this view.
+         this.forecastService.updateRollUps(params);
+         }
+         */
       });
-  }
-
-  getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
-           projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number): Entry {
-    return new Entry(firstName, lastName, employeeId, clientName, clientId, projectName, projectId, weekOf, capacity, boxNumber);
   }
 
   onScroll($event) {

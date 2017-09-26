@@ -11,10 +11,9 @@ export class Entry {
     projectId: number;
     weekOf: string;
     capacity: number;
-    boxNumber: number;
 
     constructor(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
-                projectName: string, projectId: number, weekOf: string, capacity: number, boxNumber: number) {
+                projectName: string, projectId: number, weekOf: string, capacity: number) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.employeeId = employeeId;
@@ -24,6 +23,5 @@ export class Entry {
         this.projectId = projectId;
         this.weekOf = weekOf;
         this.capacity = capacity;
-        this.boxNumber = boxNumber;
     }
 }
