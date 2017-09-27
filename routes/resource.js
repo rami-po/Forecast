@@ -841,7 +841,11 @@ router.get('/tier/:id', function (req, res, next) {
  */
 
 router.get('/rollups', function (req, res, next) {
-  let openEmployees = req.query.opened;
+  if (typeof req.query.opened == 'undefined') {
+    console.log('opened is undefined:');
+    console.log(req);
+  }
+  let openEmployees = (typeof req.query.opened != 'undefined' ? req.query.opened : []);
   SQL.getPeople(req, (err, employees) => {
     if (err) {
       return res.status(500).json({
