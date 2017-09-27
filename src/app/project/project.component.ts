@@ -95,6 +95,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.forecastService.params$.subscribe(
       params => {
+        console.log('params!!!!!!!!!!!');
         this.params = params;
         if (this.params !== this.lastParams) {
           if (this.params.id !== '') {
@@ -124,10 +125,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           this.lastParams = this.params;
-          if (this.isGraphShowing) {
-            this.graphService.initializeGraph(this.params);
-          }
-          this.forecastService.updateRollUps(params);
+
         }
       }
     );
@@ -135,6 +133,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.route.url.subscribe(
       urlSegments => {
+        console.log('url!!!!');
         if (urlSegments.length > 1) {
           const path = urlSegments[0].path;
           const id = urlSegments[1].path;
@@ -145,6 +144,11 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
             openEmployees: []
           });
         }
+
+        if (this.isGraphShowing) {
+          this.graphService.initializeGraph(this.params);
+        }
+        this.forecastService.updateRollUps(this.params);
       }
     );
 
