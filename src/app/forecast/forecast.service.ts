@@ -17,7 +17,7 @@ import {Router} from "@angular/router";
 export class ForecastService {
   public socket;
 
-  public static NUMBER_OF_WEEKS = 20;
+  public static NUMBER_OF_WEEKS = 52;
 
   public resources = new Subject<any>();
   resources$ = this.resources.asObservable();
@@ -42,10 +42,7 @@ export class ForecastService {
   employees$ = this.employees.asObservable();
 
   public params = new Subject<any>();
-  params$ = this.params.asObservable().startWith({id: '', path: ''});
-
-  public currentId = '';
-  public path = '';
+  params$ = this.params.asObservable().startWith({id: '', path: '', openEmployees: []});
 
   constructor(private http: Http,
               private datePipe: DatePipe,
@@ -231,12 +228,8 @@ export class ForecastService {
 
   updateRollUps(params) {
     const rollUps = [];
-
-    // TODO - delete this.currentId and this.path after testing
-    this.currentId = params.id;
-    this.path = params.path;
-
-    this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
+    let opened = (params.openEmployees.length > 1 ? '&opened[]=' + params.openEmployees.join('&opened[]=') : '&opened[]');
+    this.getRollUps('?active=1&' + params.path + 'Id=' + params.id + opened).subscribe(
       data => {
         this.employees.next(data.employees);
         this.rollUps.next(data.rollUps);

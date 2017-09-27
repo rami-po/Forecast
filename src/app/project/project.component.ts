@@ -141,7 +141,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
           this.isGraphShowing = (path === 'project');
           this.forecastService.params.next({
             id: id,
-            path: path
+            path: path,
+            openEmployees: []
           });
         }
       }

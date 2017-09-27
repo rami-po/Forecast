@@ -324,9 +324,9 @@ exports.getGraphData = function (req, callback) {
   SELECT employee_id AS user_id, project_id, week_of AS spent_at, capacity AS hours FROM resourceManagement WHERE week_of >= '` + monday + `') as t
   RIGHT OUTER JOIN employees e ON t.user_id = e.id ` + whereStatement + projectFilter + `
   GROUP BY date_format(t.spent_at, "%x-%v"), t.user_id ` + havingStatement + `
-  ORDER BY t.spent_at ASC; 
-  SELECT r.employee_id AS user_id, e.capacity / 3600 AS capacity, date_format(r.week_of, "%x-%v") AS week_of, SUM(r.capacity) AS hours 
-  FROM resourceManagement r 
+  ORDER BY t.spent_at ASC;
+  SELECT r.employee_id AS user_id, e.capacity / 3600 AS capacity, date_format(r.week_of, "%x-%v") AS week_of, SUM(r.capacity) AS hours
+  FROM resourceManagement r
   RIGHT OUTER JOIN employees e ON r.employee_id = e.id ` + whereStatement2 + projectFilter + `
   GROUP BY date_format(r.week_of, "%x-%v"), r.employee_id ` + havingStatement + `
   ORDER BY r.week_of ASC`, function (err, result) {
@@ -455,7 +455,6 @@ exports.getStartTime = function (req, callback) {
  */
 
 exports.createEntry = function (req, callback) {
-  console.log(req.body.employeeId);
   connection.query(
     'INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, capacity, box_number) ' +
     'VALUES (' +
@@ -513,10 +512,6 @@ exports.addFakeEmployee = function (employee, callback) {
     "tier_id=" + mysql.escape(employee.tier_id) + "; ", function (err, result) {
       callback(err, result);
   });
-
-  /* not in use
-  "UPDATE all_employees SET id = '" + employee.id + "', first_name='" + employee.first_name + "', last_name='" + employee.last_name + "', is_contractor='" + employee.is_contractor + "', is_active='" + employee.is_active + "', " + "capacity='" + employee.capacity + "'"
-   */
 };
 
 exports.addAssignment = function (assignment, callback) {
@@ -553,14 +548,6 @@ exports.addAssignment = function (assignment, callback) {
     function (err, result) {
       callback(err, result);
     });
-
-    /* not in use
-     "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" + assignment.user_id + "', project_id='" +
-     assignment.project_id + "', is_project_manager='" + +assignment.is_project_manager + "', deactivated='" +
-     +assignment.deactivated + "', hourly_rate='" + assignment.default_hourly_rate + "', budget='" + assignment.budget +
-     "', created_at='" + assignment.created_at + "', updated_at='" + assignment.updated_at + "', estimate='" +
-     assignment.estimate + "', expected_weekly_hours='" + assignment.expected_weekly_hours + "'"
-  */
 };
 
 exports.addFakeAssignment = function (assignment, callback) {
@@ -576,17 +563,9 @@ exports.addFakeAssignment = function (assignment, callback) {
     "project_id=" + mysql.escape(assignment.project_id) + ", " +
     "deactivated=" + mysql.escape(assignment.deactivated);
 
-  console.log(query);
-
   connection.query(query, function (err, result) {
     callback(err, result);
   });
-
-
-  /* not in use
-   "UPDATE all_assignments SET id = '" + assignment.id + "', user_id='" +
-   assignment.user_id + "', project_id='" + assignment.project_id + "', deactivated='" + assignment.deactivated + "'"
-  */
 };
 
 /*

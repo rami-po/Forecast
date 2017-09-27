@@ -59,7 +59,6 @@ export class ForecastComponent implements OnInit {
     this.forecastService.rollUps$.subscribe(
       data => {
         this.rollUps = data;
-        console.log(data);
         this.isDataAvailable = true;
       }
     );
@@ -128,35 +127,6 @@ export class ForecastComponent implements OnInit {
           // an employee in the current client or project view has an updated entry in another project. we need to update this view.
           this.forecastService.updateRollUps(this.params);
         }
-        // TODO - delete this version soon
-        /*
-         let params = {id: this.forecastService.currentId, path: this.forecastService.path};
-         console.log('currentId: ' + this.forecastService.currentId);
-         let currentId = this.forecastService.currentId;
-         let employees = this.forecastService.employees.getValue();
-         let employeeId = !isNullOrUndefined((message as any).employeeId) ? (message as any).employeeId : false;
-         let clientId = !isNullOrUndefined((message as any).clientId) ? (message as any).clientId : false;
-         if (currentId === '') {
-         // the current view is of all projects. any change requires an update
-         this.forecastService.updateRollUps(params);
-         }
-         else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
-         // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
-         this.forecastService.updateRollUps(params);
-         }
-         else if (currentId === (message as any).id) {
-         // a change occurred in the current project or client view. an update is required
-         this.forecastService.updateRollUps(params);
-         }
-         else if (clientId !== false && currentId === clientId) {
-         // a change occurred in a project of the current client view. an update is required
-         this.forecastService.updateRollUps(params);
-         }
-         else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
-         // an employee in the current client or project view has an updated entry in another project. we need to update this view.
-         this.forecastService.updateRollUps(params);
-         }
-         */
       });
   }
 

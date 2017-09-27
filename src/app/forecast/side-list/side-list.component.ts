@@ -143,7 +143,6 @@ export class SideListComponent implements OnInit {
       confirmed => {
         if (confirmed) {
           if (entry.last_name === '') { // employee is fake
-            console.log('deleteUser - entry: ' + JSON.stringify(entry));
             this.forecastService.getAssignments('?employeeId=' + entry.employee_id).subscribe(
               allAssignments => {
                 if (allAssignments.result.length === 1) {
@@ -251,6 +250,15 @@ export class SideListComponent implements OnInit {
 
   updateState(employee) {
     employee.opened = !employee.opened;
+    if (employee.opened) {
+      this.params.openEmployees.push(employee.id);
+    }
+    else {
+      let i = this.params.openEmployees.indexOf(employee.id);
+      if (i != -1) {
+        this.params.openEmployees.splice(i, 1);
+      }
+    }
   }
 
 }
