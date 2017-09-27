@@ -17,7 +17,7 @@ import {Router} from "@angular/router";
 export class ForecastService {
   public socket;
 
-  public static NUMBER_OF_WEEKS = 20;
+  public static NUMBER_OF_WEEKS = 52;
 
   public resources = new Subject<any>();
   resources$ = this.resources.asObservable();

@@ -134,7 +134,9 @@ export class GraphService {
       {data: [], label: 'Cost (Forecast)'},
       {data: [], label: 'Cost (Actual)'},
       {data: [], label: 'Revenue (Forecast)'},
-      {data: [], label: 'Revenue (Actual)'}
+      {data: [], label: 'Revenue (Actual)'},
+      {data: [], label: 'Cost (Trend)'},
+      {data: [], label: 'Revenue (Trend)'}
     ];
 
     console.log(params);
@@ -145,34 +147,39 @@ export class GraphService {
         const body = {employees: employees, projectId: params.id};
         this.forecastService.getGraphData('?all=1', JSON.stringify(body)).subscribe(
           allGraphData => {
-            allGraphData = allGraphData.result;
             const forecastGraphData = allGraphData.forecast;
+            allGraphData = allGraphData.result;
             this.forecastService.getGraphData('', JSON.stringify(body)).subscribe(
               projectData => {
-                projectData = projectData.result;
                 const forecastProjectData = projectData.forecast;
+                projectData = projectData.result;
                 this.forecastService.getProjects('/' + body.projectId).subscribe(
                   project => {
                     const budgetData = this.parse(project.result[0].notes);
                     const revenueData = [];
                     const costData = [];
-                    // const forecastRevenueData = [];
+                    const forecastRevenueData = [];
+                    const forecastCostData = [];
                     let cost = 0;
                     let revenue = 0;
-                    // let forecastRevenue = 0;
+                    let forecastRevenue = 0;
+                    let forecastCost = 0;
 
-                    // for (let i = 0; i < forecastGraphData.length; i++) {
-                    //   const week = allGraphData[i].week_of.split('-');
-                    //   const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
-                    //
-                    //   if (forecastGraphData[i].hours >= forecastGraphData[i].capacity) {
-                    //     forecastRevenue += (forecastProjectData[i].hours / forecastGraphData[i].hours) * forecastGraphData[i].capacity * 20;
-                    //   } else {
-                    //     forecastRevenue += forecastProjectData[i].hours * 20;
-                    //   }
-                    //   forecastRevenue[ISOWeek] = forecastRevenue;
-                    // }
-                    // console.log(forecastRevenue);
+                    for (let i = 0; i < forecastGraphData.length; i++) {
+                      const week = forecastGraphData[i].week_of.split('-');
+                      const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
+
+                      if (forecastGraphData[i].hours >= forecastGraphData[i].capacity) {
+                        forecastCost += (forecastProjectData[i].hours / forecastGraphData[i].hours) * 20;
+                        forecastRevenue += (forecastProjectData[i].hours / forecastGraphData[i].hours) * forecastGraphData[i].capacity * 20;
+                      } else {
+                        forecastCost += (forecastProjectData[i].hours / forecastProjectData[i].capacity) * 20;
+                        forecastRevenue += forecastProjectData[i].hours * 20;
+                      }
+                      forecastRevenueData[ISOWeek] = Math.trunc(forecastRevenue);
+                      forecastCostData[ISOWeek] = Math.trunc(forecastCost);
+                    }
+                    console.log(forecastRevenueData);
 
                     for (let i = 0; i < allGraphData.length; i++) {
                       const week = allGraphData[i].week_of.split('-');
@@ -187,13 +194,21 @@ export class GraphService {
                         revenue += projectData[i].hours * 20;
 
                       }
-                      revenueData[ISOWeek] = revenue;
-                      costData[ISOWeek] = cost;
+                      revenueData[ISOWeek] = Math.trunc(revenue);
+                      costData[ISOWeek] = Math.trunc(cost);
                     }
+
+                    let budgetKey = allData.length;
+                    const allDataLength = allData.length;
                     if (budgetData.length > 0) {
                       allData.push({data: [], label: budgetData[0].notes});
                     }
-                    let budgetKey = 4;
+                    // for (const key in forecastRevenueData) {
+                    //   if (forecastRevenueData.hasOwnProperty(key)) {
+                    //     allData[4].data.push(forecastCostData[key]);
+                    //     allData[5].data.push(forecastRevenueData[key]);
+                    //   }
+                    // }
                     for (const key in revenueData) {
                       if (revenueData.hasOwnProperty(key)) {
                         labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
@@ -212,16 +227,23 @@ export class GraphService {
                           allData[2].data.push(revenueData[key]);
                           allData[0].data.push(costData[key]);
                         }
+                        if (forecastRevenueData.hasOwnProperty(key)) {
+                          allData[4].data.push(forecastCostData[key]);
+                          allData[5].data.push(forecastRevenueData[key]);
+                        } else {
+                          allData[4].data.push(null);
+                          allData[5].data.push(null);
+                        }
 
                         // BREAKPOINT DATA
-                        if (budgetKey - 4 < budgetData.length) {
-                          allData[budgetKey].data.push(budgetData[budgetKey - 4].budget);
-                          if (budgetData[budgetKey - 4].endWeek === key) {
+                        if (budgetKey - allDataLength < budgetData.length) {
+                          allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
+                          if (budgetData[budgetKey - 6].endWeek === key) {
                             budgetKey++;
-                            if (budgetKey - 4 < budgetData.length) {
+                            if (budgetKey - allDataLength < budgetData.length) {
                               allData.push({
                                 data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
-                                label: budgetData[budgetKey - 4].notes
+                                label: budgetData[budgetKey - allDataLength].notes
                               });
                             }
                           }

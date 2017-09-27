@@ -28,11 +28,11 @@
 
 <div *ngIf="isGraphShowing" class="graph-data-wrapper">
   <div class="data-wrapper">
-    <div class="data"><b>Budget: </b> ${{budget}}</div>
-    <div class="data"><b>Internal Cost to Date: </b> ${{internalCost}}</div>
-    <div class="data"><b>Budget Spent: </b> ${{budgetSpent}}</div>
-    <div class="data"><b>Projected Profit: </b> ${{projectedProfit}}</div>
-    <div class="data"><b>Project Profit Margin: </b> {{projectedProfitMargin | number:'2.2-2'}}%</div>
+    <div class="data"><b>Budget:&nbsp;</b>${{budget | number: '1.0-0'}}</div>
+    <div class="data"><b>Internal Cost to Date:&nbsp;</b>${{internalCost | number: '1.0-0'}}</div>
+    <div class="data"><b>Budget Spent:&nbsp;</b>${{budgetSpent | number: '1.0-0'}}</div>
+    <div class="data"><b>Projected Profit:&nbsp;</b>${{projectedProfit | number: '1.0-0'}}</div>
+    <div class="data"><b>Project Profit Margin:&nbsp;</b>{{projectedProfitMargin | number:'2.2-2'}}%</div>
   </div>
   <app-graph [params]="params"></app-graph>
 </div>
