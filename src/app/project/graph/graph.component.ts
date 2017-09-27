@@ -39,12 +39,12 @@ export class GraphComponent implements OnInit, OnDestroy {
       {
         label: 'Cost (Forecast)',
         data: [],
-        backgroundColor: 'rgba(255, 100, 0, .2)',
-        borderColor: 'rgba(255, 100, 0, 1)',
-        pointBackgroundColor: 'rgba(255, 100, 0, 1)',
+        backgroundColor: 'rgba(255, 180, 66, .2)',
+        borderColor: 'rgba(255, 180, 66, 1)',
+        pointBackgroundColor: 'rgba(255, 180, 66, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(255, 100, 0, .8)',
+        pointHoverBorderColor: 'rgba(255, 180, 66, .8)',
         lineTension: null,
         hidden: false
       },
@@ -63,25 +63,89 @@ export class GraphComponent implements OnInit, OnDestroy {
       {
         label: 'Revenue (Forecast)',
         data: [],
-        backgroundColor: 'rgba(9, 103, 179, .2)',
-        borderColor: 'rgba(9, 103, 179, 1)',
-        pointBackgroundColor: 'rgba(9, 103, 179, 1)',
+        backgroundColor: 'rgba(90, 176, 246, .2)',
+        borderColor: 'rgba(90, 176, 246, 1)',
+        pointBackgroundColor: 'rgba(90, 176, 246, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(9, 103, 179, .8)',
+        pointHoverBorderColor: 'rgba(90, 176, 246, .8)',
         lineTension: null,
         hidden: false
       },
       {
         label: 'Revenue (Actual)',
         data: [],
-        backgroundColor: 'rgba(33, 150, 243, .4)',
+        backgroundColor: 'rgba(33, 150, 243, .2)',
         borderColor: 'rgba(33, 150, 243, 1)',
         pointBackgroundColor: 'rgba(33, 150, 243, 1)',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
         lineTension: null,
+        hidden: false
+      },
+      {
+        label: 'Cost (Trend)',
+        data: [],
+        backgroundColor: 'rgba(255, 152, 0, .2)',
+        borderColor: 'rgba(255, 152, 0, 1)',
+        pointBackgroundColor: 'rgba(255, 152, 0, 0)',
+        pointBorderColor: 'rgba(0, 0, 0, 0)',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(255, 152, 0, .8)',
+        lineTension: null,
+        hidden: false,
+        spanGaps: true,
+        borderDash: [5, 5]
+      },
+      {
+        label: 'Revenue (Trend)',
+        data: [],
+        backgroundColor: 'rgba(33, 150, 243, .2)',
+        borderColor: 'rgba(33, 150, 243, 1)',
+        pointBackgroundColor: 'rgba(33, 150, 243, 0)',
+        pointBorderColor: 'rgba(0, 0, 0, 0)',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
+        lineTension: null,
+        hidden: false,
+        spanGaps: true,
+        borderDash: [5, 5]
+      },
+      {
+        label: 'Cost',
+        data: [],
+        backgroundColor: 'rgba(255, 152, 0, .2)',
+        borderColor: 'rgba(255, 152, 0, 1)',
+        pointBackgroundColor: 'rgba(255, 152, 0, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(255, 152, 0, .8)',
+        lineTension: null,
+        hidden: false
+      },
+      {
+        label: 'Revenue',
+        data: [],
+        backgroundColor: 'rgba(33, 150, 243, .2)',
+        borderColor: 'rgba(33, 150, 243, 1)',
+        pointBackgroundColor: 'rgba(33, 150, 243, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(33, 150, 243, .8)',
+        lineTension: null,
+        hidden: false
+      },
+      {
+        label: 'Budget',
+        data: [],
+        backgroundColor: 'rgba(244, 67, 54, .2)',
+        borderColor: 'rgba(244, 67, 54, 1)',
+        pointBackgroundColor: 'rgba(244, 67, 54, 0)',
+        pointBorderColor: 'rgba(0, 0, 0, 0)',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(244, 67, 54, .8)',
+        lineTension: 0,
         hidden: false
       }
     ]
@@ -100,19 +164,30 @@ export class GraphComponent implements OnInit, OnDestroy {
       }]
     },
     legend: {
+      position: 'right',
       reverse: true,
       onClick: ($event, legendItem) => {
         switch (legendItem.datasetIndex) {
-          case 0 :
-          case 1 :
+          case 6:
             this.data.datasets[0].hidden = !this.data.datasets[0].hidden;
             this.data.datasets[1].hidden = !this.data.datasets[1].hidden;
+            this.data.datasets[6].hidden = !this.data.datasets[6].hidden;
             this.chart.chart.update();
             break;
-          case 2 :
-          case 3 :
+          case 7:
             this.data.datasets[2].hidden = !this.data.datasets[2].hidden;
             this.data.datasets[3].hidden = !this.data.datasets[3].hidden;
+            this.data.datasets[7].hidden = !this.data.datasets[7].hidden;
+            this.chart.chart.update();
+            break;
+          case 8:
+            for (let i = 8; i < this.data.datasets.length; i++) {
+              this.data.datasets[i].hidden = !this.data.datasets[i].hidden;
+            }
+            this.chart.chart.update();
+            break;
+          default:
+            this.data.datasets[legendItem.datasetIndex].hidden = !this.data.datasets[legendItem.datasetIndex].hidden;
             this.chart.chart.update();
             break;
         }
@@ -120,13 +195,11 @@ export class GraphComponent implements OnInit, OnDestroy {
       labels: {
         filter: (legendItem, chartData) => {
           switch (legendItem.datasetIndex) {
-            case 0:
-              return true;
-            case 1:
-              return true;
-            case 2:
-              return true;
-            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
               return true;
             default:
               return false;
@@ -201,17 +274,22 @@ export class GraphComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
       data => {
-        for (let i = 4; i <= this.data.datasets.length; i++) {
-          this.data.datasets.splice(4, 1);
+        const dataSets = 9;
+        const shift = dataSets - 6;
+
+        for (let i = dataSets; i <= this.data.datasets.length; i++) {
+          this.data.datasets.splice(dataSets, 1); // clears budget since there are a different amount per project
         }
         this.data.datasets[0].data = data[0].data;
         this.data.datasets[1].data = data[1].data;
         this.data.datasets[2].data = data[2].data;
         this.data.datasets[3].data = data[3].data;
-        for (let i = 4; i < data.length; i++) {
+        this.data.datasets[4].data = data[4].data;
+        this.data.datasets[5].data = data[5].data;
+        for (let i = dataSets; i < data.length + shift; i++) {
           this.data.datasets[i] = {
-            label: data[i].label,
-            data: data[i].data,
+            label: data[i - shift].label,
+            data: data[i - shift].data,
             backgroundColor: 'rgba(0, 0, 0, 0)',
             borderColor: 'rgba(244, 67, 54, 1)',
             pointBackgroundColor: 'rgba(244, 67, 54, 0)',
