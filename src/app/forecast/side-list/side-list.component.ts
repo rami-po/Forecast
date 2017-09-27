@@ -143,7 +143,6 @@ export class SideListComponent implements OnInit {
       confirmed => {
         if (confirmed) {
           if (entry.last_name === '') { // employee is fake
-            console.log('deleteUser - entry: ' + JSON.stringify(entry));
             this.forecastService.getAssignments('?employeeId=' + entry.employee_id).subscribe(
               allAssignments => {
                 if (allAssignments.result.length === 1) {

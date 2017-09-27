@@ -841,6 +841,7 @@ router.get('/tier/:id', function (req, res, next) {
  */
 
 router.get('/rollups', function (req, res, next) {
+  let openEmployees = req.query.opened;
   SQL.getPeople(req, (err, employees) => {
     if (err) {
       return res.status(500).json({
@@ -853,7 +854,7 @@ router.get('/rollups', function (req, res, next) {
     req.query = {};
     for (const employee of employees) {
       req.query['employeeid'] = employee.id;
-      employee.opened = false;
+      employee.opened = (openEmployees.indexOf(employee.id) > -1 ? true : false);
       rollUps.push('');
       SQL.getEntries(req, (err, entries) => {
         if (err) {

@@ -44,9 +44,6 @@ export class ForecastService {
   public params = new Subject<any>();
   params$ = this.params.asObservable().startWith({id: '', path: '', openEmployees: []});
 
-  public currentId = '';
-  public path = '';
-
   constructor(private http: Http,
               private datePipe: DatePipe,
               private router: Router) {
@@ -231,12 +228,9 @@ export class ForecastService {
 
   updateRollUps(params) {
     const rollUps = [];
-
-    this.getRollUps('?active=1&' + params.path + 'Id=' + params.id).subscribe(
+    let opened = (params.openEmployees.length > 1 ? '&opened[]=' + params.openEmployees.join('&opened[]=') : '&opened[]');
+    this.getRollUps('?active=1&' + params.path + 'Id=' + params.id + opened).subscribe(
       data => {
-        data.employees.forEach(function(employee) {
-          employee.opened = (params.openEmployees.indexOf(employee.id) > -1);
-        });
         this.employees.next(data.employees);
         this.rollUps.next(data.rollUps);
       }

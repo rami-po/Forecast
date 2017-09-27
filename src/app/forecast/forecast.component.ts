@@ -59,7 +59,6 @@ export class ForecastComponent implements OnInit {
     this.forecastService.rollUps$.subscribe(
       data => {
         this.rollUps = data;
-        console.log(data);
         this.isDataAvailable = true;
       }
     );
