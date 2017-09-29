@@ -6,7 +6,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {ProjectService} from './project.service';
 import {ForecastService} from '../forecast/forecast.service';
-import {isUndefined} from 'util';
+import {isNullOrUndefined, isUndefined} from 'util';
 import {GraphService} from './graph/graph.service';
 import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
 import {MdDialog, MdIconRegistry, MdMenu, MdMenuTrigger} from '@angular/material';
@@ -138,6 +138,16 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
           const path = urlSegments[0].path;
           const id = urlSegments[1].path;
           this.isGraphShowing = (path === 'project');
+          this.forecastService.params.next({
+            id: id,
+            path: path,
+            openEmployees: []
+          });
+        }
+        else if (urlSegments.length == 1 && urlSegments[0].path == 'all') {
+          const path = '';
+          const id = '';
+          this.isGraphShowing = false;
           this.forecastService.params.next({
             id: id,
             path: path,

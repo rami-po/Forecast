@@ -42,7 +42,7 @@ export class ForecastService {
   employees$ = this.employees.asObservable();
 
   public params = new Subject<any>();
-  params$ = this.params.asObservable().startWith({id: '', path: '', openEmployees: []});
+  params$ = this.params.asObservable();
 
   constructor(private http: Http,
               private datePipe: DatePipe,
