@@ -1,19 +1,18 @@
-<div *ngIf="true">
+<div *ngIf="isDataAvailable">
   <div>
-    <app-entry [isOpened]="employee.opened" [totalCapacities]="totalCapacities"
-               [filteredCapacities]="filteredCapacities"
-               [test]="headerData"
-               [row]="row"
-               [params]="params"
-               [employeeCapacity]="employee.capacity / 3600"></app-entry>
+    <app-entry
+      [employeeCapacity]="employee.capacity / 3600"
+      [params]="params"
+      [forecast]="filteredEntry"
+      [isHeader]="true"
+      [isOpened]="employee.opened">
+    </app-entry>
   </div>
   <div *ngIf="employee.opened">
     <app-entry *ngFor="let entry of data, let i = index"
                [employeeCapacity]="employee.capacity / 3600"
                [params]="params"
-               [data]="entries[i]"
                [forecast]="entry.forecast"
-               [row]="i"
                [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name,
                entry.client_id, entry.project_name, entry.project_id, null, null)'>
     </app-entry>

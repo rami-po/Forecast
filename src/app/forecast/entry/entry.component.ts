@@ -32,15 +32,11 @@ export class EntryComponent implements OnInit, OnDestroy {
   private lastWeek;
   public timerSubscription;
   @Input() public entry: Entry;
-  @Input() public data;
   @Input() public forecast;
-  @Input() public row;
-  @Input() public test;
-  @Input() public totalCapacities;
-  @Input() public filteredCapacities;
   @Input() public employeeCapacity;
   @Input() public isOpened = false;
   @Input() private params;
+  @Input() public isHeader = false;
 
   private isSubscribed = false;
 
@@ -86,28 +82,35 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   public getTotal(week, index) {
     let value = 0;
-    if (!isNullOrUndefined(this.test[index]) && this.test[index].week_of.slice(0, 10) === week) {
-      value = this.test[index].hours;
+    let total = 0;
+    if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
+      total = Number(this.forecast.totals[index].hours);
     } else {
-      this.test.splice(index, 0, {week_of: week, hours: 0});
+      this.forecast.totals.splice(index, 0, {week_of: week, hours: 0});
     }
-    if (this.params.id !== '') {
-      if (value === this.employeeCapacity) {
-        return value;
-      }
-      return value + ' / ' + this.employeeCapacity;
+    if (this.params.id === '') { // no filter applied
+      return total;
     }
-    return value;
+    if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
+      value = Number(this.forecast.data[index].capacity);
+    } else {
+      this.forecast.data.splice(index, 0, {week_of: week, capacity: 0});
+    }
+    if (total === value) {
+      return total;
+    }
+    return value + ' / ' + total;
+
   }
 
   getColor(week, index) {
-    if (isNullOrUndefined(this.test)) {
+    if (!this.isHeader) {
       return 'white';
     }
-    if (!isNullOrUndefined(this.test[index]) && this.test[index].week_of.slice(0, 10) === week) {
-      if (this.test[index].hours < this.employeeCapacity) {
+    if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
+      if (this.forecast.totals[index].hours < this.employeeCapacity) {
         return '#EF9A9A';
-      } else if (this.test[index].hours > this.employeeCapacity) {
+      } else if (this.forecast.totals[index].hours > this.employeeCapacity) {
         return '#FFF59D';
       }
     } else {
@@ -119,7 +122,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   getTextColor() {
-    if (isNullOrUndefined(this.test)) {
+    if (!this.isHeader) {
       return 'rgb(33, 150, 243)';
     }
     return 'black';
@@ -166,6 +169,10 @@ export class EntryComponent implements OnInit, OnDestroy {
                     week_of: week,
                     capacity: value
                   });
+                  this.rollUpComponent.filteredEntry.totals = data.result;
+                  if (this.entry.projectId === Number(this.params.id)) {
+                    this.rollUpComponent.filteredEntry.data = this.forecast.data;
+                  }
                   break;
                 }
               }
