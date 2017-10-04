@@ -63,12 +63,18 @@ export class GraphService {
 
     if (!isNullOrUndefined(arrayWeekAndBudget) &&
       !isNullOrUndefined(arrayNotes) && arrayWeekAndBudget.length === arrayNotes.length) {
+
       let lastBudget = 0;
       for (let i = 0; i < arrayWeekAndBudget.length; i++) {
         const weekAndBudget = arrayWeekAndBudget[i].substring(1, arrayWeekAndBudget[i].length - 1);
         const colonIndex = weekAndBudget.indexOf(':');
         const budget = Number(weekAndBudget.substring(colonIndex + 2).replace(/,/, ''));
-        const notes = arrayNotes[i].substring(2, arrayNotes[i].length - 2).replace(/(?:\r\n|\r|\n)/g, ' | ');
+        // const notes = arrayNotes[i].substring(2, arrayNotes[i].length - 2).replace(/(?:\r\n|\r|\n)/g, ' | ');
+        const notes = arrayNotes[i].split('\n');
+        notes.shift();
+        notes.pop();
+        notes.push(budget);
+        console.log(notes);
         const date = new Date(weekAndBudget.substring(0, colonIndex));
         data.push({
           endWeek: this.forecastService.getMonday(date).toISOString().slice(0, 10),
