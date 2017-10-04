@@ -80,6 +80,12 @@ exports.getPeople = function (req, callback) {
     ORDER BY CASE last_name <> '' WHEN TRUE THEN e.last_name ELSE e.first_name END, e.id ASC;`;
 
   connection.query(query, function (err, result) {
+    //because of Harvest v2, new employees won't have their capacity on SQL so we make it 0 and have manager change it in the front end
+    for (const person of result) {
+      if (person.capacity == null) {
+        person.capacity = 0;
+      }
+    }
     callback(err, result);
   });
 
@@ -245,6 +251,10 @@ exports.getData = function (req, callback) {
       connection.query(
         entryQuery +
         'SELECT SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+        'RIGHT OUTER JOIN (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) as a ON ' +
+        'a.user_id = ' + employeeId + ' AND ' +
+        'a.project_id = r.project_id AND ' +
+        'a.deactivated = 0 ' +
         'WHERE r.employee_id = ' + employeeId + ' ' +
         sumFilter +
         'AND r.capacity <> \'\' ' +

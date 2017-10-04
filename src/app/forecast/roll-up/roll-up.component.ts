@@ -17,20 +17,28 @@ export class RollUpComponent implements OnInit {
 
   @Input() public employee;
   @Input() public data;
-  @Input() public row;
   @Input() public params;
+  public filteredEntry;
+  public isDataAvailable = false;
 
-  public entries = [];
-  public totalCapacities;
-  public filteredCapacities;
-
-
-  public headerData;
   constructor() {
   }
 
   ngOnInit() {
-    this.headerData = this.data[0].forecast.totals;
+    if (this.params.id !== '') {
+      for (const entry of this.data) {
+        if (entry.project_id === Number(this.params.id) || entry.client_id === Number(this.params.id)) {
+          this.filteredEntry = JSON.parse(JSON.stringify(entry.forecast));
+          console.log(entry.forecast.data);
+          break;
+        }
+      }
+    } else {
+      this.filteredEntry = this.data[0].forecast;
+    }
+
+    this.isDataAvailable = true;
+
   }
 
   getEntry(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,

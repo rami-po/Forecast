@@ -85,9 +85,9 @@ export class GraphComponent implements OnInit, OnDestroy {
         hidden: false
       },
       {
-        label: 'Cost (Trend)',
+        label: 'Cost Target',
         data: [],
-        backgroundColor: 'rgba(255, 152, 0, .2)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
         borderColor: 'rgba(255, 152, 0, 1)',
         pointBackgroundColor: 'rgba(255, 152, 0, 0)',
         pointBorderColor: 'rgba(0, 0, 0, 0)',
@@ -99,9 +99,9 @@ export class GraphComponent implements OnInit, OnDestroy {
         borderDash: [5, 5]
       },
       {
-        label: 'Revenue (Trend)',
+        label: 'Revenue Target',
         data: [],
-        backgroundColor: 'rgba(33, 150, 243, .2)',
+        backgroundColor: 'rgba(0, 0, 0, 0)',
         borderColor: 'rgba(33, 150, 243, 1)',
         pointBackgroundColor: 'rgba(33, 150, 243, 0)',
         pointBorderColor: 'rgba(0, 0, 0, 0)',

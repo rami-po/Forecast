@@ -4,8 +4,8 @@
       [style.color]="getTextColor()"
       class="capacity"
       maxlength="2" (blur)="send($event.target.value, week)" onclick="select()"
-      (input)="type($event.target.value, week)" [value]="check(entry) ? getCapacity(week, i) : getTotal(week, i)"
+      (input)="type($event.target.value, week)" [value]="!isHeader ? getCapacity(week, i) : getTotal(week, i)"
       [style.background-color]="getColor(week, i)"
-      [disabled]="!check(entry)">
+      [disabled]="isHeader">
   </div>
 </div>
