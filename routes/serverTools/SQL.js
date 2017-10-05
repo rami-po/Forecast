@@ -233,7 +233,7 @@ exports.getData = function (req, callback) {
 
       const active = (req.query.active === '1' ? 'AND r.week_of >= \'' + monday + '\' ' : '');
 
-      let entryQuery = 'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity, r.box_number' + cost + ' FROM resourceManagement r ' +
+      let entryQuery = 'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity' + cost + ' FROM resourceManagement r ' +
         costJoin +
         'WHERE r.project_id = ' + projectId + ' ' +
         'AND r.client_id = ' + clientId + ' ' +
@@ -466,15 +466,14 @@ exports.getStartTime = function (req, callback) {
 
 exports.createEntry = function (req, callback) {
   connection.query(
-    'INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, capacity, box_number) ' +
+    'INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, capacity) ' +
     'VALUES (' +
     mysql.escape(req.body.clientId) + ', ' +
     mysql.escape(req.body.projectId) + ', ' +
     mysql.escape(req.body.employeeId) + ', ' +
     mysql.escape(req.body.weekOf) + ', ' +
-    mysql.escape(req.body.capacity) + ', ' +
-    mysql.escape(req.body.boxNumber) + ') ' +
-    'ON DUPLICATE KEY UPDATE capacity=' + mysql.escape(req.body.capacity) + ', box_number=' + mysql.escape(req.body.boxNumber),
+    mysql.escape(req.body.capacity) + ') ' +
+    'ON DUPLICATE KEY UPDATE capacity=' + mysql.escape(req.body.capacity),
     function (err, result) {
       callback(err, result);
     });
@@ -590,6 +589,15 @@ exports.updateCapacity = function (req, callback) {
 };
 
 exports.updateData = function (req, callback) {
+  // connection.query('REPLACE INTO resourceManagement ' +
+  //   '(SELECT client_id, project_id, MAX(employee_id), week_of, SUM(capacity) FROM resourceManagement ' +
+  //   'WHERE (employee_id = ' + mysql.escape(req.body.employee_id) + ' ' +
+  //   'OR employee_id = ' + mysql.escape(req.body.fake_employee_id) + ') AND project_id = ' + mysql.escape(req.body.project_id) + ' ' +
+  //   'GROUP BY week_of);' +
+  //   'DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
+  //   'AND project_id = ' + mysql.escape(req.body.project_id), function (err, result) {
+  //   callback(err, result);
+  // });
   connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.employee_id) +
     ' AND project_id = ' + mysql.escape(req.body.project_id) + ';UPDATE resourceManagement SET employee_id = ' + mysql.escape(req.body.employee_id) +
     ' WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' AND project_id = ' + mysql.escape(req.body.project_id),
