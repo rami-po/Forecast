@@ -78,7 +78,17 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    console.log('ngOnInit - project.components.ts');
 
+    if (isNullOrUndefined(this.forecastService.allEmployees.getValue())) {
+      this.forecastService.updateAllEmployees();
+    }
+
+    if (isNullOrUndefined(this.forecastService.allActiveProjects.getValue())) {
+      this.forecastService.updateAllActiveProjects();
+    }
+
+    /*
     this.forecastService.getProjects('?active=1').subscribe(
       data => {
         data.result.splice(0, 0, {id: '', name: 'All'});
@@ -86,6 +96,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         this.projects = data.result;
       }
     );
+    */
 
     this.forecastService.getClientsAndProjects().subscribe(
       data => {
@@ -155,9 +166,12 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
           });
         }
 
+        /*
+        // moved initializeGraph to the forecast component to prevent another getEmployee call.
         if (this.isGraphShowing) {
           this.graphService.initializeGraph(this.params);
         }
+        */
         this.forecastService.updateRollUps(this.params);
       }
     );

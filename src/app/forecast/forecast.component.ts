@@ -9,6 +9,7 @@ import {DatePipe} from '@angular/common';
 import {GridViewComponent} from './grid-view/grid-view.component';
 import {isNullOrUndefined} from 'util';
 import {Observable} from "rxjs/Observable";
+import {GraphService} from '../project/graph/graph.service';
 
 @Component({
   selector: 'app-forecast',
@@ -37,7 +38,7 @@ export class ForecastComponent implements OnInit {
   public isDataAvailable = false;
   public mode = 'indeterminate';
 
-  constructor(private forecastService: ForecastService) {
+  constructor(private forecastService: ForecastService, private graphService: GraphService) {
   }
 
   ngOnInit() {
@@ -56,19 +57,19 @@ export class ForecastComponent implements OnInit {
     EntryComponent.setWeeks(this.weeks);
     GridViewComponent.weeks = this.weeks;
 
-    this.forecastService.rollUps$.subscribe(
+    this.forecastService.combinedRollUps$.subscribe(
       data => {
-        this.rollUps = data;
+        this.rollUps = data.rollUps;
+        this.employees = data.employees;
+        console.log('combinedRollUps'); console.log(data);
         this.isDataAvailable = true;
+        if (this.params.path == 'project') {
+          this.graphService.initializeGraph(this.params);
+        }
       }
     );
 
-    this.forecastService.employees$.subscribe(
-      data => {
-        this.employees = data;
-      }
-    );
-    //
+    // TODO - not in use - when can we delete?
     // this.forecastService.params$.subscribe(
     //   params => {
     //     this.params = params;
@@ -79,10 +80,11 @@ export class ForecastComponent implements OnInit {
     //   }
     // );
 
-    this.forecastService.getProjects('?active=1').subscribe(
-      data => {
-        this.projects = data.result;
-        this.projects.splice(0, 0, {id: '', name: 'All'});
+    this.forecastService.allActiveProjects$.subscribe(
+      projects => {
+        if (!isNullOrUndefined(projects)) {
+          this.projects = projects;
+        }
       }
     );
 
@@ -102,31 +104,39 @@ export class ForecastComponent implements OnInit {
     //   4) when the current view and the update have different project IDs, but the same employee ID
     this.forecastService.getUpdateMessages().subscribe(
       data => {
-        let message = data as any;
-        let currentId = this.params.id;
-        let employees = this.forecastService.employees.getValue();
-        let employeeId = !isNullOrUndefined(message.employeeId) ? message.employeeId : false;
-        let clientId = !isNullOrUndefined(message.clientId) ? message.clientId : false;
-        if (currentId === '') {
+        const message = data as any;
+        const action = message.action;
+        const projectId = (!isNullOrUndefined(message.projectId) ? message.projectId : false);
+        const employeeId = (!isNullOrUndefined(message.employeeId) ? message.employeeId : false);
+        const clientId = (!isNullOrUndefined(message.clientId) ? message.clientId : false);
+
+        const pageId = this.params.id;
+        const currentEmployees = this.forecastService.employees.getValue();
+
+        console.log('received an update message: ' + action); console.log(this.params);
+
+        if (pageId === '') {
           // the current view is of all projects. any change requires an update
           this.forecastService.updateRollUps(this.params);
         }
-        else if (message === 'addFakeEmployee' || message === 'deleteFakeEmployee' || message === 'transformFakeEmployee') {
+        else if (action === 'addFakeEmployee' || action === 'deleteFakeEmployee' || action === 'transformFakeEmployee') {
           // adding, deleting, or transforming a fake employee requires an update, regardless of the project, because everyone's add an employee list has been changed
+          this.forecastService.updateAllEmployees();
           this.forecastService.updateRollUps(this.params);
         }
-        else if (currentId === message.id) {
-          // a change occurred in the current project or client view. an update is required
+        else if (pageId === clientId) {
+          // a change occurred in the current client view. an update is required
           this.forecastService.updateRollUps(this.params);
         }
-        else if (clientId !== false && currentId === clientId) {
-          // a change occurred in a project of the current client view. an update is required
+        else if (pageId === projectId) {
+          // a change occurred in the current project. an update is required
           this.forecastService.updateRollUps(this.params);
         }
-        else if (employeeId != false && !isNullOrUndefined(employees.find(employee => employee.id === employeeId))) {
+        else if (employeeId != false && !isNullOrUndefined(currentEmployees.find(employee => employee.id === employeeId))) {
           // an employee in the current client or project view has an updated entry in another project. we need to update this view.
           this.forecastService.updateRollUps(this.params);
         }
+        // still need to handle the case of something changing in a related view (client or project)
       });
   }
 

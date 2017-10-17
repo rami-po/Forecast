@@ -36,6 +36,8 @@ export class FakeEmployeeComponent implements OnInit {
 }
 
   ngOnInit() {
+    console.log('ngOnInit - fake-employee.component.ts params: ' + JSON.stringify(this.params)); // console.log(this.params);
+
   }
 
   onKey(event) {
@@ -109,15 +111,24 @@ export class FakeEmployeeComponent implements OnInit {
   updateData(employeeId, fakeProjectId) {
     this.forecastService.updateResources(employeeId, this.fakeEmployee.id, fakeProjectId).subscribe(
       () => {
-        this.forecastService
-          .getAssignments('?employeeid=' + this.fakeEmployee.id + '&projectid=' + fakeProjectId).subscribe(
+        this.forecastService.getAssignments('?employee_id=' + this.fakeEmployee.id + '&project_id=' + fakeProjectId).subscribe(
           assignment => {
-            this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
+            this.forecastService.deleteFakeAssignment(assignment.result[0].id, this.fakeEmployee.id, fakeProjectId).subscribe(
               () => {
                 this.forecastService.deleteFakeEmployee(this.fakeEmployee.id).subscribe(
                   () => {
-                    this.socket.emit('userUpdatedRollUps', 'transformFakeEmployee'); // everyone gets it, including the sender
-                    // this.forecastService.updateRollUps(this.params);
+                    const message = {
+                      action: 'transformFakeEmployee',
+                      employeeId: '',
+                      clientId: (this.params.path == 'client' ? this.params.id : ''),
+                      projectId: (this.params.path == 'project' ? this.params.id : '')
+                    };
+                    // this.socket.emit('userUpdatedRollUps', 'transformFakeEmployee'); // everyone gets it, including the sender
+                    this.params.clearcache = true;
+                    this.forecastService.updateAllEmployees();
+                    // this.forecastService.updateEmployees(this.params);
+                    this.forecastService.updateRollUps(this.params);
+                    this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
                   }
                 );
               }

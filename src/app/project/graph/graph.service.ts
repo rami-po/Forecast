@@ -147,120 +147,117 @@ export class GraphService {
 
     console.log(params);
 
-    this.forecastService.getEmployees('?projectId=' + params.id).subscribe(
-      employees => {
-        employees = employees.result;
-        const body = {employees: employees, projectId: params.id};
-        this.forecastService.getGraphData('?all=1', JSON.stringify(body)).subscribe(
-          allGraphData => {
-            const forecastGraphData = allGraphData.forecast;
-            allGraphData = allGraphData.result;
-            this.forecastService.getGraphData('', JSON.stringify(body)).subscribe(
-              projectData => {
-                const forecastProjectData = projectData.forecast;
-                projectData = projectData.result;
-                this.forecastService.getProjects('/' + body.projectId).subscribe(
-                  project => {
-                    const budgetData = this.parse(project.result[0].notes);
-                    const revenueData = [];
-                    const costData = [];
-                    const forecastRevenueData = [];
-                    const forecastCostData = [];
-                    let cost = 0;
-                    let revenue = 0;
-                    let forecastRevenue = 0;
-                    let forecastCost = 0;
+    const employees = this.forecastService.employees.getValue();
+    console.log('graph.service.ts - initializeGraph: ' + JSON.stringify(params)); console.log(employees);
+    const body = {employees: employees, projectId: params.id};
+    this.forecastService.getGraphData('?all=1', JSON.stringify(body)).subscribe(
+      allGraphData => {
+        const forecastGraphData = allGraphData.forecast;
+        allGraphData = allGraphData.result;
+        this.forecastService.getGraphData('', JSON.stringify(body)).subscribe(
+          projectData => {
+            const forecastProjectData = projectData.forecast;
+            projectData = projectData.result;
+            this.forecastService.getProjects('/' + body.projectId).subscribe(
+              project => {
+                const budgetData = this.parse(project.result[0].notes);
+                const revenueData = [];
+                const costData = [];
+                const forecastRevenueData = [];
+                const forecastCostData = [];
+                let cost = 0;
+                let revenue = 0;
+                let forecastRevenue = 0;
+                let forecastCost = 0;
 
-                    for (let i = 0; i < forecastGraphData.length; i++) {
-                      const week = forecastGraphData[i].week_of.split('-');
-                      const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
+                for (let i = 0; i < forecastGraphData.length; i++) {
+                  const week = forecastGraphData[i].week_of.split('-');
+                  const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
 
-                      if (forecastGraphData[i].hours >= forecastGraphData[i].capacity) {
-                        forecastCost += (forecastProjectData[i].hours / forecastGraphData[i].hours) * 20;
-                        forecastRevenue += (forecastProjectData[i].hours / forecastGraphData[i].hours) * forecastGraphData[i].capacity * 20;
-                      } else {
-                        forecastCost += (forecastProjectData[i].hours / forecastProjectData[i].capacity) * 20;
-                        forecastRevenue += forecastProjectData[i].hours * 20;
-                      }
-                      forecastRevenueData[ISOWeek] = Math.trunc(forecastRevenue);
-                      forecastCostData[ISOWeek] = Math.trunc(forecastCost);
-                    }
-                    console.log(forecastRevenueData);
+                  if (forecastGraphData[i].hours >= forecastGraphData[i].capacity) {
+                    forecastCost += (forecastProjectData[i].hours / forecastGraphData[i].hours) * 20;
+                    forecastRevenue += (forecastProjectData[i].hours / forecastGraphData[i].hours) * forecastGraphData[i].capacity * 20;
+                  } else {
+                    forecastCost += (forecastProjectData[i].hours / forecastProjectData[i].capacity) * 20;
+                    forecastRevenue += forecastProjectData[i].hours * 20;
+                  }
+                  forecastRevenueData[ISOWeek] = Math.trunc(forecastRevenue);
+                  forecastCostData[ISOWeek] = Math.trunc(forecastCost);
+                }
+                console.log(forecastRevenueData);
 
-                    for (let i = 0; i < allGraphData.length; i++) {
-                      const week = allGraphData[i].week_of.split('-');
-                      const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
+                for (let i = 0; i < allGraphData.length; i++) {
+                  const week = allGraphData[i].week_of.split('-');
+                  const ISOWeek = this.getDateOfISOWeek(week[1], week[0]).toISOString().slice(0, 10);
 
-                      if (allGraphData[i].hours >= allGraphData[i].capacity) {
-                        cost += (projectData[i].hours / allGraphData[i].hours) * 20;
-                        revenue += (projectData[i].hours / allGraphData[i].hours) * allGraphData[i].capacity * 20;
+                  if (allGraphData[i].hours >= allGraphData[i].capacity) {
+                    cost += (projectData[i].hours / allGraphData[i].hours) * 20;
+                    revenue += (projectData[i].hours / allGraphData[i].hours) * allGraphData[i].capacity * 20;
 
-                      } else {
-                        cost += (projectData[i].hours / projectData[i].capacity) * 20;
-                        revenue += projectData[i].hours * 20;
-
-                      }
-                      revenueData[ISOWeek] = Math.trunc(revenue);
-                      costData[ISOWeek] = Math.trunc(cost);
-                    }
-
-                    let budgetKey = allData.length;
-                    const allDataLength = allData.length;
-                    if (budgetData.length > 0) {
-                      allData.push({data: [], label: budgetData[0].notes});
-                    }
-                    // for (const key in forecastRevenueData) {
-                    //   if (forecastRevenueData.hasOwnProperty(key)) {
-                    //     allData[4].data.push(forecastCostData[key]);
-                    //     allData[5].data.push(forecastRevenueData[key]);
-                    //   }
-                    // }
-                    for (const key in revenueData) {
-                      if (revenueData.hasOwnProperty(key)) {
-                        labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
-                        // ACTUAL AND FORECAST DATA
-                        if (key < this.weeks[0]) { // actual
-                          allData[3].data.push(revenueData[key]);
-                          allData[1].data.push(costData[key]);
-                          allData[2].data.push(null);
-                          allData[0].data.push(null);
-                        } else if (key === this.weeks[0]) { // both
-                          allData[3].data.push(revenueData[key]);
-                          allData[1].data.push(costData[key]);
-                          allData[2].data.push(revenueData[key]);
-                          allData[0].data.push(costData[key]);
-                        } else if (key > this.weeks[0]) { // forecast
-                          allData[2].data.push(revenueData[key]);
-                          allData[0].data.push(costData[key]);
-                        }
-                        if (forecastRevenueData.hasOwnProperty(key)) {
-                          allData[4].data.push(forecastCostData[key]);
-                          allData[5].data.push(forecastRevenueData[key]);
-                        } else {
-                          allData[4].data.push(null);
-                          allData[5].data.push(null);
-                        }
-
-                        // BREAKPOINT DATA
-                        if (budgetKey - allDataLength < budgetData.length) {
-                          allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
-                          if (budgetData[budgetKey - 6].endWeek === key) {
-                            budgetKey++;
-                            if (budgetKey - allDataLength < budgetData.length) {
-                              allData.push({
-                                data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
-                                label: budgetData[budgetKey - allDataLength].notes
-                              });
-                            }
-                          }
-                        }
-                      }
-                    }
-                    this.lineChartLabels.next(labels);
-                    this.lineChartData.next(allData);
+                  } else {
+                    cost += (projectData[i].hours / projectData[i].capacity) * 20;
+                    revenue += projectData[i].hours * 20;
 
                   }
-                );
+                  revenueData[ISOWeek] = Math.trunc(revenue);
+                  costData[ISOWeek] = Math.trunc(cost);
+                }
+
+                let budgetKey = allData.length;
+                const allDataLength = allData.length;
+                if (budgetData.length > 0) {
+                  allData.push({data: [], label: budgetData[0].notes});
+                }
+                // for (const key in forecastRevenueData) {
+                //   if (forecastRevenueData.hasOwnProperty(key)) {
+                //     allData[4].data.push(forecastCostData[key]);
+                //     allData[5].data.push(forecastRevenueData[key]);
+                //   }
+                // }
+                for (const key in revenueData) {
+                  if (revenueData.hasOwnProperty(key)) {
+                    labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
+                    // ACTUAL AND FORECAST DATA
+                    if (key < this.weeks[0]) { // actual
+                      allData[3].data.push(revenueData[key]);
+                      allData[1].data.push(costData[key]);
+                      allData[2].data.push(null);
+                      allData[0].data.push(null);
+                    } else if (key === this.weeks[0]) { // both
+                      allData[3].data.push(revenueData[key]);
+                      allData[1].data.push(costData[key]);
+                      allData[2].data.push(revenueData[key]);
+                      allData[0].data.push(costData[key]);
+                    } else if (key > this.weeks[0]) { // forecast
+                      allData[2].data.push(revenueData[key]);
+                      allData[0].data.push(costData[key]);
+                    }
+                    if (forecastRevenueData.hasOwnProperty(key)) {
+                      allData[4].data.push(forecastCostData[key]);
+                      allData[5].data.push(forecastRevenueData[key]);
+                    } else {
+                      allData[4].data.push(null);
+                      allData[5].data.push(null);
+                    }
+
+                    // BREAKPOINT DATA
+                    if (budgetKey - allDataLength < budgetData.length) {
+                      allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
+                      if (budgetData[budgetKey - 6].endWeek === key) {
+                        budgetKey++;
+                        if (budgetKey - allDataLength < budgetData.length) {
+                          allData.push({
+                            data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
+                            label: budgetData[budgetKey - allDataLength].notes
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+                this.lineChartLabels.next(labels);
+                this.lineChartData.next(allData);
+
               }
             );
           }
