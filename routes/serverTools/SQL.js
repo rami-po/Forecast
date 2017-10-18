@@ -856,6 +856,7 @@ exports.updateData = function (req, callback) {
     'OR employee_id = ' + mysql.escape(req.body.fake_employee_id) + ') AND project_id = ' + mysql.escape(req.body.project_id) + ' ' +
     'GROUP BY week_of ORDER BY employee_id); DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
     'AND project_id = ' + mysql.escape(req.body.project_id), function (err, result) {
+
     callback(err, result);
     // if (!err) {
     //   connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
