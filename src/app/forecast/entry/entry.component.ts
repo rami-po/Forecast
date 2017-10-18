@@ -148,18 +148,18 @@ export class EntryComponent implements OnInit, OnDestroy {
           } else if (this.params.path === 'project') {
             this.forecastService.filteredResources.next(resources.projectHoursData);
             // moved from below where we just checked for an id being present
-            this.graphService.initializeGraph(this.params, false);
+            // this.graphService.initializeGraph(this.params, false);
           }
 
-          /*
+
           // this.graphService.updateGraph(week);
           if (this.params.id !== '') {
+            console.log('mhm');
             const timer = Observable.timer(2000);
             this.graphSubscription = timer.subscribe(t => {
               this.graphService.initializeGraph(this.params, false);
             });
           }
-          */
 
           const message = {
             action: 'updateEntry',

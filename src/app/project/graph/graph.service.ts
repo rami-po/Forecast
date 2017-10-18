@@ -211,57 +211,56 @@ export class GraphService {
                 const allDataLength = allData.length;
                 if (getBudgetData && budgetData.length > 0) {
                   allData.push({data: [], label: budgetData[0].notes});
+                }
+                // for (const key in forecastRevenueData) {
+                //   if (forecastRevenueData.hasOwnProperty(key)) {
+                //     allData[4].data.push(forecastCostData[key]);
+                //     allData[5].data.push(forecastRevenueData[key]);
+                //   }
+                // }
+                for (const key in revenueData) {
+                  if (revenueData.hasOwnProperty(key)) {
+                    labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
+                    // ACTUAL AND FORECAST DATA
+                    if (key < this.weeks[0]) { // actual
+                      allData[3].data.push(revenueData[key]);
+                      allData[1].data.push(costData[key]);
+                      allData[2].data.push(null);
+                      allData[0].data.push(null);
+                    } else if (key === this.weeks[0]) { // both
+                      allData[3].data.push(revenueData[key]);
+                      allData[1].data.push(costData[key]);
+                      allData[2].data.push(revenueData[key]);
+                      allData[0].data.push(costData[key]);
+                    } else if (key > this.weeks[0]) { // forecast
+                      allData[2].data.push(revenueData[key]);
+                      allData[0].data.push(costData[key]);
+                    }
+                    if (forecastRevenueData.hasOwnProperty(key)) {
+                      allData[4].data.push(forecastCostData[key]);
+                      allData[5].data.push(forecastRevenueData[key]);
+                    } else {
+                      allData[4].data.push(null);
+                      allData[5].data.push(null);
+                    }
 
-                  // for (const key in forecastRevenueData) {
-                  //   if (forecastRevenueData.hasOwnProperty(key)) {
-                  //     allData[4].data.push(forecastCostData[key]);
-                  //     allData[5].data.push(forecastRevenueData[key]);
-                  //   }
-                  // }
-                  for (const key in revenueData) {
-                    if (revenueData.hasOwnProperty(key)) {
-                      labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
-                      // ACTUAL AND FORECAST DATA
-                      if (key < this.weeks[0]) { // actual
-                        allData[3].data.push(revenueData[key]);
-                        allData[1].data.push(costData[key]);
-                        allData[2].data.push(null);
-                        allData[0].data.push(null);
-                      } else if (key === this.weeks[0]) { // both
-                        allData[3].data.push(revenueData[key]);
-                        allData[1].data.push(costData[key]);
-                        allData[2].data.push(revenueData[key]);
-                        allData[0].data.push(costData[key]);
-                      } else if (key > this.weeks[0]) { // forecast
-                        allData[2].data.push(revenueData[key]);
-                        allData[0].data.push(costData[key]);
-                      }
-                      if (forecastRevenueData.hasOwnProperty(key)) {
-                        allData[4].data.push(forecastCostData[key]);
-                        allData[5].data.push(forecastRevenueData[key]);
-                      } else {
-                        allData[4].data.push(null);
-                        allData[5].data.push(null);
-                      }
-
-                      // BREAKPOINT DATA
-                      if (getBudgetData && budgetKey - allDataLength < budgetData.length) {
-                        allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
-                        if (budgetData[budgetKey - 6].endWeek === key) {
-                          budgetKey++;
-                          if (budgetKey - allDataLength < budgetData.length) {
-                            allData.push({
-                              data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
-                              label: budgetData[budgetKey - allDataLength].notes
-                            });
-                          }
+                    // BREAKPOINT DATA
+                    if (getBudgetData && budgetKey - allDataLength < budgetData.length) {
+                      allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
+                      if (budgetData[budgetKey - 6].endWeek === key) {
+                        budgetKey++;
+                        if (budgetKey - allDataLength < budgetData.length) {
+                          allData.push({
+                            data: JSON.parse(JSON.stringify(allData[budgetKey - 1].data)),
+                            label: budgetData[budgetKey - allDataLength].notes
+                          });
                         }
                       }
                     }
                   }
-                  this.lineChartLabels.next(labels);
-                  this.lineChartData.next(allData);
                 }
+                this.lineChartLabels.next(labels);
+                this.lineChartData.next(allData);
               }
             );
           }
