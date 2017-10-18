@@ -29,7 +29,7 @@ export class RollUpComponent implements OnInit {
       for (const entry of this.data) {
         if (entry.project_id === Number(this.params.id) || entry.client_id === Number(this.params.id)) {
           this.filteredEntry = JSON.parse(JSON.stringify(entry.forecast));
-          console.log(entry.forecast.data);
+          // console.log('ngOnInit RollUpComponent'); console.log(entry.forecast.data);
           break;
         }
       }
