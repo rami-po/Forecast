@@ -95,8 +95,9 @@ export class SideListComponent implements OnInit {
         console.log('NEED TO UPDATE REAL EMPLOYEES: ');
         allEmployees = data.slice(0);
         this.realEmployees = [];
+        console.log(data);
         allEmployees.forEach(employee => {
-          if (!employee.is_fake) {
+          if (employee.last_name !== '') {
             this.realEmployees.push(employee);
           }
         });

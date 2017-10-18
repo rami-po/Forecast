@@ -38,10 +38,10 @@ app.use(function(req, res, next) {
   for (var key in req.query) {
     if (key !== key.toLowerCase()) {
       console.log('QUERY PARAMETERS SHOULD BE LOWERCASE: ' + key + ' in ' + JSON.stringify(req.query));
+      // the one-liner below produces duplicate keys that only differ by capitalization
+      req.query[key.toLowerCase()] = req.query[key];
       delete req.query[key];
     }
-    // the one-liner below produces duplicate keys that only differ by capitalization
-    req.query[key.toLowerCase()] = req.query[key];
   }
   next();
 });

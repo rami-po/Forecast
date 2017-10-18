@@ -81,7 +81,7 @@ export class ForecastService {
     this.getAllActiveProjects().subscribe(
       data => {
         console.log('updateAllActiveProjects has data'); console.log(data);
-        let projects = data.result;
+        const projects = data.result;
         projects.splice(0, 0, {id: '', name: 'All'});
         console.log(projects);
         this.allActiveProjects.next(projects);

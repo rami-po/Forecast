@@ -11,14 +11,14 @@ exports.checkCaches = checkCaches;
 
 // if the delay is too short (less than 100ms?), this function will start to block new requests.
 function checkCaches(clear, key, delay, retries, reqId=0, callback) {
-  console.log('----ENTER CHECK_CACHE: ' + retries + ' TRIES LEFT FOR ' + reqId);
+  // console.log('----ENTER CHECK_CACHE: ' + retries + ' TRIES LEFT FOR ' + reqId);
   inProgress = inProgressCache.get(key);
   if (clear) {
     cache.del(key);
     return callback(true, null);
   }
   else if (inProgress == null) {
-    console.log('----CHECK_CACHE REQUEST NOT IN PROGRESS ' + reqId + ' REMAINING TRIES=' + retries);
+    // console.log('----CHECK_CACHE REQUEST NOT IN PROGRESS ' + reqId + ' REMAINING TRIES=' + retries);
     return callback(true, cache.get(key));
   }
   else if (retries > 0) {

@@ -20,8 +20,11 @@ const checkCaches = require('./serverTools/cache').checkCaches;
 
 console.log = tools.conditionalConsoleLog;
 
-const displayClearAdditionalCaches = true;
-const displayCacheClear  = true;
+const displayClearAdditionalCaches = false;
+const displayCacheClear  = false;
+const displayCacheClearAlso = false;
+const displayCacheMisses = false;
+const displayInProgressCacheMessages = false;
 
 /*
  * CACHE ROUTES
@@ -383,21 +386,21 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
     console.log('harvest returned: ' + JSON.stringify(result));
     if (status === 200 || status === 404) {
       SQL.deactivateAssignment(req, function (err, result) {
-        console.log('CLEAR ADDITIONAL CACHES after removing employee from project');
+        console.log('CLEAR ADDITIONAL CACHES after removing employee from project', displayClearAdditionalCaches);
         for (const key of cache.keys()) {
           // for now, we'll bust all rollup caches.
           if (key.indexOf('ROLLUPS:') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key);
+            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
             cache.del(key);
           }
           // clear cache for the project's employees
           if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':'+req.params.project_id+':') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key);
+            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
             cache.del(key);
           }
           // clear all caches where the employee is a key
           if (key.indexOf(':'+req.query.employee_id+':') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key);
+            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
             cache.del(key);
           }
         }
@@ -459,21 +462,21 @@ router.post('/project/:project_id/assignments', function (req, res, next) {
   const employeeId = req.body.user.id;
   const projectId = req.params.project_id;
   const clientId = SQL.getClientId(projectId);
-  console.log('CLEAR ADDITIONAL CACHES before adding employee to a project');
+  console.log('CLEAR ADDITIONAL CACHES before adding employee to a project', displayClearAdditionalCaches);
   for (const key of cache.keys()) {
     // for now, we'll bust all rollup caches.
     if (key.indexOf('ROLLUPS:') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key);
+      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
       cache.del(key);
     }
     // clear cache for the project's employees
     if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':'+projectId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key);
+      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
       cache.del(key);
     }
     // clear all caches where the employee is a key
     if (key.indexOf(':'+employeeId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key);
+      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
       cache.del(key);
     }
   }
@@ -656,21 +659,21 @@ router.delete('/assignment/fake/:assignment_id', function (req, res, next) {
         err: err
       });
     } else {
-      console.log('CLEAR ADDITIONAL CACHES: removed fake employee from project');
+      console.log('CLEAR ADDITIONAL CACHES: removed fake employee from project', displayClearAdditionalCaches);
       for (const key of cache.keys()) {
         // for now, we'll bust all rollup caches.
         if (key.indexOf('ROLLUPS:') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key);
+          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
           cache.del(key);
         }
         // clear cache for the project's employees
         if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':' + projectId + ':') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key);
+          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
           cache.del(key);
         }
         // clear all caches where the employee is a key
         if (key.indexOf(':' + employeeId +':') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key);
+          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
           cache.del(key);
         }
       }
@@ -795,16 +798,16 @@ router.post('/entry', function (req, res, next) {
                     }
                     else {
                       // clear associated rollup and entry caches
-                      console.log('CLEAR ADDITIONAL CACHES after updating entry');
+                      console.log('CLEAR ADDITIONAL CACHES after updating entry', displayClearAdditionalCaches);
                       for (const key of cache.keys()) {
                         // for now, we'll bust all rollup caches.
                         if (key.indexOf('ROLLUPS:') != -1) {
-                          console.log('CACHE CLEAR ALSO for ' + key);
+                          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
                           cache.del(key);
                         }
                         // bust all entry caches for this employee and the projectId
                         if (key.indexOf('ENTRY:') != -1 && key.indexOf(':' + employeeId + ':') != -1 && key.indexOf(':' + projectId + ':') != -1) {
-                          console.log('CACHE CLEAR ALSO for ' + key);
+                          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
                           cache.del(key);
                         }
                       }
@@ -1093,11 +1096,11 @@ router.put('/data', function (req, res, next) {
   const projectId = req.body.project_id;
   const fakeEmployeeId = req.body.fake_employee_id;
 
-  console.log('CLEAR ADDITIONAL CACHES after updating entry');
+  console.log('CLEAR ADDITIONAL CACHES after updating entry', displayClearAdditionalCaches);
   for (const key of cache.keys()) {
     // for now, we'll bust all rollup caches.
     if (key.indexOf('ROLLUPS:') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key);
+      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
       cache.del(key);
     }
     // bust all caches for this employee
@@ -1279,7 +1282,7 @@ router.get('/rollups', function (req, res, next) {
 
       console.log('CACHE MISS for ' + cacheKey);
       inProgressCache.set(cacheKey, reqId, inProgressCacheTTL);
-      console.log('IN PROGRESS CACHE SET for ' + cacheKey + ' (' + reqId + ') ');
+      console.log('IN PROGRESS CACHE SET for ' + cacheKey + ' (' + reqId + ') ', displayInProgressCacheMessages);
 
       SQL.getPeople(req.query, (err, employees) => {
         if (err) {
@@ -1306,8 +1309,7 @@ router.get('/rollups', function (req, res, next) {
             for (const entry of employee.entries) {
               const entryQuery = {employee_id: entry.employee_id, project_id: entry.project_id, active: '1'};
               // using a special prefix for the cache key here to make it easier to delete the entry cache from elsewhere
-              const entryCacheKey = tools.createStructuredCacheKey('ENTRY:', entryQuery);
-              SQL.getData(entryQuery, entryCacheKey, (err, data) => {
+              SQL.getEntry(entryQuery, (err, data) => {
                 if (err) {
                   return res.status(500).json({
                     message: 'Error!',
@@ -1328,7 +1330,7 @@ router.get('/rollups', function (req, res, next) {
                   cache.set(cacheKey, {'employees': employees, 'rollUps': rollUps});
                   console.log('CACHE SET for ' + cacheKey);
                   inProgressCache.del(cacheKey);
-                  console.log('IN PROGRESS CACHE DELETED for ' + inProgressCacheKey);
+                  console.log('IN PROGRESS CACHE DELETED for ' + inProgressCacheKey, displayInProgressCacheMessages);
                   const timeSpent = (new Date().getTime() - startTime - waitTime) / 1000;
                   console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS AFTER WAITING ' + waitTime/1000 + ' SECONDS');
 
