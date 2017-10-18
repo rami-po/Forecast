@@ -48,9 +48,9 @@ export class FakeEmployeeComponent implements OnInit {
     console.log(employee);
     this.dialogRef.close(false);
 
-    this.forecastService.getProjects('?active=1&employeeId=' + employee.id).subscribe(
+    this.forecastService.getProjects('?active=1&employeeid=' + employee.id).subscribe(
       data1 => {
-        this.forecastService.getProjects('?active=1&employeeId=' + this.fakeEmployee.id).subscribe(
+        this.forecastService.getProjects('?active=1&employeeid=' + this.fakeEmployee.id).subscribe(
           data2 => {
             console.log(data1);
             console.log(data2);

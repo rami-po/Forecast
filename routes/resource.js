@@ -1099,18 +1099,18 @@ router.put('/data', function (req, res, next) {
       cache.del(key);
     }
     // bust all caches for this employee
-    if (indexOf(':'+employeeId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+    if (key.indexOf(':'+employeeId+':') != -1) {
+      console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
     // bust all caches for the fake employee
-    if (indexOf(':'+fakeEmployeeId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+    if (key.indexOf(':'+fakeEmployeeId+':') != -1) {
+      console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
     // bust all caches for the fake employee
-    if (indexOf(':'+projectId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+    if (key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
   }
