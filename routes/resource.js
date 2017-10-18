@@ -785,11 +785,8 @@ router.post('/entry', function (req, res, next) {
                   });
                 }
                 else {
-                  const employeeDataQuery = {employee_id: employeeId, active: '1', slim: '1'};
-                  const employeeDataCacheKey = tools.createStructuredCacheKey('DATA:', employeeDataQuery);
-                  console.log('CACHE CLEAR for ' + employeeDataCacheKey);
-                  cache.del(employeeDataCacheKey);
-                  SQL.getData(employeeDataQuery, employeeDataCacheKey, function (err, employeeDataResult) {
+                  const employeeDataQuery = {employee_id: employeeId, active: '1', slim: '1', clearcache: 'true'};
+                  SQL.getData(employeeDataQuery, function (err, employeeDataResult) {
                     if (err) {
                       return res.status(500).json({
                         message: 'Error!',
@@ -866,9 +863,7 @@ router.get('/data', function (req, res, next) {
     req.query.clientid = null; req.query.clientId = null;
   }
 
-  let cacheKey = tools.createStructuredCacheKey('DATA:', req.query);
-
-  SQL.getData(req.query, cacheKey, function (err, result) {
+  SQL.getData(req.query, function (err, result) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',

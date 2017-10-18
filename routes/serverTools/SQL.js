@@ -136,7 +136,7 @@ exports.getEmployees = function (args, callback) {
       console.log('IN PROGRESS CACHE SET for ' + cacheKey, displayInProgressCacheMessages);
 
       const selectAssignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
-      const selectEmployees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
+      const selectEmployees = '(SELECT *, false AS is_fake FROM employees UNION ALL SELECT *, true AS is_fake FROM employees_fake)';
       const activeCondition = (isActive === '1' ? ' AND e.is_active=1 AND a.deactivated=0 AND p.active=1 ' : '');
       const contractorCondition = (isContractor === '1' ? ' AND e.is_contractor=1 ' : '');
       const idCondition = (type === 'all' ? ' ' : ' AND ' + type + '_id=' + id + ' ');
@@ -548,14 +548,15 @@ exports.getEntry = function (args, callback) {
   }
 };
 
-exports.getData = function (args, cacheKey, callback) {
+exports.getData = function (args, callback) {
   const projectId = (args.project_id !== undefined ? mysql.escape(args.project_id) : 'r.project_id');
   const employeeId = (args.employee_id !== undefined ? mysql.escape(args.employee_id) : 'r.employee_id');
   const clientId = (args.client_id !== undefined ? mysql.escape(args.client_id) : 'r.client_id');
   const isActive = (args.active === '1');
   const slim = (args.slim === '1');
-
   const clearCache = (args.clearcache && args.clearcache == 'true');
+
+  const cacheKey = tools.createStructuredCacheKey('DATA:', args);
   if (clearCache) {
     console.log('CACHE CLEAR for ' + cacheKey, displayCacheClears);
     cache.del(cacheKey);
