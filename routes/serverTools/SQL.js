@@ -589,21 +589,28 @@ exports.updateCapacity = function (req, callback) {
 };
 
 exports.updateData = function (req, callback) {
-  // connection.query('REPLACE INTO resourceManagement ' +
-  //   '(SELECT client_id, project_id, MAX(employee_id), week_of, SUM(capacity) FROM resourceManagement ' +
-  //   'WHERE (employee_id = ' + mysql.escape(req.body.employee_id) + ' ' +
-  //   'OR employee_id = ' + mysql.escape(req.body.fake_employee_id) + ') AND project_id = ' + mysql.escape(req.body.project_id) + ' ' +
-  //   'GROUP BY week_of);' +
-  //   'DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
-  //   'AND project_id = ' + mysql.escape(req.body.project_id), function (err, result) {
-  //   callback(err, result);
-  // });
-  connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.employee_id) +
-    ' AND project_id = ' + mysql.escape(req.body.project_id) + ';UPDATE resourceManagement SET employee_id = ' + mysql.escape(req.body.employee_id) +
-    ' WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' AND project_id = ' + mysql.escape(req.body.project_id),
-    function (err, result) {
-      callback(err, result);
-    })
+  //adds rows together
+  connection.query('REPLACE INTO resourceManagement ' +
+    '(SELECT client_id, project_id, employee_id, week_of, SUM(capacity) FROM resourceManagement ' +
+    'WHERE (employee_id = ' + mysql.escape(req.body.employee_id) + ' ' +
+    'OR employee_id = ' + mysql.escape(req.body.fake_employee_id) + ') AND project_id = ' + mysql.escape(req.body.project_id) + ' ' +
+    'GROUP BY week_of ORDER BY employee_id); DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
+    'AND project_id = ' + mysql.escape(req.body.project_id), function (err, result) {
+    callback(err, result);
+    // if (!err) {
+    //   connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' ' +
+    //     'AND project_id = ' + mysql.escape(req.body.project_id), function (err, result) {
+    //     callback(err, result);
+    //   })
+    // }
+  });
+  //replaces real row data with fake row data
+  // connection.query('DELETE FROM resourceManagement WHERE employee_id = ' + mysql.escape(req.body.employee_id) +
+  //   ' AND project_id = ' + mysql.escape(req.body.project_id) + ';UPDATE resourceManagement SET employee_id = ' + mysql.escape(req.body.employee_id) +
+  //   ' WHERE employee_id = ' + mysql.escape(req.body.fake_employee_id) + ' AND project_id = ' + mysql.escape(req.body.project_id),
+  //   function (err, result) {
+  //     callback(err, result);
+  //   })
 };
 
 exports.deactivateAssignment = function (req, callback) {

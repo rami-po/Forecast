@@ -156,7 +156,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         if (this.isGraphShowing) {
-          this.graphService.initializeGraph(this.params);
+          this.graphService.initializeGraph(this.params, true);
         }
         this.forecastService.updateRollUps(this.params);
       }

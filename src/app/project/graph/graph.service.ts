@@ -134,7 +134,7 @@ export class GraphService {
     return ISOweekStart;
   }
 
-  initializeGraph(params) {
+  initializeGraph(params, getBudgetData) {
     const labels = [];
     const allData = [
       {data: [], label: 'Cost (Forecast)'},
@@ -161,7 +161,10 @@ export class GraphService {
                 projectData = projectData.result;
                 this.forecastService.getProjects('/' + body.projectId).subscribe(
                   project => {
-                    const budgetData = this.parse(project.result[0].notes);
+                    let budgetData;
+                    if (getBudgetData) {
+                      budgetData = this.parse(project.result[0].notes);
+                    }
                     const revenueData = [];
                     const costData = [];
                     const forecastRevenueData = [];
@@ -206,7 +209,7 @@ export class GraphService {
 
                     let budgetKey = allData.length;
                     const allDataLength = allData.length;
-                    if (budgetData.length > 0) {
+                    if (getBudgetData && budgetData.length > 0) {
                       allData.push({data: [], label: budgetData[0].notes});
                     }
                     // for (const key in forecastRevenueData) {
@@ -242,7 +245,7 @@ export class GraphService {
                         }
 
                         // BREAKPOINT DATA
-                        if (budgetKey - allDataLength < budgetData.length) {
+                        if (getBudgetData && budgetKey - allDataLength < budgetData.length) {
                           allData[budgetKey].data.push(budgetData[budgetKey - allDataLength].budget);
                           if (budgetData[budgetKey - 6].endWeek === key) {
                             budgetKey++;
@@ -258,7 +261,6 @@ export class GraphService {
                     }
                     this.lineChartLabels.next(labels);
                     this.lineChartData.next(allData);
-
                   }
                 );
               }

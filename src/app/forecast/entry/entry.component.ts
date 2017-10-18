@@ -31,6 +31,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public static weeks = [];
   private lastWeek;
   public timerSubscription;
+  public graphSubscription;
   @Input() public entry: Entry;
   @Input() public forecast;
   @Input() public employeeCapacity;
@@ -132,6 +133,9 @@ export class EntryComponent implements OnInit, OnDestroy {
     if (this.isSubscribed) {
 
       this.timerSubscription.unsubscribe();
+      if (!isNullOrUndefined(this.graphSubscription)) {
+        this.graphSubscription.unsubscribe();
+      }
       this.isSubscribed = false;
 
       console.log('sent');
@@ -151,7 +155,10 @@ export class EntryComponent implements OnInit, OnDestroy {
 
           // this.graphService.updateGraph(week);
           if (this.params.id !== '') {
-            this.graphService.initializeGraph(this.params);
+            const timer = Observable.timer(2000);
+            this.graphSubscription = timer.subscribe(t => {
+              this.graphService.initializeGraph(this.params, false);
+            });
           }
           this.forecastService.socket.emit('broadcastUpdatedRollUps', {
             id: this.entry.projectId,
