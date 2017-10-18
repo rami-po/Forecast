@@ -143,7 +143,7 @@ exports.getEmployees = function (args, callback) {
 
       const query =
         'SELECT DISTINCT e.id, e.email, e.created_at, e.is_admin, e.first_name, e.last_name, e.is_contractor, ' +
-        'e.telephone, e.is_active, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity ' +
+        'e.telephone, e.is_active, e.is_fake, e.default_hourly_rate, e.department, e.updated_at, e.cost_rate, e.capacity ' +
         'FROM clients c ' +
         'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
         'LEFT OUTER JOIN ' + selectAssignments + ' a ON p.id = a.project_id ' +
