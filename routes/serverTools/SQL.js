@@ -54,6 +54,7 @@ const displayCacheHits = true;
 const displayCacheMisses = true;
 const displayCacheSets = false;
 const displayCacheClears = false;
+const displayInProgressCacheMessages = false;
 
 console.log = tools.conditionalConsoleLog;
 
@@ -132,7 +133,7 @@ exports.getEmployees = function (args, callback) {
       console.log('CACHE MISS for ' + cacheKey, displayCacheMisses);
       const waitTime = new Date().getTime() - startWaiting;
       inProgressCache.set(cacheKey, reqId, inProgressCacheTTL);
-      console.log('IN PROGRESS CACHE SET for ' + cacheKey);
+      console.log('IN PROGRESS CACHE SET for ' + cacheKey, displayInProgressCacheMessages);
 
       const selectAssignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
       const selectEmployees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
@@ -253,22 +254,22 @@ exports.getPeople = function (args, callback) {
 };
 
 // TODO - it doesn't look like we're calling this with a clientID...
-exports.getProjects = function (params, callback) {
-  const projectId = (params.project_id !== undefined ? mysql.escape(params.project_id) : 'a.project_id');
-  let employeeId = (params.employeeid !== undefined ? mysql.escape(params.employeeid) : 'a.user_id');
-  const clientId = (params.clientid !== undefined ? mysql.escape(params.clientid) : 'p.client_id');
-  const active = (params.active !== undefined ? mysql.escape(params.active) : 'p.active');
+exports.getProjects = function (args, callback) {
+  const projectId = (args.project_id !== undefined ? mysql.escape(args.project_id) : 'a.project_id');
+  let employeeId = (args.employeeid !== undefined ? mysql.escape(args.employeeid) : 'a.user_id');
+  const clientId = (args.clientid !== undefined ? mysql.escape(args.clientid) : 'p.client_id');
+  const active = (args.active !== undefined ? mysql.escape(args.active) : 'p.active');
 
   let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
   let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
 
-  if (params.real === '1') {
+  if (args.real === '1') {
     assignments = 'assignments';
     employees = 'employees';
   }
 
-  const cacheKey = tools.createStructuredCacheKey('PROJECTS:', params);
-  const clearCache = (params.clearcache && params.clearcache == 'true');
+  const cacheKey = tools.createStructuredCacheKey('PROJECTS:', args);
+  const clearCache = (args.clearcache && args.clearcache == 'true');
   if (clearCache) {
     console.log('CACHE CLEAR for ' + cacheKey, displayCacheClears);
     cache.del(cacheKey);
@@ -438,17 +439,17 @@ exports.getEntries = function (req, callback) {
   }
 };
 
-exports.getCapacityHours = function (params, callback) {
+exports.getCapacityHours = function (args, callback) {
   const types = ['overall', 'client', 'project'];
-  const type = (types.indexOf(params.type) != -1 ? params.type : false);
-  const id = (params.id !== undefined ? mysql.escape(params.id) : '');
-  const clearCache = (params.clearcache && params.clearcache == 'true');
+  const type = (types.indexOf(args.type) != -1 ? args.type : false);
+  const id = (args.id !== undefined ? mysql.escape(args.id) : '');
+  const clearCache = (args.clearcache && args.clearcache == 'true');
 
   if (!type) {
-    callback({ message: 'Invalid type (' + params.type + ')for capacity hours'});
+    callback({ message: 'Invalid type (' + args.type + ')for capacity hours'});
   }
   else {
-    const cacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', params);
+    const cacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', args);
 
     if (clearCache) {
       console.log('CACHE CLEAR for ' + cacheKey, displayCacheClears);
@@ -483,15 +484,78 @@ exports.getCapacityHours = function (params, callback) {
   }
 };
 
+exports.getEntry = function (args, callback) {
+  const projectId = (args.project_id !== undefined ? mysql.escape(args.project_id) : '');
+  const employeeId = (args.employee_id !== undefined ? mysql.escape(args.employee_id) : '');
+  const isActive = (args.active === '1');
+  const clearCache = (args.clearcache && args.clearcache == 'true');
 
-exports.getData = function (params, cacheKey, callback) {
-  const projectId = (params.project_id !== undefined ? mysql.escape(params.project_id) : 'r.project_id');
-  const employeeId = (params.employee_id !== undefined ? mysql.escape(params.employee_id) : 'r.employee_id');
-  const clientId = (params.client_id !== undefined ? mysql.escape(params.client_id) : 'r.client_id');
-  const isActive = (params.active === '1');
-  const slim = (params.slim === '1');
+  const cacheKey = tools.createStructuredCacheKey('ENTRY:', args);
 
-  const clearCache = (params.clearcache && params.clearcache == 'true');
+  if (clearCache) {
+    console.log('CACHE CLEAR for ' + cacheKey, displayCacheClears);
+    cache.del(cacheKey);
+  }
+
+  var result = cache.get(cacheKey);
+  if (result != null) {
+    //console.log('CACHE HIT for ' + cacheKey, displayEntryCacheHits);
+    callback(false, result);
+  }
+  else {
+    //console.log('CACHE MISS for ' + cacheKey, displayEntryCacheMisses);
+    let cost = '';
+    let costJoin = '';
+    if (args.cost === '1') {
+      cost = ', t.cost';
+      costJoin =
+        'LEFT OUTER JOIN employees e ON r.employee_id = e.id ' +
+        'LEFT OUTER JOIN tiers t on t.id = e.tier_id ';
+    }
+    let monday = tools.getMondayFormatted();
+    const active = (isActive ? 'AND r.week_of >= \'' + monday + '\' ' : '');
+
+    let entryQuery = 'SELECT r.client_id, r.project_id, r.employee_id, r.week_of, r.capacity' + cost + ' FROM resourceManagement r ' +
+      costJoin +
+      'WHERE r.project_id = ' + projectId + ' ' +
+      'AND r.employee_id = ' + employeeId + ' ' +
+      'AND r.capacity <> \'\' ' +
+      active +
+      'ORDER BY r.week_of ASC;';
+
+    let totalsQuery =
+      'SELECT SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+      'WHERE r.employee_id = ' + employeeId + ' ' +
+      'AND r.capacity <> \'\' ' +
+      active +
+      'GROUP BY r.week_of ' +
+      'ORDER BY r.week_of ASC;';
+
+    let query = entryQuery + totalsQuery;
+
+    connection.query(query, function (err, result) {
+      if (!err) {
+        // console.log('CACHE SET for ' + cacheKey);
+        cache.set(cacheKey, result);
+        callback(err, result);
+      }
+      else {
+        console.log('QUERY ERROR for ' + cacheKey);
+        console.log('QUERY'); console.log(query);
+        callback(err, result);
+      }
+    });
+  }
+};
+
+exports.getData = function (args, cacheKey, callback) {
+  const projectId = (args.project_id !== undefined ? mysql.escape(args.project_id) : 'r.project_id');
+  const employeeId = (args.employee_id !== undefined ? mysql.escape(args.employee_id) : 'r.employee_id');
+  const clientId = (args.client_id !== undefined ? mysql.escape(args.client_id) : 'r.client_id');
+  const isActive = (args.active === '1');
+  const slim = (args.slim === '1');
+
+  const clearCache = (args.clearcache && args.clearcache == 'true');
   if (clearCache) {
     console.log('CACHE CLEAR for ' + cacheKey, displayCacheClears);
     cache.del(cacheKey);
@@ -508,7 +572,7 @@ exports.getData = function (params, cacheKey, callback) {
     }
     let cost = '';
     let costJoin = '';
-    if (params.cost === '1') {
+    if (args.cost === '1') {
       cost = ', t.cost';
       costJoin =
         'LEFT OUTER JOIN employees e ON r.employee_id = e.id ' +
@@ -898,10 +962,10 @@ exports.deleteFakeAssignment = function (req, callback) {
  *
  * deletes a fake employee and removes all of their capacity entries
  */
-exports.deleteFakeEmployee = function (params, callback) {
-  const employeeId = (params.employee_id !== undefined ? mysql.escape(params.employee_id) : false);
+exports.deleteFakeEmployee = function (args, callback) {
+  const employeeId = (args.employee_id !== undefined ? mysql.escape(args.employee_id) : false);
   if (!employeeId) {
-    const errorMessage = 'employee_id missing from params. Params=' + JSON.stringify(params);
+    const errorMessage = 'employee_id missing from arguments. Args =' + JSON.stringify(args);
     console.log(errorMessage);
     callback({message: errorMessage});
   }
