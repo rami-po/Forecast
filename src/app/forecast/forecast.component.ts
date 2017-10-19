@@ -61,9 +61,9 @@ export class ForecastComponent implements OnInit {
       data => {
         this.rollUps = data.rollUps;
         this.employees = data.employees;
-        console.log('combinedRollUps'); console.log(data);
+        console.log('combinedRollUps');  console.log(this.params); console.log(data);
         this.isDataAvailable = true;
-        if (this.params.path === 'project') {
+        if (data.path === 'project') {
           this.graphService.initializeGraph(this.params, true);
         }
       }

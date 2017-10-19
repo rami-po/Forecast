@@ -583,6 +583,8 @@ export class ForecastService {
         console.log('updateRollUps:'); console.log(data);
         this.employees.next(data.employees);
         this.rollUps.next(data.rollUps);
+        // need to include the path that was used for these rollups so that we can later decide if we're going to initialize the graph
+        data.path = params.path;
         this.combinedRollUps.next(data);
         // overall hours - was originally outside of the getRollUps subscription
         this.updateOverallHours();
