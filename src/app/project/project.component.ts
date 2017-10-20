@@ -25,7 +25,10 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('parentMenu') parentMenu: MdMenuTrigger;
   @Input() public projectId;
   @Input() public tableEnabled = true;
-  private lastParams = '';
+  private lastParams = {
+    id: '',
+    path: ''
+  };
   public params: any;
   public budget;
   public internalCost;
@@ -59,17 +62,20 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   filter(id, name) {
-    this.filterName = name;
-    let path = '';
-    if (id !== '') {
-      this.isGraphShowing = name.indexOf('All Projects') === -1;
-      path = (name.indexOf('All Projects') === -1 ? 'project' : 'client');
-      // type = (name.indexOf('All Projects') === -1 ? 'projectId=' : 'clientId=') + id;
-    } else {
-      this.isGraphShowing = false;
+    if (id !== this.params.id) {
+      this.filterName = name;
+      let path = '';
+      if (id !== '') {
+        this.isGraphShowing = name.indexOf('All Projects') === -1;
+        path = (name.indexOf('All Projects') === -1 ? 'project' : 'client');
+        // type = (name.indexOf('All Projects') === -1 ? 'projectId=' : 'clientId=') + id;
+        this.router.navigate(['/' + path + '/' + id]);
+      } else {
+        this.isGraphShowing = false;
+        this.router.navigate(['all']);
+      }
+      // this.forecastService.params.next(type);
     }
-    // this.forecastService.params.next(type);
-    this.router.navigate(['/' + path + '/' + id]);
     this.parentMenu.closeMenu();
   }
 
@@ -78,41 +84,44 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+
     console.log('ngOnInit - project.components.ts');
 
-    if (isNullOrUndefined(this.forecastService.allEmployees.getValue())) {
-      this.forecastService.updateAllEmployees();
-    }
+    // moved to URL subscription!!!!!!!!
+    // if (isNullOrUndefined(this.forecastService.allEmployees.getValue())) {
+    //   this.forecastService.updateAllEmployees();
+    // }
+    //
+    // if (isNullOrUndefined(this.forecastService.allActiveProjects.getValue())) {
+    //   this.forecastService.updateAllActiveProjects();
+    // }
+    //
+    // /*
+    // this.forecastService.getProjects('?active=1').subscribe(
+    //   data => {
+    //     data.result.splice(0, 0, {id: '', name: 'All'});
+    //     this.forecastService.projects.next(data.result);
+    //     this.projects = data.result;
+    //   }
+    // );
+    // */
+    //
+    // this.forecastService.getClientsAndProjects().subscribe(
+    //   data => {
+    //     this.filterList = data.result;
+    //   }
+    // );
 
-    if (isNullOrUndefined(this.forecastService.allActiveProjects.getValue())) {
-      this.forecastService.updateAllActiveProjects();
-    }
-
-    /*
-    this.forecastService.getProjects('?active=1').subscribe(
-      data => {
-        data.result.splice(0, 0, {id: '', name: 'All'});
-        this.forecastService.projects.next(data.result);
-        this.projects = data.result;
-      }
-    );
-    */
-
-    this.forecastService.getClientsAndProjects().subscribe(
-      data => {
-        this.filterList = data.result;
-      }
-    );
-
-    this.forecastService.params$.subscribe(
+    this.subscriptions.push(this.forecastService.params$.subscribe(
       params => {
-        console.log('params!!!!!!!!!!!');
+        console.log('params!!!!!!!!!!! ' + JSON.stringify(params));
         this.params = params;
-        if (this.params !== this.lastParams) {
+        if (this.params.id !== this.lastParams.id) {
           if (this.params.id !== '') {
             this.forecastService.getClients('/' + this.params.id).subscribe(
               client => {
                 if (client.result.length <= 0) {
+                  console.log('OH');
                   this.forecastService.getProjectAndClient(this.params.id).subscribe(
                     project => {
                       this.forecastService.current.next(project.result[0]);
@@ -125,6 +134,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
                     }
                   );
                 } else {
+                  console.log('AH');
                   this.forecastService.current.next(client.result[0]);
                   const clientName = client.result[0].name;
                   this.filterName = clientName;
@@ -135,17 +145,36 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
             );
           }
 
+          console.log('DONE WITH PARAMS!');
+
           this.lastParams = this.params;
 
         }
       }
-    );
+    ));
 
 
-    this.route.url.subscribe(
+    this.subscriptions.push(this.route.url.subscribe(
       urlSegments => {
         console.log('url!!!!');
+
+        if (isNullOrUndefined(this.forecastService.allEmployees.getValue())) {
+          this.forecastService.updateAllEmployees();
+        }
+
+        if (isNullOrUndefined(this.forecastService.allActiveProjects.getValue())) {
+          this.forecastService.updateAllActiveProjects();
+        }
+
+        this.forecastService.getClientsAndProjects().subscribe(
+          data => {
+            this.filterList = data.result;
+          }
+        );
+
         if (urlSegments.length > 1) {
+
+          console.log('PROJECT VIEW!!!!');
           const path = urlSegments[0].path;
           const id = urlSegments[1].path;
           this.isGraphShowing = (path === 'project');
@@ -154,8 +183,9 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
             path: path,
             openEmployees: []
           });
-        }
-        else if (urlSegments.length == 1 && urlSegments[0].path == 'all') {
+
+        } else if (urlSegments.length === 1 && urlSegments[0].path === 'all') {
+          console.log('ALL VIEW!!!!');
           const path = '';
           const id = '';
           this.isGraphShowing = false;
@@ -174,7 +204,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         */
         this.forecastService.updateRollUps(this.params);
       }
-    );
+    ));
 
 
     this.subscriptions.push(this.graphService.lineChartData$.subscribe(
@@ -236,6 +266,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    console.log('DESTROY PROJECT COMPONENT!')
     for (const subscription of this.subscriptions) {
       subscription.unsubscribe();
     }
