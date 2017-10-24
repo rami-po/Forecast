@@ -1,7 +1,7 @@
 /**
  * Created by Rami Khadder on 8/7/2017.
  */
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Entry} from './entry/entry.model';
 import {ForecastService} from './forecast.service';
 import {EntryComponent} from './entry/entry.component';
@@ -17,7 +17,7 @@ import {GraphService} from '../project/graph/graph.service';
   styleUrls: ['./forecast.component.scss']
 })
 
-export class ForecastComponent implements OnInit {
+export class ForecastComponent implements OnInit, OnDestroy {
   public weeks;
   public rollUps = [];
   private side;
@@ -38,6 +38,8 @@ export class ForecastComponent implements OnInit {
   public isDataAvailable = false;
   public mode = 'indeterminate';
 
+  private subscriptions = [];
+
   constructor(private forecastService: ForecastService, private graphService: GraphService) {
   }
 
@@ -57,7 +59,7 @@ export class ForecastComponent implements OnInit {
     EntryComponent.setWeeks(this.weeks);
     GridViewComponent.weeks = this.weeks;
 
-    this.forecastService.combinedRollUps$.subscribe(
+    this.subscriptions.push(this.forecastService.combinedRollUps$.subscribe(
       data => {
         this.rollUps = data.rollUps;
         this.employees = data.employees;
@@ -73,22 +75,22 @@ export class ForecastComponent implements OnInit {
           }
         }
       }
-    );
+    ));
 
-    this.forecastService.allActiveProjects$.subscribe(
+    this.subscriptions.push(this.forecastService.allActiveProjects$.subscribe(
       projects => {
         if (!isNullOrUndefined(projects)) {
           this.projects = projects;
         }
       }
-    );
+    ));
 
-    this.forecastService.getClients('?active=1').subscribe(
+    this.subscriptions.push(this.forecastService.getClients('?active=1').subscribe(
       data => {
         this.clients = data.result;
         this.clients.splice(0, 0, {id: '', name: 'All'});
       }
-    );
+    ));
 
     // listen for update messages from the server, and then update roll ups when received
     // should only update when the current view is affected by the update:
@@ -97,7 +99,7 @@ export class ForecastComponent implements OnInit {
     //   2) when the current view and the update have the same project ID
     //   3) when the current view is a client view, and the update is in one of the client's projects
     //   4) when the current view and the update have different project IDs, but the same employee ID
-    this.forecastService.getUpdateMessages().subscribe(
+    this.subscriptions.push(this.forecastService.getUpdateMessages().subscribe(
       data => {
         const message = data as any;
         const action = message.action;
@@ -132,7 +134,8 @@ export class ForecastComponent implements OnInit {
           this.forecastService.updateRollUps(this.params);
         }
         // still need to handle the case of something changing in a related view (client or project)
-      });
+      }));
+
   }
 
   onScroll($event) {
@@ -140,4 +143,13 @@ export class ForecastComponent implements OnInit {
     this.header.scrollLeft = $event.srcElement.scrollLeft;
     this.capacityHeader.scrollLeft = $event.srcElement.scrollLeft;
   }
+
+  ngOnDestroy() {
+    console.log('DESTROY FORECAST COMPONENT!');
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
+  }
+
+
 }
