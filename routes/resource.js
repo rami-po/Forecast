@@ -12,7 +12,9 @@ const uuidv4 = require('uuid/v4');
 
 const cache = require('./serverTools/cache').cache;
 const inProgressCache = require('./serverTools/cache').inProgressCache;
+const rollUpsCache = require('./serverTools/cache').rollUpsCache;
 const checkCaches = require('./serverTools/cache').checkCaches;
+const checkOrClearCache = require('./serverTools/cache').checkOrClearCache;
 
 /*
  * DEBUGGING
@@ -50,7 +52,6 @@ router.get('/cache/clear', (req, res, next) => {
 router.get('/employees/:type/:id?', function (req, res, next) {
   const args = {};
   Object.assign(args, req.query, req.params);
-  console.log('------EMPLOYEES: '); console.log(args);
   SQL.getEmployees(args, function (err, result) {
     if (err) {
       return res.status(500).json({
@@ -159,6 +160,14 @@ router.put('/person/fake', function (req, res, next) {
   })
 });
 
+/*
+ * need to bust these caches:
+ * all employees
+ * all rollups
+ * project employees
+ * parent client employees
+ * project graph data
+ */
 router.post('/person/fake', function (req, res, next) {
   const employee = {
     id: uuidv4(),
@@ -170,23 +179,37 @@ router.post('/person/fake', function (req, res, next) {
     tier_id: 1
   };
   const projectId = req.body.project_id;
+  const clientId = SQL.getProjectClientId(projectId);
   const assignment = {id: uuidv4(), user_id: employee.id, project_id: projectId, deactivated: 0};
 
   console.log('CLEAR CACHES before adding fake user');
-  console.log('CACHE CLEAR for ALL_EMPLOYEES:');
-  cache.del('ALL_EMPLOYEES:');
-  const employeesQuery = {project_id: projectId, active: '1'};
-  const employeesCacheKey = tools.createStructuredCacheKey('PEOPLE:', employeesQuery);
-  console.log('CACHE CLEAR for ' + employeesCacheKey);
-  cache.del(employeesCacheKey);
+
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache');
+
+  const allEmployeesQuery = {type: 'all', active: '1', clearcache: 'true'};
+  const allEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', allEmployeesQuery);
+  cache.del(allEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + allEmployeesCacheKey);
+
+  const projectEmployeesQuery = {type: 'project', id: projectId, active: '1'};
+  const projectEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', projectEmployeesQuery);
+  cache.del(projectEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + projectEmployeesCacheKey);
+
+  const clientEmployeesQuery = {type: 'client', id: clientId, active: '1'};
+  const clientEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', clientEmployeesQuery);
+  cache.del(clientEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + clientEmployeesCacheKey);
+
   for (const key of cache.keys()) {
-    // for now, we'll bust all rollup caches.
-    if (key.indexOf('ROLLUPS:') != -1) {
-      console.log('CACHE CLEAR for ' + key, displayCacheClear);
+    // TODO - shouldn't have to loop through keys to find graph data key
+    // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
+    if (key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
-    // clear cache for the project's employees
-    if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':' + req.body.project_id + ':') != -1) {
+    if (key.indexOf(':'+clientId+':') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
@@ -220,11 +243,10 @@ router.post('/person/fake', function (req, res, next) {
             }
             else {
               console.log('CACHE REFRESH for project ID ' + projectId + 'employees');
-              const employeesQuery = {project_id: projectId, active: '1', clearcache: 'true'};
-              SQL.getPeople(employeesQuery, (err, employees) => {
+              SQL.getEmployees(projectEmployeesQuery, (err, employees) => {
                 if (err) {
-                  console.log('SQL.getPeople returned an error: ' + err);
-                  cache.del(employeesCacheKey);
+                  console.log('SQL.getEmployees returned an error: ' + err);
+                  cache.del(projectEmployeesCacheKey);
                 }
                 else {
                   return res.status(200).json({
@@ -242,19 +264,34 @@ router.post('/person/fake', function (req, res, next) {
   });
 });
 
-
+/*
+ * need to bust these caches:
+ * all employees
+ * all rollups
+ * project employees - DONE ELSEWHERE
+ * parent client employees - DONE ELSEWHERE
+ * project graph data - DONE ELSEWHERE
+ * ANY cache with the employee_id
+ */
 router.delete('/person/fake/:employee_id', function (req, res, next) {
   const employeeId = req.params.employee_id;
   const params = { employee_id: employeeId };
 
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache');
+
+  const allEmployeesQuery = {type: 'all', active: '1', clearcache: 'true'};
+  const allEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', allEmployeesQuery);
+  cache.del(allEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + allEmployeesCacheKey);
+
   for (const key of cache.keys()) {
-    // for now, we'll bust all rollup caches.
-    if (key.indexOf('ROLLUPS:') != -1) {
+    // clear all caches with the employeeID
+    if (key.indexOf(':'+employeeId+':') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
-    // clear all caches with the employeeID
-    if (key.indexOf(':'+employeeId+':') != -1) {
+    if (key.indexOf('\''+employeeId+'\'') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
@@ -269,7 +306,6 @@ router.delete('/person/fake/:employee_id', function (req, res, next) {
     }
     else {
       console.log('CACHE REFRESH for allEmployees');
-      cache.del('ALL_EMPLOYEES:');
       SQL.getEmployees({type: 'all', active: '1', clearcache: 'true'}, function (err, result) {
         if (err) {
           console.log('ERROR refreshing all employees cache');
@@ -381,30 +417,50 @@ router.get('/project/:id/client', function (req, res, next) {
 });
 
 // delete employee from project
+/*
+ * need to bust these caches:
+ * all rollUps
+ * project employees
+ * parent client employees
+ * project graph data
+ * ANY cache with the employee_id
+ */
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
+  const projectId = params.project_id;
+  const clientId = SQL.getProjectClientId(projectId);
+
+  console.log('CLEAR ADDITIONAL CACHES BEFORE removing employee from project', displayClearAdditionalCaches);
+
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache', displayClearAdditionalCaches);
+
+  const projectEmployeesQuery = {type: 'project', id: projectId, active: '1'};
+  const projectEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', projectEmployeesQuery);
+  cache.del(projectEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + projectEmployeesCacheKey, displayClearAdditionalCaches);
+
+  const clientEmployeesQuery = {type: 'client', id: clientId, active: '1'};
+  const clientEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', clientEmployeesQuery);
+  cache.del(clientEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + clientEmployeesCacheKey, displayClearAdditionalCaches);
+
+  for (const key of cache.keys()) {
+    // TODO - shouldn't have to loop through keys to find graph data key
+    // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
+    if (key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+    if (key.indexOf(':'+clientId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+  }
+
   harvest.removeEmployeeFromProject(req, function (status, result) {
     console.log('harvest returned: ' + JSON.stringify(result));
     if (status === 200 || status === 404) {
       SQL.deactivateAssignment(req, function (err, result) {
-        console.log('CLEAR ADDITIONAL CACHES after removing employee from project', displayClearAdditionalCaches);
-        for (const key of cache.keys()) {
-          // for now, we'll bust all rollup caches.
-          if (key.indexOf('ROLLUPS:') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-            cache.del(key);
-          }
-          // clear cache for the project's employees
-          if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':'+req.params.project_id+':') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-            cache.del(key);
-          }
-          // clear all caches where the employee is a key
-          if (key.indexOf(':'+req.query.employee_id+':') != -1) {
-            console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-            cache.del(key);
-          }
-        }
-
         if (err) {
           return res.status(500).json({
             message: 'Error!',
@@ -458,25 +514,50 @@ router.delete('/project/:project_id/assignments_fake/:assignment_id', function (
 */
 
 // add employee to a project
+/*
+ * need to bust these caches:
+ * all rollUps
+ * project employees
+ * parent client employees
+ * project graph data
+ * ANY cache with the employee_id
+ */
 router.post('/project/:project_id/assignments', function (req, res, next) {
   const employeeId = req.body.user.id;
   const projectId = req.params.project_id;
-  const clientId = SQL.getClientId(projectId);
-  console.log('CLEAR ADDITIONAL CACHES before adding employee to a project', displayClearAdditionalCaches);
+  const clientId = SQL.getProjectClientId(projectId);
+  console.log('CLEAR ADDITIONAL CACHES BEFORE adding employee to a project', displayClearAdditionalCaches);
+
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache', displayClearAdditionalCaches);
+
+  const projectEmployeesQuery = {type: 'project', id: projectId, active: '1'};
+  const projectEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', projectEmployeesQuery);
+  cache.del(projectEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + projectEmployeesCacheKey, displayClearAdditionalCaches);
+
+  const clientEmployeesQuery = {type: 'client', id: clientId, active: '1'};
+  const clientEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', clientEmployeesQuery);
+  cache.del(clientEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + clientEmployeesCacheKey, displayClearAdditionalCaches);
+
   for (const key of cache.keys()) {
-    // for now, we'll bust all rollup caches.
-    if (key.indexOf('ROLLUPS:') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+    // TODO - shouldn't have to loop through keys to find graph data key
+    // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
+    if (key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    // clear cache for the project's employees
-    if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':'+projectId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+    if (key.indexOf(':'+clientId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    // clear all caches where the employee is a key
     if (key.indexOf(':'+employeeId+':') != -1) {
-      console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+    if (key.indexOf('\''+employeeId+'\'') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
   }
@@ -646,11 +727,54 @@ router.get('/assignment/:id', function (req, res, next) {
   });
 });
 
+/*
+ * need to bust these caches:
+ * all rollUps
+ * project employees
+ * parent client employees
+ * project graph data
+ * ANY cache with the employee_id
+ */
 router.delete('/assignment/fake/:assignment_id', function (req, res, next) {
   const employeeId = req.query.employee_id;
   const projectId = req.query.project_id;
+  const clientId = SQL.getProjectClientId(projectId);
 
-  console.log('/assignment/fake/:assignment_id'); console.log(req.query); console.log(req.params);
+  console.log('CLEAR ADDITIONAL CACHES BEFORE deleting fake employees from a project', displayClearAdditionalCaches);
+
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache', displayClearAdditionalCaches);
+
+  const projectEmployeesQuery = {type: 'project', id: projectId, active: '1'};
+  const projectEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', projectEmployeesQuery);
+  cache.del(projectEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + projectEmployeesCacheKey, displayClearAdditionalCaches);
+
+  const clientEmployeesQuery = {type: 'client', id: clientId, active: '1'};
+  const clientEmployeesCacheKey = tools.createStructuredCacheKey('EMPLOYEES:', clientEmployeesQuery);
+  cache.del(clientEmployeesCacheKey);
+  console.log('CACHE CLEAR for ' + clientEmployeesCacheKey, displayClearAdditionalCaches);
+
+  for (const key of cache.keys()) {
+    // TODO - shouldn't have to loop through keys to find graph data key
+    // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
+    if (key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+    if (key.indexOf(':'+clientId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+    if (key.indexOf(':'+employeeId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+    if (key.indexOf('\''+employeeId+'\'') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+  }
 
   SQL.deleteFakeAssignment(req, function (err, result) {
     if (err) {
@@ -659,24 +783,6 @@ router.delete('/assignment/fake/:assignment_id', function (req, res, next) {
         err: err
       });
     } else {
-      console.log('CLEAR ADDITIONAL CACHES: removed fake employee from project', displayClearAdditionalCaches);
-      for (const key of cache.keys()) {
-        // for now, we'll bust all rollup caches.
-        if (key.indexOf('ROLLUPS:') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-          cache.del(key);
-        }
-        // clear cache for the project's employees
-        if (key.indexOf('PEOPLE:') != -1 && key.indexOf(':' + projectId + ':') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-          cache.del(key);
-        }
-        // clear all caches where the employee is a key
-        if (key.indexOf(':' + employeeId +':') != -1) {
-          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-          cache.del(key);
-        }
-      }
       return res.status(200).json({
         message: 'Success!',
         result: result
@@ -698,7 +804,7 @@ router.get('/week/:date*', function (req, res, next) {
  */
 
 router.get('/entry', function (req, res, next) {
-  SQL.getEntries(req, function (err, result) {
+  SQL.getEntries(req.query, function (err, result) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',
@@ -734,10 +840,19 @@ router.post('/entry', function (req, res, next) {
   const params = req.body.params;
   const employeeId = entry.employeeId;
   const projectId = entry.projectId;
-  // TODO - need to bust the caches of the associated rollups here
-  const entryCacheKey = tools.createStructuredCacheKey('ENTRY:', entry);
-  console.log('CACHE CLEAR for ' + entryCacheKey);
-  cache.del(entryCacheKey);
+  const clientId = entry.clientId;
+
+  rollUpsCache.flushAll();
+  console.log('CACHE FLUSH for rollUpsCache', displayClearAdditionalCaches);
+
+  for (const key of cache.keys()) {
+    // TODO - shouldn't have to loop through keys to find graph data key
+    if (key.indexOf(':GRAPH_DATA:') != -1 && key.indexOf(':'+projectId+':') != -1) {
+      console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
+      cache.del(key);
+    }
+  }
+
   SQL.createEntry(entry, function (err, createEntryResult) {
     if (err) {
       return res.status(500).json({
@@ -747,11 +862,8 @@ router.post('/entry', function (req, res, next) {
     }
     else {
       // refresh overall hours capacity cache
-      const overallHoursQuery = {type: 'overall'};
-      const overallHoursCacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', overallHoursQuery);
-      console.log('CACHE CLEAR for ' + overallHoursCacheKey);
-      cache.del(overallHoursCacheKey);
-      SQL.getCapacityHours(overallHoursQuery, function (err, overallHoursResult) {
+      console.log('REFRESH CACHE: overall capacity hours');
+      SQL.getCapacityHours({type: 'overall', clearcache: 'true'}, function (err, overallHoursResult) {
         if (err) {
           return res.status(500).json({
             message: 'Error!',
@@ -760,11 +872,8 @@ router.post('/entry', function (req, res, next) {
         }
         else {
           // refresh client hours
-          const clientHoursQuery = {type: 'client', id: entry.clientId};
-          const clientHoursCacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', clientHoursQuery);
-          console.log('CACHE CLEAR for ' + clientHoursCacheKey);
-          cache.del(clientHoursCacheKey);
-          SQL.getCapacityHours(clientHoursQuery, function (err, clientHoursResult) {
+          console.log('REFRESH CACHE: client capacity hours');
+          SQL.getCapacityHours({type: 'client', id: clientId, clearcache: 'true'}, function (err, clientHoursResult) {
             if (err) {
               return res.status(500).json({
                 message: 'Error!',
@@ -773,11 +882,8 @@ router.post('/entry', function (req, res, next) {
             }
             else {
               // refresh project hours
-              const projectHoursQuery = {type: 'project', id: entry.projectId};
-              const projectHoursCacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', projectHoursQuery);
-              console.log('CACHE CLEAR for ' + projectHoursCacheKey);
-              cache.del(projectHoursCacheKey);
-              SQL.getCapacityHours(projectHoursQuery, function (err, projectHoursResult) {
+              console.log('REFRESH CACHE: project capacity hours');
+              SQL.getCapacityHours({type: 'project', id: projectId, clearcache: 'true'}, function (err, projectHoursResult) {
                 if (err) {
                   return res.status(500).json({
                     message: 'Error!',
@@ -794,20 +900,6 @@ router.post('/entry', function (req, res, next) {
                       });
                     }
                     else {
-                      // clear associated rollup and entry caches
-                      console.log('CLEAR ADDITIONAL CACHES after updating entry', displayClearAdditionalCaches);
-                      for (const key of cache.keys()) {
-                        // for now, we'll bust all rollup caches.
-                        if (key.indexOf('ROLLUPS:') != -1) {
-                          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-                          cache.del(key);
-                        }
-                        // bust all entry caches for this employee and the projectId
-                        if (key.indexOf('ENTRY:') != -1 && key.indexOf(':' + employeeId + ':') != -1 && key.indexOf(':' + projectId + ':') != -1) {
-                          console.log('CACHE CLEAR ALSO for ' + key, displayCacheClearAlso);
-                          cache.del(key);
-                        }
-                      }
                       return res.status(200).json({
                         message: 'Success!',
                         result: createEntryResult,
@@ -911,7 +1003,7 @@ router.get('/data', function (req, res, next) {
   });
 });
 
-router.post('/data/graph', function (req, res, next) {
+router.post('/graph/data', function (req, res, next) {
   SQL.getGraphData(req, (err, result) => {
     if (err) {
       return res.status(500).json({
@@ -1231,7 +1323,8 @@ router.get('/rollups', function (req, res, next) {
     ("0" + d.getSeconds()).slice(-2);
 
   const reqId = uuidv4();
-  console.log('ROLLUPS: ' + reqId + ' ' + timeString); console.log(req.query);
+  console.log('ROLLUPS: ' + reqId + ' ' + timeString);
+  console.log(req.query);
 
   if (typeof req.query.opened === 'undefined') {
     console.log('opened is undefined:');
@@ -1243,105 +1336,152 @@ router.get('/rollups', function (req, res, next) {
   const cachePrefix = 'ROLLUPS:';
   const cacheKey = tools.createStructuredCacheKey(cachePrefix, req.query);
 
-  //req.query['inProgress'] = reqId;
-  const inProgressCacheKey = 'IN-PROGRESS:' + cacheKey;
-  //delete req.query['inProgress'];
-
   const clearCache = (req.query.clearcache && req.query.clearcache == 'true');
 
-  const startWaiting = new Date().getTime();
-  // a fresh request an all projects rollup could take more than 5 seconds, so check the caches for up to 6 seconds
-  const cacheCheckDelay = 100;    // milliseconds
-  const cacheCheckRetries = 60; // milliseconds
-  const inProgressCacheTTL = (cacheCheckDelay*cacheCheckRetries)/1000 + 1; // seconds
-  checkCaches(clearCache, cacheKey, cacheCheckDelay, cacheCheckRetries, reqId, (done, result) => {
-    if (result != null) {
-      const waitTime = new Date().getTime() - startWaiting;
-
-      console.log('CACHE HIT for ' + cacheKey);
-      if (openEmployees.length > 0) {
-        for (const employee of result.employees) {
-          employee.opened = (openEmployees.indexOf(employee.id) > -1);
-        }
+  var result = checkOrClearCache(clearCache, cacheKey, rollUpsCache);
+  if (result != null) {
+    console.log('CACHE HIT for ' + cacheKey);
+    if (openEmployees.length > 0) {
+      for (const employee of result.employees) {
+        employee.opened = (openEmployees.indexOf(employee.id) > -1);
       }
-      const timeSpent = (new Date().getTime() - startTime - waitTime) / 1000;
-      console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS AFTER WAITING ' + waitTime/1000 + ' SECONDS');
-      return res.status(200).json({
-        message: 'Success!',
-        employees: result.employees,
-        rollUps: result.rollUps
-      });
     }
-    else {
-      const waitTime = new Date().getTime() - startWaiting;
+    const timeSpent = (new Date().getTime() - startTime) / 1000;
+    console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+    return res.status(200).json({
+      message: 'Success!',
+      employees: result.employees,
+      rollUps: result.rollUps
+    });
+  }
+  else {
+    console.log('CACHE MISS for ' + cacheKey);
+    let viewType = 'all';
+    let viewId = undefined;
+    if (clientId !== '') {
+      viewType = 'client';
+      viewId = clientId;
+    }
+    else if (projectId !== '') {
+      viewType = 'project';
+      viewId = projectId;
+    }
 
-      console.log('CACHE MISS for ' + cacheKey);
-      inProgressCache.set(cacheKey, reqId, inProgressCacheTTL);
-      console.log('IN PROGRESS CACHE SET for ' + cacheKey + ' (' + reqId + ') ', displayInProgressCacheMessages);
-
-      SQL.getPeople(req.query, (err, employees) => {
-        if (err) {
-          return res.status(500).json({
-            message: 'Error!',
-            err: err
-          });
-        }
-
-        let completedEmployees = 0;
+    //SQL.getPeople(req.query, (err, employees) => {
+    SQL.getEmployees({type: viewType, id: viewId, active: '1', clearcache: clearCache}, (err, employees) => {
+      if (err) {
+        return res.status(500).json({
+          message: 'Error!',
+          err: err
+        });
+      }
+      else {
+        let employeeIds = [];
+        let keyedEmployees = {};
         for (const employee of employees) {
-          const employeeQuery = {employee_id: employee.id};
+          employeeIds.push(employee.id);
           employee.opened = (openEmployees.indexOf(employee.id) > -1);
           employee.entries = [];
-          SQL.getEntries({query: employeeQuery}, (err, entries) => {
-            if (err) {
-              return res.status(500).json({
-                message: 'Error!',
-                err: err
-              });
-            }
-            employee.entries = entries;
-            let completedEntries = 0;
-            for (const entry of employee.entries) {
-              const entryQuery = {employee_id: entry.employee_id, project_id: entry.project_id, active: '1'};
-              // using a special prefix for the cache key here to make it easier to delete the entry cache from elsewhere
-              SQL.getEntry(entryQuery, (err, data) => {
-                if (err) {
-                  return res.status(500).json({
-                    message: 'Error!',
-                    err: err
-                  });
-                }
-                entry['forecast'] = {data: data[0], totals: data[1]};
-                completedEntries++;
-                if (completedEntries == employee.entries.length) {
-                  completedEmployees++;
-                }
-                if (completedEmployees == employees.length) {
-                  const rollUps = [];
-                  for (i = 0; i < employees.length; i++) {
-                    const employee = employees[i];
-                    rollUps.push(employee.entries);
-                  }
-                  cache.set(cacheKey, {'employees': employees, 'rollUps': rollUps});
-                  console.log('CACHE SET for ' + cacheKey);
-                  inProgressCache.del(cacheKey);
-                  console.log('IN PROGRESS CACHE DELETED for ' + inProgressCacheKey, displayInProgressCacheMessages);
-                  const timeSpent = (new Date().getTime() - startTime - waitTime) / 1000;
-                  console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS AFTER WAITING ' + waitTime/1000 + ' SECONDS');
-
-                  return res.status(200).json({
-                    message: 'Success!',
-                    employees: employees,
-                    rollUps: rollUps
-                  });
-                }
-              });
-            }
-          });
+          employee.assignments = {};
+          employee.assignmentIds = {};
+          employee.projects = {};
+          employee.total_capacities = [];
+          keyedEmployees[employee.id] = employee;
         }
-      });
-    }
-  });
+        const assignmentsAndTotalCapacityQuery = {employee_ids: employeeIds, client_id: clientId, project_id: projectId};
+        SQL.getAssignmentsAndTotalCapacity(assignmentsAndTotalCapacityQuery, (err, results) => {
+          if (err) {
+            inProgressCache.del(cacheKey);
+            return res.status(500).json({
+              message: 'Error!',
+              err: err
+            });
+          }
+          else {
+            for (const totalCapacity of results[1]) {
+              const employee = keyedEmployees[totalCapacity.employee_id];
+              employee.total_capacities.push(totalCapacity);
+            }
+            let projectIds = [];
+            let keyedAssignments = {};
+            for (const assignment of results[0]) {
+              const employee = keyedEmployees[assignment.employee_id];
+              assignment.forecast = {'data': [], 'totals': employee.total_capacities};
+              employee.entries.push(assignment);
+              employee.assignments[assignment.id] = assignment;
+              employee.projects[assignment.project_id] = assignment;
+              employee.assignmentIds[assignment.project_id] = assignment.id;
+              keyedAssignments[assignment.id] = assignment;
+              // need a list of project IDs for the entry capacity query
+              projectIds.push(assignment.project_id);
+              /*
+               if (! projectIds.indexOf(assignment.project_id) === -1) {
+               console.log('PUSH');
+               projectIds.push(assignment.project_id);
+               }
+               */
+            }
+            SQL.getEntriesCapacityHours({
+              project_ids: projectIds,
+              employee_ids: employeeIds,
+              active: '1'
+            }, (err, results) => {
+              if (err) {
+                inProgressCache.del(cacheKey);
+                return res.status(500).json({
+                  message: 'Error!',
+                  err: err
+                });
+              }
+              else {
+                for (const entry of results) {
+                  const employee = keyedEmployees[entry.employee_id];
+                  const entryAssignmentId = employee.assignmentIds[entry.project_id];
+                  const assignment = employee.assignments[entryAssignmentId];
+                  if (typeof assignment !== 'undefined') {
+                    assignment.forecast.data.push(entry);
+                    //assignment.forecast.totals = employee.total_capacities;
+                  }
+                  else {
+                    console.log('UNDEFINED ASSIGNMENT:');
+                    console.log(' ENTRY:');
+                    console.log(entry);
+                    console.log('  ASSIGNMENT IDS:');
+                    console.log(employee.assignmentIds);
+                    console.log('  ASSIGNMENTS:');
+                    console.log(employee.assignments);
+                  }
+                }
+                let rollUps = [];
+                for (const employee of employees) {
+                  rollUps.push(keyedEmployees[employee.id].entries);
+                  // clean up employees array to reduce size of JSON returned
+                  // assignment to null is potentially quicker than delete an object's property
+                  employee.assignmentIds = null;
+                  employee.assignments = null;
+                  employee.projects = null;
+                  employee.total_capacities = null;
+
+                }
+
+                rollUpsCache.set(cacheKey, {'employees': employees, 'rollUps': rollUps});
+                console.log('CACHE SET for ' + cacheKey);
+                const timeSpent = (new Date().getTime() - startTime) / 1000;
+                console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+
+                return res.status(200).json({
+                  message: 'Success!',
+                  employees: employees,
+                  rollUps: rollUps
+                });
+              }
+            });
+
+          }
+        });
+      }
+    });
+  }
 });
 
 module.exports = router;

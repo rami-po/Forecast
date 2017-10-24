@@ -1,11 +1,26 @@
 // https://www.npmjs.com/package/node-cache
 const NodeCache = require( "node-cache" );
+const crypto = require('crypto');
 
 const cache = new NodeCache( { stdTTL: 60, checkperiod: 20 } );
 const inProgressCache = new NodeCache( { stdTTL: 60, checkperiod: 20 } );
+const rollUpsCache = new NodeCache( {stdTTL: 60, checkperiod: 20} );
 
 exports.cache = cache;
 exports.inProgressCache = inProgressCache;
+exports.rollUpsCache = rollUpsCache;
+
+exports.checkOrClearCache = function(clearCache, cacheKey, theCache=cache) {
+  var result = null;
+  if (clearCache) {
+    console.log('CACHE CLEAR for ' + cacheKey);
+    theCache.del(cacheKey);
+  }
+  else {
+    result = theCache.get(cacheKey);
+  }
+  return result;
+}
 
 exports.checkCaches = checkCaches;
 
@@ -36,4 +51,14 @@ function checkCaches(clear, key, delay, retries, reqId=0, callback) {
   else {
     return callback(true, null);
   }
+}
+
+exports.createHashKey = createHashKey;
+
+function createHashKey(prefix, stringToHash) {
+  const secret = 'thisDoesntNeedToBeVerySecret';
+  const hashedString = crypto.createHmac('sha256', secret)
+    .update(JSON.stringify(stringToHash))
+    .digest('hex');
+  return prefix + hashedString;
 }

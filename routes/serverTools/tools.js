@@ -22,6 +22,7 @@ exports.createStructuredCacheKey = function (prefix, requestKeyValues) {
     employeeId: 'employee_id',
     employeeid: 'employee_id',
     employee_id: 'employee_id',
+    employee_ids: 'employee_ids',
     iscontractor: 'iscontractor',
     active: 'active',
     real: 'real',
@@ -31,7 +32,8 @@ exports.createStructuredCacheKey = function (prefix, requestKeyValues) {
     id: 'id',
     type: 'type',
     inProgress: 'in_progress',
-    in_progress: 'in_progress'
+    in_progress: 'in_progress',
+    all: 'all'
   };
 
   let keyValues = {};
