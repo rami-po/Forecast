@@ -66,8 +66,13 @@ export class ForecastComponent implements OnInit, OnDestroy {
         console.log('combinedRollUps');  console.log(this.params); console.log(data);
         this.isDataAvailable = true;
         if (data.path === 'project') {
-          console.log('INITIALIZE!! ' + JSON.stringify(this.params));
-          this.graphService.initializeGraph(this.params, true);
+          console.log('combinedRollUps: initializeGraph:'); console.log('this.params:'); console.log(this.params);
+          if (this.params.path === 'project') {
+            this.graphService.initializeGraph(this.params, true);
+          }
+          else {
+            console.log('WARNING: rollUp data is for a project, but current path is not a project');
+          }
         }
       }
     ));

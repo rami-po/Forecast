@@ -43,6 +43,7 @@ export class ForecastService {
   projects$ = this.projects.asObservable();
 
   public params = new Subject<any>();
+  //public params = new BehaviorSubject<any>({path: '', id: ''});
   params$ = this.params.asObservable();
 
   // BehaviorSubject's have the getValue method, and an initial value.
@@ -571,7 +572,7 @@ export class ForecastService {
 
   getGraphData(params, body) {
     const headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.post(this.apiBase + '/data/graph' + params, body, {headers: headers})
+    return this.http.post(this.apiBase + '/graph/data' + params, body, {headers: headers})
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
   }

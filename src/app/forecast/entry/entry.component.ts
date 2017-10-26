@@ -32,6 +32,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   private lastWeek;
   public timerSubscription;
   public graphSubscription;
+  public messageSubscription;
   @Input() public entry: Entry;
   @Input() public forecast;
   @Input() public employeeCapacity;
@@ -135,6 +136,9 @@ export class EntryComponent implements OnInit, OnDestroy {
       if (!isNullOrUndefined(this.graphSubscription)) {
         this.graphSubscription.unsubscribe();
       }
+      if (!isNullOrUndefined(this.messageSubscription)) {
+        this.messageSubscription.unsubscribe();
+      }
       this.isSubscribed = false;
 
       console.log('sent');
@@ -157,18 +161,23 @@ export class EntryComponent implements OnInit, OnDestroy {
             console.log('mhm');
             const timer = Observable.timer(2000);
             this.graphSubscription = timer.subscribe(t => {
+              console.log('entry.component.ts send: initializeGraph:');
               this.graphService.initializeGraph(this.params, false);
             });
           }
 
-          const message = {
-            action: 'updateEntry',
-            clientId: this.entry.clientId,
-            projectId: this.entry.projectId,
-            employeeId: this.entry.employeeId,
-            pageId: this.params.id
-          };
-          this.forecastService.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
+          const messageTimer = Observable.timer(2000);
+          this.messageSubscription = messageTimer.subscribe(t => {
+            console.log('send an updateEntry message');
+            const message = {
+              action: 'updateEntry',
+              clientId: this.entry.clientId,
+              projectId: this.entry.projectId,
+              employeeId: this.entry.employeeId,
+              pageId: this.params.id
+            };
+            this.forecastService.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
+          });
 
           for (let i = 0; i < this.forecast.data.length; i++) {
             if (this.forecast.data[i].week_of.slice(0, 10) === week) {
