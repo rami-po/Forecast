@@ -1206,9 +1206,9 @@ exports.updateData = function (req, callback) {
 exports.updateFunnelItem = function (req, callback) {
   const item = req.body;
   connection.query('UPDATE funnel SET client_name=' + mysql.escape(item.client_name) + ', is_new_client=' + mysql.escape(item.is_new_client) +
-    ', project_name=' + mysql.escape(item.project_name) + ', revenue=' + mysql.escape(item.revenue) + ', confidence=' + mysql.escape(item.confidence) +
-    ', status=' + mysql.escape(item.status) + ', signing_date=' + mysql.escape(item.signing_date) + ', start_date=' + mysql.escape(item.start_date) +
-    ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', forecasted=' + mysql.escape(item.forecasted) + ', project_id=' + mysql.escape(item.project_id)  +
+    ', project_name=' + mysql.escape(item.project_name) + ', project_manager=' + mysql.escape(item.project_manager) + ', revenue=' + mysql.escape(item.revenue) +
+    ', confidence=' + mysql.escape(item.confidence) + ', status=' + mysql.escape(item.status) + ', signing_date=' + mysql.escape(item.signing_date) +
+    ', start_date=' + mysql.escape(item.start_date) + ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', project_id=' + mysql.escape(item.project_id)  +
     ', completed=' + mysql.escape(item.completed) + ', notes=' + mysql.escape(item.notes) + ' WHERE id=' + mysql.escape(item.id),
     function (err, result) {
       callback(err, result);

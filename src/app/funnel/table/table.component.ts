@@ -52,15 +52,6 @@ export class TableComponent implements OnInit {
     return date.toISOString();
   }
 
-  updateOnSelect() {
-
-  }
-
-  clicked(item) {
-    console.log(item);
-    console.log('clicked');
-  }
-
   type(item) {
     console.log('sending...');
     if (!isNullOrUndefined(this.timerSubscription)) {
@@ -105,9 +96,6 @@ export class TableComponent implements OnInit {
     if (!isNullOrUndefined(this.timerSubscription)) {
       this.timerSubscription.unsubscribe();
       this.timerSubscription = null;
-      console.log('event: ' + $event);
-      console.log('event: ' + $event.toString());
-      console.log('hm');
       const newDate = new Date($event);
       if (!isNaN(newDate.getTime())) { // date is valid
         console.log('DATE CHANGED TO ' + newDate.toISOString());
