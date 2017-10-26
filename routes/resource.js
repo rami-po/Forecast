@@ -1344,4 +1344,57 @@ router.get('/rollups', function (req, res, next) {
   });
 });
 
+/*
+ * FUNNEL ROUTES
+ */
+
+router.get('/funnel', function (req, res, next) {
+  SQL.getFunnelItems(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'ERROR!',
+        result: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.post('/funnel', function (req, res, next) {
+  req.body['id'] =  uuidv4();
+  SQL.addFunnelItem(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'ERROR!',
+        result: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.put('/funnel', function (req, res, next) {
+  SQL.updateFunnelItem(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'ERROR!',
+        result: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 module.exports = router;

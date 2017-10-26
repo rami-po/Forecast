@@ -784,6 +784,12 @@ exports.getStartTime = function (req, callback) {
 
 };
 
+exports.getFunnelItems = function (req, callback) {
+  connection.query(`SELECT * FROM funnel ORDER BY client_name`, function (err, result) {
+    callback(err, result);
+  })
+};
+
 /*
  * POST METHODS
  */
@@ -902,6 +908,20 @@ exports.addFakeAssignment = function (assignment, callback) {
   });
 };
 
+exports.addFunnelItem = function (req, callback) {
+  connection.query('REPLACE INTO funnel (id, client_name, is_new_client, project_name, project_manager, revenue, confidence, ' +
+    'status, signing_date, start_date, duration_weeks, project_id, completed, notes) VALUES (' +
+    mysql.escape(req.body.id) + ', ' +
+    mysql.escape(req.body.clientName) + ', ' + mysql.escape(req.body.newClient) + ', ' + mysql.escape(req.body.projectName) + ', ' +
+    mysql.escape(req.body.projectManager) + ', ' + mysql.escape(req.body.estimatedRevenue) + ', ' + mysql.escape(req.body.confidence) + ', ' +
+    mysql.escape(req.body.status) + ', ' + mysql.escape(req.body.estimatedSigningDate) + ', ' + mysql.escape(req.body.projectedStartDate) + ', ' +
+    mysql.escape(req.body.projectDuration) + ', ' + mysql.escape(req.body.scalaProjectId) + ', ' +
+    mysql.escape(req.body.isCompleted) + ', ' + mysql.escape(req.body.notes) + ')', function (err, result) {
+    callback(err, result);
+  })
+};
+
+
 /*
  * PUT METHODS
  */
@@ -941,6 +961,18 @@ exports.updateData = function (req, callback) {
   //   function (err, result) {
   //     callback(err, result);
   //   })
+};
+
+exports.updateFunnelItem = function (req, callback) {
+  const item = req.body;
+  connection.query('UPDATE funnel SET client_name=' + mysql.escape(item.client_name) + ', is_new_client=' + mysql.escape(item.is_new_client) +
+    ', project_name=' + mysql.escape(item.project_name) + ', revenue=' + mysql.escape(item.revenue) + ', confidence=' + mysql.escape(item.confidence) +
+    ', status=' + mysql.escape(item.status) + ', signing_date=' + mysql.escape(item.signing_date) + ', start_date=' + mysql.escape(item.start_date) +
+    ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', forecasted=' + mysql.escape(item.forecasted) + ', project_id=' + mysql.escape(item.project_id)  +
+    ', completed=' + mysql.escape(item.completed) + ', notes=' + mysql.escape(item.notes) + ' WHERE id=' + mysql.escape(item.id),
+    function (err, result) {
+      callback(err, result);
+    });
 };
 
 exports.deactivateAssignment = function (req, callback) {
