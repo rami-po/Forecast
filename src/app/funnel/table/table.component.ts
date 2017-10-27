@@ -128,4 +128,11 @@ export class TableComponent implements OnInit {
     }
   }
 
+  getRevenueFromNewBusiness(revenue, isNew) {
+    if (isNew) {
+      return '$' + revenue;
+    }
+    return 'N/A';
+  }
+
 }

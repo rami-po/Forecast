@@ -17,6 +17,7 @@
       <th>Project Duration (months)</th>
       <th>Scala Project Name</th>
       <th>Estimated Monthly Revenue</th>
+      <th>Revenue from New Business</th>
       <th>Total Pipeline Revenue</th>
       <th>Completed?</th>
       <th>Notes</th>
@@ -119,6 +120,9 @@
       </td>
       <td class="no-edit">
         <div class="cell">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
       </td>
       <td class="no-edit">
         <div class="cell">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
