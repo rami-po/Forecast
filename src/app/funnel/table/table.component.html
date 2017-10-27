@@ -1,0 +1,145 @@
+<div>
+  <table class="table-wrapper">
+    <tr>
+      <th>Client Name</th>
+      <th>New Client?</th>
+      <th>Project Name</th>
+      <th>Project Manager</th>
+      <th>Estimated Revenue</th>
+      <th>Confidence</th>
+      <th>Status</th>
+      <th>Estimated Signing Date</th>
+      <th>Signing This Month?</th>
+      <th>Projected Start Date</th>
+      <th>Starting This Month?</th>
+      <th>Project End Date</th>
+      <th>Project Duration (weeks)</th>
+      <th>Project Duration (months)</th>
+      <th>Scala Project Name</th>
+      <th>Estimated Monthly Revenue</th>
+      <th>Revenue from New Business</th>
+      <th>Total Pipeline Revenue</th>
+      <th>Completed?</th>
+      <th>Notes</th>
+    </tr>
+    <tr *ngFor="let item of funnelItems">
+      <td>
+        <div class="cell">
+          <input [(ngModel)]="item.client_name" (blur)="send(item)" (input)="type(item)" type="text"
+                 value="{{item.client_name}}">
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <md-select [(ngModel)]="item.is_new_client" name="option">
+            <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
+              {{option.name}}
+            </md-option>
+          </md-select>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input [(ngModel)]="item.project_name" (blur)="send(item)" (input)="type(item)" type="text"
+                 value="{{item.project_name}}">
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input [(ngModel)]="item.project_manager" (blur)="send(item)" (input)="type(item)" type="text"
+                 value="{{item.project_manager}}">
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <span>$</span>
+          <input class="cell-revenue" [(ngModel)]="item.revenue" (blur)="send(item)" (input)="type(item)" type="number"
+                 value="{{item.revenue}}">
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input class="cell-confidence" [(ngModel)]="item.confidence" (blur)="send(item)" (input)="type(item)" type="number"
+                 value="{{item.confidence}}">
+          <span>%</span>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <md-select class="status-select" [(ngModel)]="item.status" name="option">
+            <md-option (click)="update(item)" *ngFor="let option of statusOptions" [value]="option.value">
+              {{option.name}}
+            </md-option>
+          </md-select>
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input class="cell-date" [ngModel]="item.signing_date | date: 'MM/dd/yyyy'"
+                 (ngModelChange)="changeDate(item, 'signing_date', $event)"
+                 (blur)="sendDate(item, 'signing_date', $event.target.value)" type="text">
+        </div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">
+          {{equalsThisMonth(item.signing_date)}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input class="cell-date" [ngModel]="item.start_date | date: 'MM/dd/yyyy'"
+                 (ngModelChange)="changeDate(item, 'start_date', $event)"
+                 (blur)="sendDate(item, 'start_date', $event.target.value)" type="text">
+        </div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">{{equalsThisMonth(item.start_date)}}</div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">
+          {{getEndDate(item.duration_weeks, item.start_date) | date: 'MM/dd/yyyy'}}
+        </div>
+      </td>
+      <td>
+        <div class="cell">
+          <input class="cell-duration-weeks" [(ngModel)]="item.duration_weeks" (blur)="send(item)" (input)="type(item)" type="number"
+                 value="{{item.duration_weeks}}">
+        </div>
+      </td>
+      <td>
+        <div class="cell-duration-months">{{getDurationMonths(item.duration_weeks) | number: '1.2-2'}}</div>
+      </td>
+      <td>
+        <div class="cell">
+          <md-select class="project-select" [(ngModel)]="item.project_id" name="project">
+            <md-option (click)="update(item)" *ngFor="let project of projects" [value]="project.id">
+              {{project.name}}
+            </md-option>
+          </md-select>
+        </div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
+      </td>
+      <td class="no-edit">
+        <div class="cell">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
+      </td>
+      <td>
+        <div class="cell">
+          <md-select [(ngModel)]="item.completed" name="option">
+            <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
+              {{option.name}}
+            </md-option>
+          </md-select>
+        </div>
+      </td>
+      <td>
+        <div class="cell"><input [(ngModel)]="item.notes" (blur)="send(item)" (input)="type(item)" type="text"
+                                 value="{{item.notes}}"></div>
+      </td>
+    </tr>
+  </table>
+</div>

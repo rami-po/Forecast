@@ -28,9 +28,9 @@
       <div class="add-employee"></div>
     </div>
   </div>
-
+<!-- added type="button" below to prevent ngOnInit from running twice -->
   <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
-    <button [class.blue-text]="employee.id === 'fake_id'"
+    <button type="button" [class.blue-text]="employee.id === 'fake_id'"
             *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
   </md-menu>
 

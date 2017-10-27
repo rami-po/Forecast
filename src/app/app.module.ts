@@ -10,7 +10,9 @@ import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
-  MdButtonModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule, MdMenuModule, MdProgressSpinnerModule,
+  MdButtonModule, MdCheckboxModule, MdDatepicker, MdDatepickerModule, MdDialogModule, MdIconModule, MdInputModule,
+  MdMenuModule, MdNativeDateModule,
+  MdProgressSpinnerModule, MdSelectModule,
   MdToolbarModule,
   MdTooltipModule
 } from '@angular/material';
@@ -36,6 +38,10 @@ import {StatusMessageDialogComponent} from "./forecast/status-message/status-mes
 import {RollUpService} from "./forecast/roll-up/roll-up.service";
 import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-employee.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
+import { FunnelComponent } from './funnel/funnel.component';
+import { TableComponent } from './funnel/table/table.component';
+import {AddFunnelItemComponent} from "./funnel/add-funnel-item/add-funnel-item.component";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -55,10 +61,15 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     ClientListComponent,
     CapacityRowComponent,
     StatusMessageDialogComponent,
-    FakeEmployeeComponent
+    FakeEmployeeComponent,
+    FunnelComponent,
+    TableComponent,
+    AddFunnelItemComponent
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     HttpModule,
     MdTooltipModule,
@@ -69,14 +80,18 @@ import {NotFoundComponent} from "./not-found/not-found.component";
     MdProgressSpinnerModule,
     MdIconModule,
     MdInputModule,
+    MdDatepickerModule,
+    MdNativeDateModule,
     MdCheckboxModule,
+    MdSelectModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],
   entryComponents: [
     MilestonePromptComponent,
     StatusMessageDialogComponent,
-    FakeEmployeeComponent
+    FakeEmployeeComponent,
+    AddFunnelItemComponent
   ],
   providers: [DatePipe, GraphService, ForecastService, RollUpService]
 })

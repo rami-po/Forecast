@@ -47,26 +47,15 @@ export class SideListComponent implements OnInit {
 
 
   ngOnInit() {
+    console.log('ngOnInit: side-list.component params:' + JSON.stringify(this.params));
 
     this.forecastService.employees$.subscribe(
       data => {
+        console.log('RECEIVED UPDATED employees data in side-list.components'); console.log(data);
         this.employees = data;
-        this.getUnassignedEmployees();
-      }
-    );
-
-    this.forecastService.getEmployees('?real=1&active=1').subscribe(
-      data => {
-        console.log(data.result);
-        this.realEmployees = data.result;
-      }
-    );
-  }
-
-  getUnassignedEmployees() {
-    this.forecastService.getEmployees('?active=1').subscribe(
-      data => {
-        const allEmployees = data.result;
+        // use a clone of allEmployees for this
+        const allEmployees = this.forecastService.allEmployees.getValue().slice(0);
+        console.log('allEmployees'); console.log(allEmployees);
         for (let i = 0; i < this.employees.length; i++) {
           allEmployees.find(
             (item, index) => {
@@ -79,9 +68,37 @@ export class SideListComponent implements OnInit {
         }
         this.unassignedEmployees = allEmployees;
         this.unassignedEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Add', last_name: 'Other'});
+        console.log('unassignedEmployees'); console.log(this.unassignedEmployees);
       }
     );
 
+    this.forecastService.allEmployees$.subscribe(
+      data => {
+        console.log('RECEIVED UPDATED allEmployees data in side-list.components ' + data.length); console.log(data);
+        console.log('NEED TO UPDATE UNASSIGNED EMPLOYEES: '); console.log(this.params);
+        let allEmployees = data.slice(0);
+        for (let i = 0; i < this.employees.length; i++) {
+          allEmployees.find(
+            (item, index) => {
+              if (!isNullOrUndefined(item) && !isNullOrUndefined(this.employees[i]) && item.id === this.employees[i].id) {
+                allEmployees.splice(index, 1);
+                return index;
+              }
+            }
+          );
+        }
+        this.unassignedEmployees = allEmployees;
+        this.unassignedEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Add', last_name: 'Other'});
+
+        allEmployees = data.slice(0);
+        this.realEmployees = [];
+        allEmployees.forEach(employee => {
+          if (!employee.is_fake) {
+            this.realEmployees.push(employee);
+          }
+        });
+      }
+    );
   }
 
   addUser(employee) {
@@ -94,22 +111,31 @@ export class SideListComponent implements OnInit {
       return null;
     }
 
-    this.forecastService.getProjects('/' + this.params.id).subscribe(
-      project => {
-        dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name +
-        ' to the project: ' + project.result[0].name + '.'];
-        dialog.afterClosed().subscribe(
-          confirmed => {
-            if (confirmed) {
-              this.forecastService.addEmployeeToProject(this.params.id, employee.id).subscribe(
-                () => {
-                  this.socket.emit('userUpdatedRollUps', { id: this.params.id, employeeId: employee.id, clientId: project.result[0].clientId }); // everyone gets it, including the sender
-                  // this.forecastService.updateRollUps(this.params);
-                }
-              );
+    const projectId = this.params.id;
+    const allActiveProjects = this.forecastService.allActiveProjects.getValue();
+    const project = allActiveProjects.find( function (p) {
+      return p.id == projectId;
+    });
+    dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name + ' to the project: ' + project.name + '.'];
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.forecastService.addEmployeeToProject(this.params.id, employee.id).subscribe(
+            () => {
+              const message = {
+                action: 'addEmployeeToProject',
+                employeeId: employee.id,
+                clientId: (this.params.path == 'client' ? this.params.id : ''),
+                projectId: (this.params.path == 'project' ? this.params.id : '')
+              };
+              // this.socket.emit('userUpdatedRollUps', message); // everyone gets it, including the sender
+              this.params.clearcache = true;
+              // this.forecastService.updateEmployees(this.params);
+              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
             }
-          }
-        );
+          );
+        }
       }
     );
   }
@@ -123,8 +149,21 @@ export class SideListComponent implements OnInit {
         if (confirmed) {
           this.forecastService.addFakeEmployee(dialog.componentInstance.inputText, this.params.id).subscribe(
             () => {
-              this.socket.emit('userUpdatedRollUps', 'addFakeEmployee'); // everyone gets it, including the sender
-              // this.forecastService.updateRollUps(this.params);
+              console.log('fake employee added: '); console.log(this.params);
+              console.log('emit: userUpdatedRollUps - addFakeEmployee');
+              const message = {
+                action: 'addFakeEmployee',
+                employeeId: '',
+                clientId: (this.params.path == 'client' ? this.params.id : ''),
+                projectId: (this.params.path == 'project' ? this.params.id : '')
+              };
+              // need to updateAllEmployees to include new fake employee
+              // this.socket.emit('userUpdatedRollUps', message); // everyone gets it
+              this.params.clearcache = true;
+              this.forecastService.updateAllEmployees();
+              // this.forecastService.updateEmployees(this.params);
+              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
             }
           );
         }
@@ -143,26 +182,46 @@ export class SideListComponent implements OnInit {
       confirmed => {
         if (confirmed) {
           if (entry.last_name === '') { // employee is fake
-            this.forecastService.getAssignments('?employeeId=' + entry.employee_id).subscribe(
+            this.forecastService.getAssignments('?employee_id=' + entry.employee_id).subscribe(
               allAssignments => {
                 if (allAssignments.result.length === 1) {
-                  this.forecastService.deleteFakeAssignment(allAssignments.result[0].id).subscribe(
+                  this.forecastService.deleteFakeAssignment(allAssignments.result[0].id, entry.employee_id, entry.project_id).subscribe(
                     () => {
                       this.forecastService.deleteFakeEmployee(entry.employee_id).subscribe(
                         () => {
-                          this.socket.emit('userUpdatedRollUps', 'deleteFakeEmployee'); // everyone gets it, including the sender
-                          // this.forecastService.updateRollUps(this.params);
+                          // update roll ups for this user
+                          console.log('this.params'); console.log(this.params);
+                          const message = {
+                            action: 'deleteFakeEmployee',
+                            employeeId: entry.employee_id,
+                            clientId: (this.params.path == 'client' ? this.params.id : ''),
+                            projectId: (this.params.path == 'project' ? this.params.id : '')
+                          };
+                          //this.socket.emit('userUpdatedRollUps', message); // everyone gets it, including the sender
+                          this.params.clearcache = true;
+                          this.forecastService.updateAllEmployees();
+                          // this.forecastService.updateEmployees(this.params);
+                          this.forecastService.updateRollUps(this.params);
+                          this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
                         }
                       );
                     }
                   );
                 } else {
-                  this.forecastService.getAssignments('?employeeId=' + entry.employee_id + '&projectId=' + entry.project_id).subscribe(
+                  this.forecastService.getAssignments('?employee_id=' + entry.employee_id + '&project_id=' + entry.project_id).subscribe(
                     assignment => {
-                      this.forecastService.deleteFakeAssignment(assignment.result[0].id).subscribe(
+                      this.forecastService.deleteFakeAssignment(assignment.result[0].id, entry.employee_id, entry.project_id).subscribe(
                         () => {
-                          this.socket.emit('userUpdatedRollUps', { id: entry.project_id, employeeId: entry.employee_id } ); // everyone gets it, including the sender
-                          // this.forecastService.updateRollUps(this.params);
+                          const message = {
+                            action: 'deleteFakeAssignment',
+                            employeeId: entry.employee_id,
+                            clientId: (this.params.path == 'client' ? this.params.id : ''),
+                            projectId: (this.params.path == 'project' ? this.params.id : '')
+                          };
+                          // this.socket.emit('userUpdatedRollUps', { id: entry.project_id, employeeId: entry.employee_id } ); // everyone gets it, including the sender
+                          this.params.clearcache = true;
+                          this.forecastService.updateRollUps(this.params);
+                          this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
                         }
                       );
                     }
@@ -172,10 +231,20 @@ export class SideListComponent implements OnInit {
             );
             return null;
           }
-          this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id).subscribe(
+          console.log('removeEmployeeFromProject:'); console.log(entry);
+          this.forecastService.removeEmployeeFromProject(entry.project_id, entry.id, entry.employee_id).subscribe(
             () => {
-              this.socket.emit('userUpdatedRollUps', { id: entry.project_id, employeeId: entry.employee_id }); // everyone gets it, including the sender
-              // this.forecastService.updateRollUps(this.params);
+              const message = {
+                action: 'removeEmployeeFromProject',
+                employeeId: entry.employee_id,
+                entryId: entry.id,
+                clientId: (this.params.path == 'client' ? this.params.id : ''),
+                projectId: (this.params.path == 'project' ? this.params.id : '')
+              };
+              // this.socket.emit('userUpdatedRollUps', message); // everyone gets it, including the sender
+              this.params.clearcache = true;
+              this.forecastService.updateRollUps(this.params);
+              this.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
             }
           );
         }
@@ -201,7 +270,7 @@ export class SideListComponent implements OnInit {
       this.timerSubscription = timer.subscribe(t => {
         console.log('sent');
         employee.capacity = Number(value) * 3600;
-        this.forecastService.putEmployees(employee).subscribe();
+        this.forecastService.putEmployees(employee, this.params).subscribe();
       });
     } else {
       console.log('not a number...');

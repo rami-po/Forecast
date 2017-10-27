@@ -1,0 +1,67 @@
+<h3 md-dialog-title
+    [class.error]="error"
+    [class.success]="success"
+    [class.warning]="warning"
+    [class.custom]="custom">{{title}}</h3>
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+
+
+  <md-dialog-content>
+    <md-input-container *ngFor="let entry of entries">
+      <input mdInput formControlName="{{entry.formValue}}"
+             placeholder="{{entry.name}}"
+             type="text">
+    </md-input-container>
+
+    <md-input-container *ngFor="let entry of numberEntries">
+      <input mdInput formControlName="{{entry.formValue}}"
+             placeholder="{{entry.name}}"
+             type="number">
+      <span *ngIf="entry.formValue == 'estimatedRevenue'" mdPrefix>$</span>
+      <span *ngIf="entry.formValue == 'confidence'" mdSuffix>%</span>
+    </md-input-container>
+
+    <div *ngFor="let entry of selectEntries">
+      <md-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}" name="option">
+        <md-option *ngFor="let option of entry.options" [value]="option.id">
+          {{option.name}}
+        </md-option>
+      </md-select>
+    </div>
+
+    <div>
+      <md-input-container>
+        <input readonly="readonly" formControlName="projectedStartDate" mdInput [mdDatepicker]="picker2"
+               placeholder="Projected Start Date">
+        <button mdSuffix [mdDatepickerToggle]="picker2"></button>
+      </md-input-container>
+      <md-datepicker #picker2></md-datepicker>
+    </div>
+
+    <div>
+      <md-input-container>
+        <input readonly="readonly" formControlName="estimatedSigningDate" mdInput [mdDatepicker]="picker1"
+               placeholder="Estimated Signing Date">
+        <button mdSuffix [mdDatepickerToggle]="picker1"></button>
+      </md-input-container>
+      <md-datepicker #picker1></md-datepicker>
+    </div>
+
+
+  </md-dialog-content>
+
+
+  <md-dialog-actions align="center">
+    <button md-button
+            *ngIf="dismissible"
+            (click)="dialogRef.close(false)">Cancel
+    </button>
+    <button md-raised-button
+            color="primary"
+            autofocus="true"
+            type="submit">OK
+    </button>
+    <span class="clear"></span>
+  </md-dialog-actions>
+
+</form>

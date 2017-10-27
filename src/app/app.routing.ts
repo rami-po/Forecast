@@ -8,6 +8,7 @@ import {ProjectComponent} from './project/project.component';
 import {BobComponent} from './bob/bob.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
+import {FunnelComponent} from "./funnel/funnel.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -57,6 +58,10 @@ const APP_ROUTES: Routes = [
   {
     path: 'test',
     component: CapacityRowComponent
+  },
+  {
+    path: 'funnel',
+    component: FunnelComponent
   },
   {
     path: '404',

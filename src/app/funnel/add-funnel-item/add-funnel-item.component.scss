@@ -1,0 +1,61 @@
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
+:host{
+
+  h3{
+    padding: 12px 25px;
+    margin: -25px -25px 8px;
+    text-align: center;
+    box-shadow: 0px 2px 8px rgba(0,0,0,.2);
+    background-color: #eee;
+
+    &.error{
+      background-color: #c31010;
+      color: white;
+    }
+
+    &.success{
+      background-color: #1eb31e;
+      color: white;
+    }
+
+    &.warning{
+      background-color: #eac607;
+      color: white;
+    }
+    &.custom{
+      background-color: $primary-blue;
+      color: white;
+    }
+  }
+
+  md-dialog-actions{
+
+    button{
+      height: 30px;
+      line-height: 30px;
+    }
+
+    button[md-raised-button]{
+      background-color: $primary-blue;
+      float: right;
+    }
+  }
+  md-select {
+    width: 100%;
+    margin-top: 16px;
+   }
+
+  md-dialog-content{
+    width: 30rem;
+    overflow: visible;
+    margin: 3rem auto;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 50% 50%;
+
+
+  }
+}
+

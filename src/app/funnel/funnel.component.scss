@@ -1,0 +1,17 @@
+$primary-blue: rgb(33, 150, 243);
+$primary-blue-trans: rgba(33, 150, 243, .4);
+
+md-toolbar {
+  background-color: $primary-blue;
+  color: white;
+}
+
+.fill-space {
+  // This fills the remaining space, by using flexbox.
+  // Every toolbar row uses a flexbox row layout.
+  flex: 1 1 auto;
+}
+
+md-icon {
+  cursor: pointer;
+}

@@ -13,10 +13,11 @@ export class EntryService {
 
   constructor(private http: Http) { }
 
-  updateResourceManagement(entry: Entry, weekOf: string, capacity: number) {
+  updateResourceManagement(entry: Entry, weekOf: string, capacity: number, path: string, id: string) {
     entry.weekOf = weekOf;
     entry.capacity = capacity;
-    const body = JSON.stringify(entry);
+    const params = {path: path, id: id};
+    const body = JSON.stringify({entry: entry, params: params});
     const headers = new Headers({'Content-Type': 'application/json'});
 
     return this.http.post(document.location.protocol + '//' + window.location.hostname + ':3000/resource/entry', body, {headers: headers})

@@ -16,8 +16,10 @@ export class ClientListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('ngOnInit client-list.components.ts');
 
-    this.mainService.getEmployees('?active=1&clientId=' + this.client.id).subscribe(
+    //this.mainService.getEmployees('?active=1&clientId=' + this.client.id).subscribe(
+    this.mainService.getEmployees({active: '1', path: 'client', id: this.client.id}).subscribe(
       data => {
         console.log(this.client);
         this.employees = data.result;

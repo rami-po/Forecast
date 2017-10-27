@@ -21,6 +21,7 @@ export class CompanyComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('ngOnInit - CompanyComponent');
     this.mainService.getProjects('?active=1').subscribe(
       data => {
         data.result.splice(0, 1); // removes Internal
