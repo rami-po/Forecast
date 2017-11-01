@@ -175,11 +175,15 @@ export class GraphComponent implements OnInit, OnDestroy {
     responsive: true,
     scales: {
       xAxes: [{
-        display: true
+        display: true,
+        ticks: {
+          fontFamily: "'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+        }
       }],
       yAxes: [{
         display: true,
         ticks: {
+          fontFamily: "'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
           beginAtZero: true
         }
       }]
@@ -214,6 +218,9 @@ export class GraphComponent implements OnInit, OnDestroy {
         }
       },
       labels: {
+        fontFamily: "'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+        usePointStyle: true,
+        padding: 20,
         filter: (legendItem, chartData) => {
           switch (legendItem.datasetIndex) {
             case 4:
@@ -251,7 +258,7 @@ export class GraphComponent implements OnInit, OnDestroy {
         borderWidth: 2,
         label: {
           backgroundColor: 'rgba(0,0,0,0.8)',
-          fontFamily: 'sans-serif',
+          fontFamily: "'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
           fontSize: 12,
           fontStyle: 'bold',
           fontColor: '#fff',
