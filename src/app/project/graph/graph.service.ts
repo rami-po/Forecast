@@ -37,7 +37,7 @@ export class GraphService {
         data => {
           for (let i = 0; i < data.totalCapacities.length; i++) {
             if (data.totalCapacities[i].week === week) {
-              const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM-dd-yyyy'));
+              const index = this.localLineChartLabels.indexOf(this.datePipe.transform(week, 'MM/dd/yy'));
               const dataClone = JSON.parse(JSON.stringify(this.localLineChartData));
               const before = (index !== 0 ? dataClone[1].data[index - 1] : 0);
               const newCap = data.totalCapacities[i].cost + before - dataClone[1].data[index];
@@ -89,7 +89,7 @@ export class GraphService {
 
   loop(totalCapacities, i, timeEntries, employees, callback) {
 
-    const date = this.datePipe.transform(timeEntries[i].spent_at, 'MM-dd-yyyy');
+    const date = this.datePipe.transform(timeEntries[i].spent_at, 'MM/dd/yy');
     const monday = this.forecastService.getMonday(date);
     const employee = employees[timeEntries[i].user_id];
 
@@ -220,7 +220,7 @@ export class GraphService {
                 // }
                 for (const key in revenueData) {
                   if (revenueData.hasOwnProperty(key)) {
-                    labels.push(this.datePipe.transform(key, 'MM-dd-yyyy'));
+                    labels.push(this.datePipe.transform(key, 'MM/dd/yy'));
                     // ACTUAL AND FORECAST DATA
                     if (key < this.weeks[0]) { // actual
                       allData[3].data.push(revenueData[key]);
