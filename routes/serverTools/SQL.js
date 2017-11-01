@@ -527,6 +527,79 @@ exports.getAssignmentsAndTotalCapacity = function (args, callback) {
   }
 };
 
+exports.getAssignmentsAndTotalCapacityForProjects = function (args, callback) {
+  var d = new Date();
+  var startTime = d.getTime();
+  var timeString =
+    ("0" + d.getHours()).slice(-2) + ":" +
+    ("0" + d.getMinutes()).slice(-2) + ":" +
+    ("0" + d.getSeconds()).slice(-2);
+
+  const functionName = 'SQL.getAssignmentsAndTotalCapacity: ';
+  const reqId = uuidv4();
+  console.log(functionName + reqId + ' ' + timeString); // console.log(args);
+
+  const projectIds = (args.project_ids !== undefined ? mysql.escape(args.project_ids) : '');
+  args.project_ids = projectIds;
+  const isActive = (args.active === '1');
+  // ignore cached values for now
+  args.clearcache = 'true';
+  const clearCache = (args.clearcache && args.clearcache == 'true');
+
+  const cacheKey = tools.createStructuredCacheKey('NOT_IN_USE:ASSIGNMENTS_AND_TOTAL_CAPACITIES:', {});
+
+  var result = checkOrClearCache(clearCache, cacheKey);
+
+  if (result != null) {
+    console.log('CACHE HIT for ' + cacheKey, displayCacheHits);
+    const timeSpent = (new Date().getTime() - startTime) / 1000;
+    console.log(functionName + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+    callback(null, result);
+  }
+  else {
+    // console.log('CACHE MISS for ' + cacheKey, displayCacheMisses);
+
+    const monday = mysql.escape(tools.getMondayFormatted());
+
+    const assignmentsQuery = `
+    SELECT a.id as id, c.id AS client_id, c.name AS client_name, p.id AS project_id, p.name AS project_name, e.id AS employee_id, e.first_name, e.last_name
+    FROM clients c
+    LEFT OUTER JOIN projects p ON c.id = p.client_id
+    LEFT OUTER JOIN (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) a ON p.id = a.project_id
+    LEFT OUTER JOIN (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake) e ON e.id = a.user_id
+    WHERE a.deactivated = 0
+    AND p.active=1
+    AND e.is_active=1
+    AND p.id IN (` + projectIds + `)
+    ORDER BY CASE last_name <> '' WHEN TRUE THEN e.last_name ELSE e.first_name END, c.name, p.name, e.id, c.id, p.id ASC;
+    `;
+
+    const totalsQuery =
+      ' SELECT project_id, SUM(capacity) as hours, week_of FROM resourceManagement ' +
+      ' WHERE project_id IN (' + projectIds + ') ' +
+      ' AND capacity <> \'\' ' +
+      ' AND week_of >= ' + monday +
+      ' GROUP BY project_id, week_of ' +
+      ' ORDER BY week_of ASC;';
+
+    const query = assignmentsQuery + totalsQuery;
+
+    connection.query(query, function (err, result) {
+      if (!err) {
+        cache.set(cacheKey, result);
+        console.log('CACHE SET for ' + cacheKey, displayCacheSets);
+        const timeSpent = (new Date().getTime() - startTime) / 1000;
+        console.log(functionName + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+        callback(err, result);
+      }
+      else {
+        console.log('QUERY ERROR for ' + cacheKey);
+        callback(err, result);
+      }
+    });
+  }
+};
+
 exports.getEntriesCapacityHours = function (args, callback) {
   var d = new Date();
   var startTime = d.getTime();

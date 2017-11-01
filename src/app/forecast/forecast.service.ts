@@ -475,6 +475,7 @@ export class ForecastService {
     const idParam = (params.path && params.id ? '&' + params.path + '_id=' + params.id : '');
 
     const queryString = '?active=1' + idParam + openedParam + clearCacheParam;
+
     return this.http.get(this.apiBase + '/rollups' + queryString)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
