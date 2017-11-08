@@ -7,7 +7,7 @@
 
   <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
     <button (click)="filter('ap', 'All Projects')" md-menu-item><span>All Projects</span></button>
-    <button (click)="filter('pvw', 'View by Projects')" md-menu-item><span>Projects by View</span></button>
+    <button (click)="filter('pvw', 'View by Projects')" md-menu-item><span>View by Projects</span></button>
     <div *ngFor="let client of filterList">
       <button *ngIf="!checkForChildren(client.projects.length)"
               (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" md-menu-item>
