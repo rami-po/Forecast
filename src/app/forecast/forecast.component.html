@@ -9,15 +9,24 @@
   </div>
 
   <div id="side" class="side-list-container">
-    <app-side-list *ngIf="isDataAvailable" [params]="params" [isProjectView]="isProjectView" [employees]="employees" [entries]="rollUps"></app-side-list>
+    <app-side-list *ngIf="isDataAvailable && employees != null" [params]="params" [isProjectView]="isProjectView" [employees]="employees" [entries]="rollUps"></app-side-list>
+    <app-side-list-projects *ngIf="isDataAvailable && projectsSide != null" [params]="params" [projects]="projectsSide" [entries]="rollUps"></app-side-list-projects>
   </div>
 
 
   <div id="table" class="entry-container" (scroll)="onScroll($event)">
-    <div *ngIf="isDataAvailable">
+    <div *ngIf="isDataAvailable && employees != null">
       <div *ngFor="let employee of employees, let i = index">
         <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]"></app-roll-up>
       </div>
+    </div>
+
+    <!-- View by Projects -->
+    <div *ngIf="isDataAvailable && projectsSide != null">
+      <div *ngFor="let project of projectsSide, let i = index">
+        <app-roll-up [params]="params" [employee]="project" [data]="rollUps[i]"></app-roll-up>
+      </div>
+      <input>
     </div>
   </div>
 

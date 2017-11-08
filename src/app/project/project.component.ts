@@ -65,14 +65,21 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     if (id !== this.params.id) {
       this.filterName = name;
       let path = '';
-      if (id !== '') {
+      if (!isNaN(id)) {
         this.isGraphShowing = name.indexOf('All Projects') === -1;
         path = (name.indexOf('All Projects') === -1 ? 'project' : 'client');
         // type = (name.indexOf('All Projects') === -1 ? 'projectId=' : 'clientId=') + id;
         this.router.navigate(['/' + path + '/' + id]);
       } else {
         this.isGraphShowing = false;
-        this.router.navigate(['all']);
+        switch (name) {
+          case 'All Projects':
+            this.router.navigate(['all']);
+            break;
+          case 'View by Projects':
+            this.router.navigate(['projects']);
+            break;
+        }
       }
       // this.forecastService.params.next(type);
     }
@@ -184,16 +191,27 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
             openEmployees: []
           });
 
-        } else if (urlSegments.length === 1 && urlSegments[0].path === 'all') {
-          console.log('ALL VIEW!!!!');
-          const path = '';
-          const id = '';
+        } else if (urlSegments.length === 1) {
           this.isGraphShowing = false;
-          this.forecastService.params.next({
-            id: id,
-            path: path,
-            openEmployees: []
-          });
+          switch (urlSegments[0].path) {
+            case 'all':
+              this.filterName = 'All Projects';
+              console.log('ALL VIEW!!!!');
+              this.forecastService.params.next({
+                id: '',
+                path: '',
+                openEmployees: []
+              });
+              break;
+            case 'projects':
+              this.filterName = 'View by Projects';
+              console.log('ALL PROJECTS VIEW!!!!');
+              this.forecastService.params.next({
+                id: '',
+                path: '/projects',
+                openEmployees: []
+              });
+          }
         }
 
         /*

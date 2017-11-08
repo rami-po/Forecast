@@ -1,7 +1,7 @@
 <div class="name-container">
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
-      <div class="user_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
+      <div class="header_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
       <div md-button *ngIf="employee.email == null" class="fake-user-icon" (click)="openConsole(employee)">
         <md-icon svgIcon="more"></md-icon>
       </div>

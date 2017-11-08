@@ -474,7 +474,16 @@ export class ForecastService {
     const openedParam = (params.openEmployees.length > 0 ? '&opened[]=' + params.openEmployees.join('&opened[]=') : '&opened[]');
     const idParam = (params.path && params.id ? '&' + params.path + '_id=' + params.id : '');
 
-    const queryString = '?active=1' + idParam + openedParam + clearCacheParam;
+    let queryString = '?active=1' + idParam + openedParam + clearCacheParam;
+
+    // TODO: fix this hack
+    if (params.path === '/projects') {
+      queryString = params.path + queryString;
+    }
+    console.log('path: ' + params.path + ', id: ' + params.id);
+    console.log('idParam: ' + idParam);
+    console.log(queryString);
+
     return this.http.get(this.apiBase + '/rollups' + queryString)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
@@ -540,6 +549,12 @@ export class ForecastService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  getProjectRowData(projectId) {
+    return this.http.get(this.apiBase + '/capacity/project?project_id=' + projectId)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   deleteFakeAssignment(id, employeeId, projectId) {
     return this.http.delete(this.apiBase + '/assignment/fake/' + id + '?employee_id=' + employeeId + '&project_id=' + projectId)
       .map((response: Response) => response.json())
@@ -582,7 +597,11 @@ export class ForecastService {
     this.getRollUps(params).subscribe(
       data => {
         console.log('updateRollUps:'); console.log(data);
-        this.employees.next(data.employees);
+        if (isNullOrUndefined(data.projects)) {
+          this.employees.next(data.employees);
+        } else {
+          this.projects.next(data.projects);
+        }
         this.rollUps.next(data.rollUps);
         // need to include the path that was used for these rollups so that we can later decide if we're going to initialize the graph
         data.path = params.path;

@@ -1,0 +1,29 @@
+<div class="name-container">
+  <div *ngFor="let project of projects, let i = index">
+    <div class="name-row">
+      <div class="header_name" (click)="updateState(project)">{{project.client_name}} - {{project.name}}</div>
+    </div>
+    <div *ngIf="project.opened">
+      <div class="name-row" *ngFor="let entry of entries[i]">
+        <div class="project-client">{{entry.first_name}} {{entry.last_name}}</div>
+        <input maxlength="2" onclick="select()"
+               class="capacity"
+               (input)="type($event.target.value, entry)"
+               [value]="entry.capacity/3600">
+        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name">
+          <md-icon svgIcon="delete"></md-icon>
+        </div>
+      </div>
+      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">+ Add Employee</div>
+      
+    </div>
+  </div>
+
+
+  <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
+    <button type="button" [class.blue-text]="employee.id === 'fake_id'"
+            *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+  </md-menu>
+
+</div>
+

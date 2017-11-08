@@ -24,7 +24,7 @@ import {RollUpService} from '../roll-up/roll-up.service';
   selector: 'app-entry',
   templateUrl: './entry.component.html',
   styleUrls: ['./entry.component.scss'],
-  providers: [EntryService]
+  providers: [EntryService, RollUpComponent]
 })
 export class EntryComponent implements OnInit, OnDestroy {
 
@@ -37,7 +37,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public forecast;
   @Input() public employeeCapacity;
   @Input() public isOpened = false;
-  @Input() private params;
+  @Input() public params;
   @Input() public isHeader = false;
 
   private isSubscribed = false;
@@ -122,6 +122,25 @@ export class EntryComponent implements OnInit, OnDestroy {
     return 'white';
   }
 
+  getColor2(week, index) {
+    if (this.isHeader) {
+      return 'white';
+    }
+    if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
+
+      if (this.forecast.data[index].capacity < this.forecast.data[0].capacity) {
+        return '#EF9A9A';
+      } else if (this.forecast.data[index].capacity > this.forecast.data[0].capacity) {
+        return '#FFF59D';
+      }
+    } else {
+      if (0 < this.forecast.data[0].capacity) {
+        return '#EF9A9A';
+      }
+    }
+    return 'white';
+  }
+
   getTextColor() {
     if (!this.isHeader) {
       return 'rgb(33, 150, 243)';
@@ -188,7 +207,16 @@ export class EntryComponent implements OnInit, OnDestroy {
                 week_of: week,
                 capacity: value
               });
-              this.rollUpComponent.filteredEntry.totals = resources.employeeData;
+              // View by Projects has a different header data
+              if (this.params.path === '/projects') {
+                this.forecastService.getProjectRowData(this.entry.projectId).subscribe(
+                  data => {
+                    this.rollUpComponent.filteredEntry.totals = data.result;
+                  }
+                );
+              } else {
+                this.rollUpComponent.filteredEntry.totals = resources.employeeData;
+              }
               if (this.entry.projectId === Number(this.params.id)) {
                 this.rollUpComponent.filteredEntry.data = this.forecast.data;
               }

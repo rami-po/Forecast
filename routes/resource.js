@@ -23,7 +23,7 @@ const checkOrClearCache = require('./serverTools/cache').checkOrClearCache;
 console.log = tools.conditionalConsoleLog;
 
 const displayClearAdditionalCaches = false;
-const displayCacheClear  = false;
+const displayCacheClear = false;
 const displayCacheClearAlso = false;
 const displayCacheMisses = false;
 const displayInProgressCacheMessages = false;
@@ -106,6 +106,7 @@ router.get('/person/:id', function (req, res, next) {
 router.put('/person', function (req, res, next) {
   const employeeId = req.body.id;
   const pageId = req.query.page_id;
+
   harvest.updateCapacity(req, function (status, result) {
     if (status === 200) {
       SQL.updateCapacity(req, function (err, result) {
@@ -116,12 +117,13 @@ router.put('/person', function (req, res, next) {
           });
         } else {
           console.log('CLEAR ADDITIONAL CACHES: updated employee capactiy', displayClearAdditionalCaches);
-          for (const key of cache.keys) {
-            if (key.indexOf(':'+employeeId+':') != -1) {
+
+          for (const key of cache.keys()) {
+            if (key.indexOf(':' + employeeId + ':') != -1) {
               console.log('CLEAR CACHE for ' + key, displayCacheClear);
               cache.del(key);
             }
-            if (key.indexOf(':'+pageId+':') != -1) {
+            if (key.indexOf(':' + pageId + ':') != -1) {
               console.log('CLEAR CACHE for ' + key, displayCacheClear);
               cache.del(key);
             }
@@ -144,7 +146,9 @@ router.put('/person', function (req, res, next) {
 
 // TODO - is this every used? creating a new fake employee from the "+ Add Employee" link uses the post call below
 router.put('/person/fake', function (req, res, next) {
-  console.log('PUT /person/fake'); console.log(req.query); console.log(req.params);
+  console.log('PUT /person/fake');
+  console.log(req.query);
+  console.log(req.params);
   SQL.addFakeEmployee(req.body, function (err, result) {
     if (err) {
       return res.status(500).json({
@@ -205,11 +209,11 @@ router.post('/person/fake', function (req, res, next) {
   for (const key of cache.keys()) {
     // TODO - shouldn't have to loop through keys to find graph data key
     // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
-    if (key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
-    if (key.indexOf(':'+clientId+':') != -1) {
+    if (key.indexOf(':' + clientId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
@@ -275,7 +279,7 @@ router.post('/person/fake', function (req, res, next) {
  */
 router.delete('/person/fake/:employee_id', function (req, res, next) {
   const employeeId = req.params.employee_id;
-  const params = { employee_id: employeeId };
+  const params = {employee_id: employeeId};
 
   rollUpsCache.flushAll();
   console.log('CACHE FLUSH for rollUpsCache');
@@ -287,11 +291,11 @@ router.delete('/person/fake/:employee_id', function (req, res, next) {
 
   for (const key of cache.keys()) {
     // clear all caches with the employeeID
-    if (key.indexOf(':'+employeeId+':') != -1) {
+    if (key.indexOf(':' + employeeId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
-    if (key.indexOf('\''+employeeId+'\'') != -1) {
+    if (key.indexOf('\'' + employeeId + '\'') != -1) {
       console.log('CACHE CLEAR for ' + key);
       cache.del(key);
     }
@@ -426,7 +430,7 @@ router.get('/project/:id/client', function (req, res, next) {
  * ANY cache with the employee_id
  */
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
-  const projectId = params.project_id;
+  const projectId = req.params.project_id;
   const clientId = SQL.getProjectClientId(projectId);
 
   console.log('CLEAR ADDITIONAL CACHES BEFORE removing employee from project', displayClearAdditionalCaches);
@@ -447,11 +451,11 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
   for (const key of cache.keys()) {
     // TODO - shouldn't have to loop through keys to find graph data key
     // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
-    if (key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf(':'+clientId+':') != -1) {
+    if (key.indexOf(':' + clientId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
@@ -484,34 +488,34 @@ router.delete('/project/:project_id/assignments/:assignment_id', function (req, 
 
 // TODO - not in use. Delete this?
 /*
-router.delete('/project/:project_id/assignments_fake/:assignment_id', function (req, res, next) {
-  console.log('ROUTER.DELETE /project/:project+id/assignments_fake/:assignment_id');
-  SQL.deleteFakeAssignment(req, function (err, result) {
-    if (err) {
-      return res.status(500).json({
-        message: 'Error!',
-        err: err
-      });
-    } else {
-      const employeeId = req.query.employee_id;
-      const params = { employee_id: employeeId };
-      SQL.deleteFakeEmployee(params, function (err, result) {
-        if (err) {
-          return res.status(500).json({
-            message: 'Error!',
-            err: err
-          });
-        } else {
-          return res.status(200).json({
-            message: 'Success!',
-            result: result
-          });
-        }
-      })
-    }
-  });
-});
-*/
+ router.delete('/project/:project_id/assignments_fake/:assignment_id', function (req, res, next) {
+ console.log('ROUTER.DELETE /project/:project+id/assignments_fake/:assignment_id');
+ SQL.deleteFakeAssignment(req, function (err, result) {
+ if (err) {
+ return res.status(500).json({
+ message: 'Error!',
+ err: err
+ });
+ } else {
+ const employeeId = req.query.employee_id;
+ const params = { employee_id: employeeId };
+ SQL.deleteFakeEmployee(params, function (err, result) {
+ if (err) {
+ return res.status(500).json({
+ message: 'Error!',
+ err: err
+ });
+ } else {
+ return res.status(200).json({
+ message: 'Success!',
+ result: result
+ });
+ }
+ })
+ }
+ });
+ });
+ */
 
 // add employee to a project
 /*
@@ -544,19 +548,19 @@ router.post('/project/:project_id/assignments', function (req, res, next) {
   for (const key of cache.keys()) {
     // TODO - shouldn't have to loop through keys to find graph data key
     // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
-    if (key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf(':'+clientId+':') != -1) {
+    if (key.indexOf(':' + clientId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf(':'+employeeId+':') != -1) {
+    if (key.indexOf(':' + employeeId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf('\''+employeeId+'\'') != -1) {
+    if (key.indexOf('\'' + employeeId + '\'') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
@@ -581,7 +585,12 @@ router.post('/project/:project_id/assignments', function (req, res, next) {
             }
           });
         } else if (status === 404) {
-          const assignment = {id: uuidv4(), user_id: req.body.user.id, project_id: req.params.project_id, deactivated: 0};
+          const assignment = {
+            id: uuidv4(),
+            user_id: req.body.user.id,
+            project_id: req.params.project_id,
+            deactivated: 0
+          };
           SQL.addFakeAssignment(assignment, function (err, result) {
             if (err) {
               return res.status(500).json({
@@ -758,19 +767,19 @@ router.delete('/assignment/fake/:assignment_id', function (req, res, next) {
   for (const key of cache.keys()) {
     // TODO - shouldn't have to loop through keys to find graph data key
     // but for now, we'll delete any cache key with project or client ID which will also catch the graph data
-    if (key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf(':'+clientId+':') != -1) {
+    if (key.indexOf(':' + clientId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf(':'+employeeId+':') != -1) {
+    if (key.indexOf(':' + employeeId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
-    if (key.indexOf('\''+employeeId+'\'') != -1) {
+    if (key.indexOf('\'' + employeeId + '\'') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
@@ -847,7 +856,7 @@ router.post('/entry', function (req, res, next) {
 
   for (const key of cache.keys()) {
     // TODO - shouldn't have to loop through keys to find graph data key
-    if (key.indexOf(':GRAPH_DATA:') != -1 && key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':GRAPH_DATA:') != -1 && key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR for ' + key, displayClearAdditionalCaches);
       cache.del(key);
     }
@@ -883,7 +892,11 @@ router.post('/entry', function (req, res, next) {
             else {
               // refresh project hours
               console.log('REFRESH CACHE: project capacity hours');
-              SQL.getCapacityHours({type: 'project', id: projectId, clearcache: 'true'}, function (err, projectHoursResult) {
+              SQL.getCapacityHours({
+                type: 'project',
+                id: projectId,
+                clearcache: 'true'
+              }, function (err, projectHoursResult) {
                 if (err) {
                   return res.status(500).json({
                     message: 'Error!',
@@ -924,6 +937,23 @@ router.post('/entry', function (req, res, next) {
  * CAPACITY ROUTES
  */
 
+router.get('/capacity/project', function (req, res, next) {
+  console.log('AY! ' + req);
+  SQL.getProjectRowData(req.query, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
 router.get('/capacity/hours/:type/:id?', function (req, res, next) {
   SQL.getCapacityHours(req.params, (err, result) => {
     if (err) {
@@ -947,12 +977,16 @@ router.get('/data', function (req, res, next) {
   const employeeId = (req.query.employee_id !== undefined ? 'employeeId:' + req.query.employee_id : '');
   const isActive = (req.query.active ? 'isActive' + req.query.active + ':' : '' );
 
-  console.log('/DATA'); console.log(req.query);
+  console.log('/DATA');
+  console.log(req.query);
 
   if (!req.query.client_id && (req.query.clientid || req.query.clientId)) {
-    console.log('BAD QUERY ARGUMENTS, PLEASE USE "client_id" instead of "clientid"'); console.log(req.query); console.log(req);
+    console.log('BAD QUERY ARGUMENTS, PLEASE USE "client_id" instead of "clientid"');
+    console.log(req.query);
+    console.log(req);
     req.query.client_id = (req.query.clientid ? req.query.clientid : req.query.clientId);
-    req.query.clientid = null; req.query.clientId = null;
+    req.query.clientid = null;
+    req.query.clientId = null;
   }
 
   SQL.getData(req.query, function (err, result) {
@@ -1191,17 +1225,17 @@ router.put('/data', function (req, res, next) {
       cache.del(key);
     }
     // bust all caches for this employee
-    if (key.indexOf(':'+employeeId+':') != -1) {
+    if (key.indexOf(':' + employeeId + ':') != -1) {
       console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
     // bust all caches for the fake employee
-    if (key.indexOf(':'+fakeEmployeeId+':') != -1) {
+    if (key.indexOf(':' + fakeEmployeeId + ':') != -1) {
       console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
     // bust all caches for the fake employee
-    if (key.indexOf(':'+projectId+':') != -1) {
+    if (key.indexOf(':' + projectId + ':') != -1) {
       console.log('CACHE CLEAR ALSO for ' + key);
       cache.del(key);
     }
@@ -1339,7 +1373,10 @@ router.get('/rollups', function (req, res, next) {
   const clearCache = (req.query.clearcache && req.query.clearcache == 'true');
 
   var result = checkOrClearCache(clearCache, cacheKey, rollUpsCache);
-  if (result != null) {
+  // all and projects view produce the same cachekey, so we check if employees is null or not
+  if (result != null && result.employees != null) {
+    console.log('result!! ' + result);
+
     console.log('CACHE HIT for ' + cacheKey);
     if (openEmployees.length > 0) {
       for (const employee of result.employees) {
@@ -1388,7 +1425,11 @@ router.get('/rollups', function (req, res, next) {
           employee.total_capacities = [];
           keyedEmployees[employee.id] = employee;
         }
-        const assignmentsAndTotalCapacityQuery = {employee_ids: employeeIds, client_id: clientId, project_id: projectId};
+        const assignmentsAndTotalCapacityQuery = {
+          employee_ids: employeeIds,
+          client_id: clientId,
+          project_id: projectId
+        };
         SQL.getAssignmentsAndTotalCapacity(assignmentsAndTotalCapacityQuery, (err, results) => {
           if (err) {
             inProgressCache.del(cacheKey);
@@ -1476,9 +1517,159 @@ router.get('/rollups', function (req, res, next) {
                 });
               }
             });
-
           }
         });
+      }
+    });
+  }
+});
+
+router.get('/rollups/projects', function (req, res, next) {
+  const d = new Date();
+  const startTime = d.getTime();
+  var timeString =
+    ("0" + d.getHours()).slice(-2) + ":" +
+    ("0" + d.getMinutes()).slice(-2) + ":" +
+    ("0" + d.getSeconds()).slice(-2);
+
+  const reqId = uuidv4();
+  console.log('ROLLUPS: ' + reqId + ' ' + timeString);
+  console.log(req.query);
+
+  if (typeof req.query.opened === 'undefined') {
+    console.log('opened is undefined:');
+  }
+  const openProjects = (typeof req.query.opened != 'undefined' ? req.query.opened : []);
+
+  const cachePrefix = 'ROLLUPS:';
+  const cacheKey = tools.createStructuredCacheKey(cachePrefix, req.query);
+
+  const clearCache = (req.query.clearcache && req.query.clearcache == 'true');
+
+  var result = checkOrClearCache(clearCache, cacheKey, rollUpsCache);
+  // all and projects view produce the same cachekey, so we check if projects is null or not
+  if (result != null && result.projects != null) {
+    console.log('result!! ' + result);
+
+    console.log('CACHE HIT for ' + cacheKey);
+    if (openProjects.length > 0) {
+      for (const project of result.projects) {
+        project.opened = (openProjects.indexOf(project.id) > -1);
+      }
+    }
+    const timeSpent = (new Date().getTime() - startTime) / 1000;
+    console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+    return res.status(200).json({
+      message: 'Success!',
+      projects: result.projects,
+      rollUps: result.rollUps
+    });
+  }
+  else {
+    console.log('CACHE MISS for ' + cacheKey);
+    SQL.getProjects({active: '1', clearcache: clearCache, orderByClient: '1'}, (err, projects) => {
+      if (err) {
+        return res.status(500).json({
+          message: 'Error!',
+          err: err
+        });
+      }
+      else {
+        let projectIds = [];
+        let keyedProjects = {};
+        for (const project of projects) {
+          projectIds.push(project.id);
+          project.opened = (openProjects.indexOf(project.id) > -1);
+          project.entries = [];
+          project.assignments = {};
+          project.assignmentIds = {};
+          project.employees = {};
+          project.total_capacities = [];
+          keyedProjects[project.id] = project;
+        }
+        const assignmentsAndTotalCapacityQueryForProjects = {project_ids: projectIds};
+        SQL.getAssignmentsAndTotalCapacityForProjects(assignmentsAndTotalCapacityQueryForProjects, (err, results) => {
+          if (err) {
+            console.log('ERR!!!!!');
+            inProgressCache.del(cacheKey);
+            return res.status(500).json({
+              message: 'Error!',
+              err: err
+            });
+          }
+          else {
+            for (const totalCapacity of results[1]) {
+              const project = keyedProjects[totalCapacity.project_id];
+              project.total_capacities.push(totalCapacity);
+            }
+            let employeeIds = [];
+            let keyedAssignments = {};
+            for (const assignment of results[0]) {
+              const project = keyedProjects[assignment.project_id];
+              assignment.forecast = {'data': [], 'totals': project.total_capacities};
+              project.entries.push(assignment);
+              project.assignments[assignment.id] = assignment;
+              project.employees[assignment.employeeId] = assignment;
+              project.assignmentIds[assignment.employee_id] = assignment.id;
+              keyedAssignments[assignment.id] = assignment;
+              employeeIds.push(assignment.employee_id);
+            }
+            SQL.getEntriesCapacityHours({
+              project_ids: projectIds,
+              employee_ids: employeeIds,
+              active: '1'
+            }, (err, results) => {
+              if (err) {
+                inProgressCache.del(cacheKey);
+                return res.status(500).json({
+                  message: 'Error!',
+                  err: err
+                });
+              }
+              else {
+                for (const entry of results) {
+                  const project = keyedProjects[entry.project_id];
+                  const entryAssignmentId = project.assignmentIds[entry.employee_id];
+                  const assignment = project.assignments[entryAssignmentId];
+                  if (typeof assignment !== 'undefined') {
+                    assignment.forecast.data.push(entry);
+                  }
+                  else {
+                    console.log('UNDEFINED ASSIGNMENT:');
+                    console.log(' ENTRY:');
+                    console.log(entry);
+                    console.log('  ASSIGNMENT IDS:');
+                    console.log(project.assignmentIds);
+                    console.log('  ASSIGNMENTS:');
+                    console.log(project.assignments);
+                  }
+                }
+                let rollUps = [];
+                for (const project of projects) {
+                  rollUps.push(keyedProjects[project.id].entries);
+                  // clean up employees array to reduce size of JSON returned
+                  // assignment to null is potentially quicker than delete an object's property
+                  project.assignmentIds = null;
+                  project.assignments = null;
+                  project.employees = null;
+                  project.total_capacities = null;
+
+                }
+
+                rollUpsCache.set(cacheKey, {'projects': projects, 'rollUps': rollUps});
+                console.log('CACHE SET for ' + cacheKey);
+                const timeSpent = (new Date().getTime() - startTime) / 1000;
+                console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+
+                return res.status(200).json({
+                  message: 'Success!',
+                  projects: projects,
+                  rollUps: rollUps
+                });
+              }
+            });
+          }
+        })
       }
     });
   }
@@ -1505,7 +1696,7 @@ router.get('/funnel', function (req, res, next) {
 });
 
 router.post('/funnel', function (req, res, next) {
-  req.body['id'] =  uuidv4();
+  req.body['id'] = uuidv4();
   SQL.addFunnelItem(req, function (err, result) {
     if (err) {
       return res.status(500).json({

@@ -42,6 +42,7 @@ import { FunnelComponent } from './funnel/funnel.component';
 import { TableComponent } from './funnel/table/table.component';
 import {AddFunnelItemComponent} from "./funnel/add-funnel-item/add-funnel-item.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { SideListProjectsComponent } from './forecast/side-list-projects/side-list-projects.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     FakeEmployeeComponent,
     FunnelComponent,
     TableComponent,
-    AddFunnelItemComponent
+    AddFunnelItemComponent,
+    SideListProjectsComponent
   ],
   imports: [
     BrowserModule,
