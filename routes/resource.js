@@ -106,6 +106,7 @@ router.get('/person/:id', function (req, res, next) {
 router.put('/person', function (req, res, next) {
   const employeeId = req.body.id;
   const pageId = req.query.page_id;
+
   harvest.updateCapacity(req, function (status, result) {
     if (status === 200) {
       SQL.updateCapacity(req, function (err, result) {
@@ -116,7 +117,8 @@ router.put('/person', function (req, res, next) {
           });
         } else {
           console.log('CLEAR ADDITIONAL CACHES: updated employee capactiy', displayClearAdditionalCaches);
-          for (const key of cache.keys) {
+
+          for (const key of cache.keys()) {
             if (key.indexOf(':' + employeeId + ':') != -1) {
               console.log('CLEAR CACHE for ' + key, displayCacheClear);
               cache.del(key);
@@ -428,7 +430,7 @@ router.get('/project/:id/client', function (req, res, next) {
  * ANY cache with the employee_id
  */
 router.delete('/project/:project_id/assignments/:assignment_id', function (req, res, next) {
-  const projectId = params.project_id;
+  const projectId = req.params.project_id;
   const clientId = SQL.getProjectClientId(projectId);
 
   console.log('CLEAR ADDITIONAL CACHES BEFORE removing employee from project', displayClearAdditionalCaches);
@@ -935,6 +937,23 @@ router.post('/entry', function (req, res, next) {
  * CAPACITY ROUTES
  */
 
+router.get('/capacity/project', function (req, res, next) {
+  console.log('AY! ' + req);
+  SQL.getProjectRowData(req.query, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
 router.get('/capacity/hours/:type/:id?', function (req, res, next) {
   SQL.getCapacityHours(req.params, (err, result) => {
     if (err) {
@@ -1354,7 +1373,10 @@ router.get('/rollups', function (req, res, next) {
   const clearCache = (req.query.clearcache && req.query.clearcache == 'true');
 
   var result = checkOrClearCache(clearCache, cacheKey, rollUpsCache);
-  if (result != null) {
+  // all and projects view produce the same cachekey, so we check if employees is null or not
+  if (result != null && result.employees != null) {
+    console.log('result!! ' + result);
+
     console.log('CACHE HIT for ' + cacheKey);
     if (openEmployees.length > 0) {
       for (const employee of result.employees) {
@@ -1502,7 +1524,7 @@ router.get('/rollups', function (req, res, next) {
   }
 });
 
-router.get('/rollups/project', function (req, res, next) {
+router.get('/rollups/projects', function (req, res, next) {
   const d = new Date();
   const startTime = d.getTime();
   var timeString =
@@ -1525,7 +1547,10 @@ router.get('/rollups/project', function (req, res, next) {
   const clearCache = (req.query.clearcache && req.query.clearcache == 'true');
 
   var result = checkOrClearCache(clearCache, cacheKey, rollUpsCache);
-  if (result != null) {
+  // all and projects view produce the same cachekey, so we check if projects is null or not
+  if (result != null && result.projects != null) {
+    console.log('result!! ' + result);
+
     console.log('CACHE HIT for ' + cacheKey);
     if (openProjects.length > 0) {
       for (const project of result.projects) {
@@ -1542,7 +1567,7 @@ router.get('/rollups/project', function (req, res, next) {
   }
   else {
     console.log('CACHE MISS for ' + cacheKey);
-    SQL.getProjects({active: '1', clearcache: clearCache}, (err, projects) => {
+    SQL.getProjects({active: '1', clearcache: clearCache, orderByClient: '1'}, (err, projects) => {
       if (err) {
         return res.status(500).json({
           message: 'Error!',

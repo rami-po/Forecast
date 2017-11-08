@@ -35,6 +35,8 @@ export class ForecastComponent implements OnInit, OnDestroy {
   public projects;
   public clients;
 
+  public projectsSide;
+
   public isDataAvailable = false;
   public mode = 'indeterminate';
 
@@ -63,6 +65,7 @@ export class ForecastComponent implements OnInit, OnDestroy {
       data => {
         this.rollUps = data.rollUps;
         this.employees = data.employees;
+        this.projectsSide = data.projects;
         console.log('combinedRollUps');  console.log(this.params); console.log(data);
         this.isDataAvailable = true;
         if (data.path === 'project') {

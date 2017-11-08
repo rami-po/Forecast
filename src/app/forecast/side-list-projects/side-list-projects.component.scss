@@ -79,6 +79,7 @@ input:focus {
 .header_name {
   @extend .name;
   cursor: pointer;
+  width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
 }
@@ -86,6 +87,17 @@ input:focus {
 .add-employee {
   @extend .user_name;
   color: $primary-blue;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/deep/ md-menu.mat-menu-panel {
+  max-height: 50px!important;
+}
+
+.mat-menu-panel {
+  max-height: 51px!important;
 }
 
 .name2 {
@@ -95,9 +107,5 @@ input:focus {
 
 .blue-text {
   color: $primary-blue;
-}
-
-/deep/ md-menu.mat-menu-panel {
-  max-height: 50vh!important;
 }
 

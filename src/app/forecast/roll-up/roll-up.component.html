@@ -10,12 +10,12 @@
   </div>
   <div *ngIf="employee.opened">
     <app-entry *ngFor="let entry of data, let i = index"
-               [employeeCapacity]="employee.capacity / 3600"
+               [employeeCapacity]="employee.capacity != null ? employee.capacity / 3600 : entry.capacity / 3600"
                [params]="params"
                [forecast]="entry.forecast"
                [entry]='getEntry(entry.first_name, entry.last_name, entry.employee_id, entry.client_name,
                entry.client_id, entry.project_name, entry.project_id, null, null)'>
     </app-entry>
-
+    <div *ngIf="params.path === '/projects'" class="space"></div>
   </div>
 </div>

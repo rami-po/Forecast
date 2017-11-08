@@ -259,6 +259,7 @@ exports.getProjects = function (args, callback) {
   let employeeId = (args.employeeid !== undefined ? mysql.escape(args.employeeid) : 'a.user_id');
   const clientId = (args.clientid !== undefined ? mysql.escape(args.clientid) : 'p.client_id');
   const active = (args.active !== undefined ? mysql.escape(args.active) : 'p.active');
+  const orderBy = (args.orderByClient === '1' ? 'c.name, p.name' : 'p.name');
 
   let assignments = '(SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake)';
   let employees = '(SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)';
@@ -283,7 +284,7 @@ exports.getProjects = function (args, callback) {
   else {
     console.log('CACHE MISS for ' + cacheKey, displayCacheMisses);
     const query =
-    'SELECT DISTINCT p.id, p.client_id, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
+    'SELECT DISTINCT p.id, p.client_id, c.name as client_name, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
     'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes ' +
     'FROM clients c ' +
     'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
@@ -295,7 +296,7 @@ exports.getProjects = function (args, callback) {
     'AND p.id = ' + projectId + ' ' +
     'AND c.id = ' + clientId + ' ' +
     'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY p.name';
+    'ORDER BY ' + orderBy;
 
     connection.query(query, function (err, result) {
       if (!err) {
@@ -562,7 +563,7 @@ exports.getAssignmentsAndTotalCapacityForProjects = function (args, callback) {
     const monday = mysql.escape(tools.getMondayFormatted());
 
     const assignmentsQuery = `
-    SELECT a.id as id, c.id AS client_id, c.name AS client_name, p.id AS project_id, p.name AS project_name, e.id AS employee_id, e.first_name, e.last_name
+    SELECT a.id as id, c.id AS client_id, c.name AS client_name, p.id AS project_id, p.name AS project_name, e.id AS employee_id, e.first_name, e.last_name, e.capacity
     FROM clients c
     LEFT OUTER JOIN projects p ON c.id = p.client_id
     LEFT OUTER JOIN (SELECT * FROM assignments UNION ALL SELECT * FROM assignments_fake) a ON p.id = a.project_id
@@ -712,6 +713,21 @@ exports.getCapacityHours = function (args, callback) {
       });
     }
   }
+};
+
+exports.getProjectRowData = function (req, callback) {
+
+
+  const projectId = (req.project_id !== undefined ? mysql.escape(req.project_id) : 'project_id');
+
+  const monday = mysql.escape(tools.getMondayFormatted());
+
+  connection.query('SELECT project_id, SUM(capacity) as hours, week_of FROM resourceManagement WHERE ' +
+    'project_id=' + projectId + 'AND week_of >= ' + monday +
+    ' GROUP BY week_of ORDER BY week_of', function (err, result) {
+    callback(err, result);
+  })
+
 };
 
 exports.getEntry = function (args, callback) {
