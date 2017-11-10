@@ -79,7 +79,7 @@ export class PersonnelComponent implements OnInit {
         () => {
           this.employee.events.push({
             id: this.employee.id,
-            date: this.timelineForm.value.date,
+            date: new Date(this.timelineForm.value.date).toISOString(),
             type: this.timelineForm.value.type,
             event: this.timelineForm.value.event
           });

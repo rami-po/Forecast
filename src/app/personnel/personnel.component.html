@@ -9,7 +9,7 @@
   <h3>Employee Timeline</h3>
   <div *ngFor="let event of employee.events">
     {{event.event}} <br>
-    {{event.date}} <br> <br>
+    {{event.date | date: 'MM/dd/yyyy'}} <br> <br>
   </div>
   <br>
   <h3>Add Timeline Event</h3> <br>
@@ -20,7 +20,12 @@
         {{item}}
       </md-option>
     </md-select> <br>
-    <input formControlName="date" placeholder="mm/dd/yyyy"> <br>
+    <md-input-container>
+      <input readonly="readonly" formControlName="date" mdInput [mdDatepicker]="picker"
+             placeholder="mm/dd/yyyy">
+      <button mdSuffix [mdDatepickerToggle]="picker"></button>
+    </md-input-container>
+    <md-datepicker #picker></md-datepicker> <br>
     <button>Add</button> <br> <br>
   </form>
 

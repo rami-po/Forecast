@@ -388,12 +388,15 @@ exports.getPerson = function (req, callback) {
     'AND e.id = ' + id + ' ' +
     'AND p.street_address IS NOT NULL ' +
     'ORDER BY e.last_name', function (err, result) {
-    connection.query("SELECT * FROM personnelTimelineEvents WHERE employee_id=" + id +
+    connection.query("SELECT * FROM personnelTimelineEvents WHERE employee_id=" + id + " ORDER by date ASC" +
       "; SELECT * FROM personnelNotes WHERE employee_id=" + id +
       "; SELECT * FROM personnelSkills WHERE employee_id=" + id, function (err, results) {
-      result[0]['events'] = results[0];
-      result[0]['notes'] = results[1];
-      result[0]['skills'] = results[2];
+      console.log(result[0]);
+    if (result != null && results != null) {
+        result[0]['events'] = results[0];
+        result[0]['notes'] = results[1];
+        result[0]['skills'] = results[2];
+      }
       callback(err, result);
     });
   })
@@ -547,7 +550,15 @@ exports.getAssignmentsAndTotalCapacity = function (args, callback) {
       ' GROUP BY employee_id, week_of ' +
       ' ORDER BY week_of ASC;';
 
-    const query = assignmentsQuery + totalsQuery;
+    const totalQuery =
+      ' SELECT employee_id, SUM(capacity) as hours FROM resourceManagement ' +
+      ' WHERE employee_id in (' + employeeIds + ') ' +
+      ' AND capacity <> \'\' ' +
+      ' AND week_of >= ' + monday +
+      ' GROUP by employee_id ' +
+      ' ORDER BY week_of ASC;';
+
+    const query = assignmentsQuery + totalsQuery + totalQuery;
 
     connection.query(query, function (err, result) {
       if (!err) {
