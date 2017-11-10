@@ -1,0 +1,47 @@
+<div *ngIf="isDataAvailable">
+  {{employee.first_name}} {{employee.last_name}} <br>
+  Software Engineer <br>
+  {{employee.p_home_phone}} <br>
+  {{employee.p_street_address}} <br>
+  {{employee.p_city}}, {{employee.p_state}} {{employee.p_zip_code}} <br>
+  <div *ngIf="employee.spouse_name">Married to {{employee.spouse_name}}</div> <br> <br>
+
+  <h3>Employee Timeline</h3>
+  <div *ngFor="let event of employee.events">
+    {{event.event}} <br>
+    {{event.date}} <br> <br>
+  </div>
+  <br>
+  <h3>Add Timeline Event</h3> <br>
+  <form [formGroup]="timelineForm" (ngSubmit)="submitTimelineForm()">
+    <input formControlName="event" placeholder="Event"> <br>
+    <md-select placeholder="Type" formControlName="type" name="item">
+      <md-option *ngFor="let item of items" [value]="item">
+        {{item}}
+      </md-option>
+    </md-select> <br>
+    <input formControlName="date" placeholder="mm/dd/yyyy"> <br>
+    <button>Add</button> <br> <br>
+  </form>
+
+  <h3>Skills</h3> <br>
+  <div *ngFor="let skill of employee.skills">
+    {{skill.skill}}
+  </div>
+  <form [formGroup]="skillsForm" (ngSubmit)="submitSkillsForm()">
+    <input formControlName="skill" placeholder="New Skill"> <button>Add</button> <br> <br>
+  </form>
+
+  <h3>Notes</h3> <br>
+  <div *ngFor="let note of employee.notes">
+    {{note.notes}}
+  </div> <br>
+  <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()">
+    <input formControlName="notes">
+    <button>Add</button>
+  </form>
+  <br>
+
+  <h3>Vacation Days</h3>
+
+</div>

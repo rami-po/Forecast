@@ -45,6 +45,58 @@ router.get('/cache/clear', (req, res, next) => {
 });
 
 /*
+ * PERSONNEL ROUTES
+ */
+
+router.post('/personnel/timeline', function (req, res, next) {
+  SQL.addTimelineEvent(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+router.post('/personnel/notes', function (req, res, next) {
+  SQL.addNotes(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+router.post('/personnel/skills', function (req, res, next) {
+  SQL.addSkills(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+/*
  * PERSON ROUTES
  */
 
@@ -85,8 +137,7 @@ router.get('/person', function (req, res, next) {
 });
 
 router.get('/person/:id', function (req, res, next) {
-  req.query.employee_id = req.params.id;
-  SQL.getPeople(req.query, function (err, result) {
+  SQL.getPerson(req, function (err, result) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',

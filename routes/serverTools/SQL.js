@@ -66,7 +66,7 @@ exports.get = function (req) {
   connection.query('SELECT * FROM resourceManagement');
 };
 
-function getProjectClientId (projectId) {
+function getProjectClientId(projectId) {
   const cacheKey = 'CLIENT_ID:' + projectId + ':';
 
   var result = cache.get(cacheKey);
@@ -106,7 +106,8 @@ exports.getEmployees = function (args, callback) {
     ("0" + d.getSeconds()).slice(-2);
 
   const reqId = uuidv4();
-  console.log('SQL.getEmployees' + reqId + ' ' + timeString); console.log(args);
+  console.log('SQL.getEmployees' + reqId + ' ' + timeString);
+  console.log(args);
 
   const types = ['all', 'client', 'project'];
   const type = (types.indexOf(args.type) != -1 ? args.type : false);
@@ -120,7 +121,7 @@ exports.getEmployees = function (args, callback) {
   const startWaiting = new Date().getTime();
   const cacheCheckDelay = 100;    // milliseconds
   const cacheCheckRetries = 60; // milliseconds
-  const inProgressCacheTTL = (cacheCheckDelay*cacheCheckRetries)/1000 + 1; // seconds
+  const inProgressCacheTTL = (cacheCheckDelay * cacheCheckRetries) / 1000 + 1; // seconds
   checkCaches(clearCache, cacheKey, cacheCheckDelay, cacheCheckRetries, reqId, (done, result) => {
     if (result != null) {
       console.log('CACHE HIT for ' + cacheKey, displayCacheHits);
@@ -163,7 +164,7 @@ exports.getEmployees = function (args, callback) {
           cache.set(cacheKey, result);
           inProgressCache.del(cacheKey);
           const timeSpent = (new Date().getTime() - startTime - waitTime) / 1000;
-          console.log('    SQL.getEmployees ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS AFTER WAITING ' + waitTime/1000 + ' SECONDS');
+          console.log('    SQL.getEmployees ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS AFTER WAITING ' + waitTime / 1000 + ' SECONDS');
           callback(err, result);
         }
         else {
@@ -195,7 +196,10 @@ exports.getPeople = function (args, callback) {
       // clear cache for the project's client
       const projectClientId = getProjectClientId(theProjectId);
       if (projectClientId) {
-        const clientEmployeesCacheKey = tools.createStructuredCacheKey('PEOPLE:', {client_id: projectClientId, active: '1'});
+        const clientEmployeesCacheKey = tools.createStructuredCacheKey('PEOPLE:', {
+          client_id: projectClientId,
+          active: '1'
+        });
         console.log('CACHE CLEAR for ' + clientEmployeesCacheKey, displayCacheClears);
         cache.del(clientEmployeesCacheKey);
       }
@@ -243,11 +247,11 @@ exports.getPeople = function (args, callback) {
         }
         // console.log('CACHE SET for ' + cacheKey, displayCacheSets);
         cache.set(cacheKey, result);
-        callback (err, result);
+        callback(err, result);
       }
       else {
         console.log('QUERY ERROR for ' + cacheKey);
-        callback (err, result);
+        callback(err, result);
       }
     });
   }
@@ -284,19 +288,19 @@ exports.getProjects = function (args, callback) {
   else {
     console.log('CACHE MISS for ' + cacheKey, displayCacheMisses);
     const query =
-    'SELECT DISTINCT p.id, p.client_id, c.name as client_name, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
-    'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes ' +
-    'FROM clients c ' +
-    'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
-    'LEFT OUTER JOIN ' + assignments + ' a ON p.id = a.project_id ' +
-    'LEFT OUTER JOIN ' + employees + ' e ON e.id = a.user_id ' +
-    'WHERE a.deactivated = 0 ' +
-    'AND p.active = ' + active + ' ' +
-    'AND e.is_active = 1 ' +
-    'AND p.id = ' + projectId + ' ' +
-    'AND c.id = ' + clientId + ' ' +
-    'AND e.id = ' + employeeId + ' ' +
-    'ORDER BY ' + orderBy;
+      'SELECT DISTINCT p.id, p.client_id, c.name as client_name, p.active, p.name, p.code, p.cost_budget, p.billable, ' +
+      'p.budget_by, p.state, p.created_date, p.last_checked_date, p.weekly_hour_budget, p.notes ' +
+      'FROM clients c ' +
+      'LEFT OUTER JOIN projects p ON c.id = p.client_id ' +
+      'LEFT OUTER JOIN ' + assignments + ' a ON p.id = a.project_id ' +
+      'LEFT OUTER JOIN ' + employees + ' e ON e.id = a.user_id ' +
+      'WHERE a.deactivated = 0 ' +
+      'AND p.active = ' + active + ' ' +
+      'AND e.is_active = 1 ' +
+      'AND p.id = ' + projectId + ' ' +
+      'AND c.id = ' + clientId + ' ' +
+      'AND e.id = ' + employeeId + ' ' +
+      'ORDER BY ' + orderBy;
 
     connection.query(query, function (err, result) {
       if (!err) {
@@ -305,7 +309,8 @@ exports.getProjects = function (args, callback) {
         callback(err, result);
       }
       else {
-        console.log('QUERY ERROR for ' + cacheKey); console.log(query);
+        console.log('QUERY ERROR for ' + cacheKey);
+        console.log(query);
         callback(err, result);
       }
     });
@@ -364,8 +369,40 @@ exports.getClients = function (query, callback) {
   }
 };
 
+exports.getPerson = function (req, callback) {
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'e.id');
+
+  console.log(id);
+
+  connection.query('SELECT e.id, e.email, e.first_name, e.last_name, ' +
+    'p.middle_initial, p.street_address as p_street_address, p.apartment_unit as p_apartment_unit, ' +
+    'p.city as p_city, p.state as p_state, p.zip_code as p_zip_code, p.home_phone as p_home_phone, ' +
+    'p.alternate_phone as p_alternate_phone, p.birthday, p.spouse_name, p.spouse_employer, p.spouse_work_phone, ' +
+    'p.computer, ec.first_name as ec_first_name, ec.last_name as ec_last_name, ec.middle_initial as ec_middle_initial, ' +
+    'ec.street_address as ec_street_address, ec.apartment_unit as ec_apartment_unit, ec.city as ec_city, ' +
+    'ec.state as ec_state, ec.zip_code as ec_zip_code, ec.primary_phone as ec_primary_phone, ' +
+    'ec.alternate_phone as ec_alternate_phone, ec.relationship FROM employees e ' +
+    'LEFT OUTER JOIN personalInformation p ON e.id = p.id ' +
+    'LEFT OUTER JOIN emergencyContacts ec ON e.id = ec.id ' +
+    'WHERE e.is_active = 1 ' +
+    'AND e.id = ' + id + ' ' +
+    'AND p.street_address IS NOT NULL ' +
+    'ORDER BY e.last_name', function (err, result) {
+    connection.query("SELECT * FROM personnelTimelineEvents WHERE employee_id=" + id +
+      "; SELECT * FROM personnelNotes WHERE employee_id=" + id +
+      "; SELECT * FROM personnelSkills WHERE employee_id=" + id, function (err, results) {
+      result[0]['events'] = results[0];
+      result[0]['notes'] = results[1];
+      result[0]['skills'] = results[2];
+      callback(err, result);
+    });
+  })
+};
+
 exports.getAssignments = function (req, callback) {
-  console.log('SQL.getAssignments'); console.log(req.query); console.log(req.params);
+  console.log('SQL.getAssignments');
+  console.log(req.query);
+  console.log(req.params);
   let id = (req.params.id !== undefined ? mysql.escape(req.params.id) : 'id');
   const employeeId = (req.query.employee_id !== undefined ? mysql.escape(req.query.employee_id) : 'user_id');
   const projectId = (req.query.project_id !== undefined ? mysql.escape(req.query.project_id) : 'project_id');
@@ -393,7 +430,6 @@ exports.getDates = function (req) {
 };
 
 
-
 exports.getEntries = function (args, callback) {
   var d = new Date();
   var startTime = d.getTime();
@@ -404,7 +440,8 @@ exports.getEntries = function (args, callback) {
 
   const functionName = 'SQL.getEntries: ';
   const reqId = uuidv4();
-  console.log(functionName + reqId + ' ' + timeString); console.log(args);
+  console.log(functionName + reqId + ' ' + timeString);
+  console.log(args);
 
   const clientId = (args.client_id !== undefined ? mysql.escape(args.client_id) : 'p.client_id');
   const employeeId = (args.employee_id !== undefined ? mysql.escape(args.employee_id) : 'a.user_id');
@@ -663,7 +700,8 @@ exports.getEntriesCapacityHours = function (args, callback) {
       }
       else {
         console.log('QUERY ERROR for ' + cacheKey);
-        console.log('QUERY'); console.log(query);
+        console.log('QUERY');
+        console.log(query);
         callback(err, result);
       }
     });
@@ -677,7 +715,7 @@ exports.getCapacityHours = function (args, callback) {
   const clearCache = (args.clearcache && args.clearcache == 'true');
 
   if (!type) {
-    callback({ message: 'Invalid type (' + args.type + ')for capacity hours'});
+    callback({message: 'Invalid type (' + args.type + ')for capacity hours'});
   }
   else {
     const cacheKey = tools.createStructuredCacheKey('CAPACITY_HOURS:', args);
@@ -707,7 +745,8 @@ exports.getCapacityHours = function (args, callback) {
           callback(err, result);
         }
         else {
-          console.log('QUERY ERROR for ' + cacheKey); console.log(query);
+          console.log('QUERY ERROR for ' + cacheKey);
+          console.log(query);
           callback(err, result);
         }
       });
@@ -787,7 +826,8 @@ exports.getEntry = function (args, callback) {
       }
       else {
         console.log('QUERY ERROR for ' + cacheKey);
-        console.log('QUERY'); console.log(query);
+        console.log('QUERY');
+        console.log(query);
         callback(err, result);
       }
     });
@@ -835,7 +875,7 @@ exports.getData = function (args, callback) {
       'AND r.employee_id = ' + employeeId + ' ' +
       'AND r.capacity <> \'\' ' +
       active +
-        // 'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;' +
+      // 'ORDER BY r.box_number, r.employee_id, r.client_id, r.project_id ASC;' +
       'ORDER BY r.week_of ASC;';
     let sumFilter = '';
     if (slim) {
@@ -863,7 +903,8 @@ exports.getData = function (args, callback) {
       }
       else {
         console.log('QUERY ERROR for ' + cacheKey);
-        console.log('QUERY'); console.log(query);
+        console.log('QUERY');
+        console.log(query);
         inProgressCache.del(cacheKey);
         console.log('IN PROGRESS CACHE DELETED for ' + cacheKey, displayInProgressCacheMessages);
         callback(err, result);
@@ -1123,6 +1164,30 @@ exports.getFunnelItems = function (req, callback) {
  * POST METHODS
  */
 
+exports.addTimelineEvent = function (req, callback) {
+  connection.query("INSERT INTO personnelTimelineEvents (id, employee_id, date, type, event) VALUES (" +
+    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.date) + ", " +
+    mysql.escape(req.body.type) + ", " + mysql.escape(req.body.event) + ")",
+    function (err, result) {
+      callback(err, result);
+    })
+};
+
+exports.addNotes = function (req, callback) {
+  connection.query("INSERT INTO personnelNotes (id, employee_id, notes) VALUES (" +
+    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.notes) + ")", function (err, result) {
+    callback(err, result);
+  })
+};
+
+exports.addSkills = function (req, callback) {
+  connection.query("INSERT INTO personnelSkills (id, employee_id, skill) VALUES (" +
+    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.skill) + ")", function (err, result) {
+    callback(err, result);
+  })
+};
+
+
 exports.createEntry = function (entry, callback) {
   connection.query(
     'INSERT INTO resourceManagement (client_id, project_id, employee_id, week_of, capacity) ' +
@@ -1179,7 +1244,7 @@ exports.addFakeEmployee = function (employee, callback) {
     "capacity=" + mysql.escape(employee.capacity) + ", " +
     "tier_id=" + mysql.escape(employee.tier_id) + "; ", function (err, result) {
       callback(err, result);
-  });
+    });
 };
 
 exports.addAssignment = function (assignment, callback) {
@@ -1219,7 +1284,8 @@ exports.addAssignment = function (assignment, callback) {
 };
 
 exports.addFakeAssignment = function (assignment, callback) {
-  console.log('SQL.addFakeAssignment'); console.log(assignment);
+  console.log('SQL.addFakeAssignment');
+  console.log(assignment);
   let query = '' +
     "INSERT INTO assignments_fake (id, user_id, project_id, deactivated) " +
     "VALUES (" +
@@ -1258,8 +1324,8 @@ exports.addFunnelItem = function (req, callback) {
 exports.updateCapacity = function (req, callback) {
   connection.query('UPDATE employees SET capacity = ' + mysql.escape(req.body.capacity) + ' WHERE id = ' + mysql.escape(req.body.id),
     function (err, result) {
-    callback(err, result);
-  });
+      callback(err, result);
+    });
 };
 
 exports.updateData = function (req, callback) {
@@ -1297,7 +1363,7 @@ exports.updateFunnelItem = function (req, callback) {
   connection.query('UPDATE funnel SET client_name=' + mysql.escape(item.client_name) + ', is_new_client=' + mysql.escape(item.is_new_client) +
     ', project_name=' + mysql.escape(item.project_name) + ', project_manager=' + mysql.escape(item.project_manager) + ', revenue=' + mysql.escape(item.revenue) +
     ', confidence=' + mysql.escape(item.confidence) + ', status=' + mysql.escape(item.status) + ', signing_date=' + mysql.escape(item.signing_date) +
-    ', start_date=' + mysql.escape(item.start_date) + ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', project_id=' + mysql.escape(item.project_id)  +
+    ', start_date=' + mysql.escape(item.start_date) + ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', project_id=' + mysql.escape(item.project_id) +
     ', completed=' + mysql.escape(item.completed) + ', notes=' + mysql.escape(item.notes) + ' WHERE id=' + mysql.escape(item.id),
     function (err, result) {
       callback(err, result);
@@ -1307,8 +1373,8 @@ exports.updateFunnelItem = function (req, callback) {
 exports.deactivateAssignment = function (req, callback) {
   connection.query('UPDATE assignments SET deactivated = 1 WHERE id = ' + mysql.escape(req.params.assignment_id) + ' AND project_id = ' + mysql.escape(req.params.project_id),
     function (err, result) {
-    callback(err, result);
-  });
+      callback(err, result);
+    });
 };
 
 /*
@@ -1318,8 +1384,8 @@ exports.deactivateAssignment = function (req, callback) {
 exports.deleteFakeAssignment = function (req, callback) {
   connection.query('DELETE FROM assignments_fake WHERE id = ' + mysql.escape(req.params.assignment_id),
     function (err, result) {
-    callback(err, result);
-  });
+      callback(err, result);
+    });
 };
 
 /*
@@ -1349,7 +1415,7 @@ exports.deleteFakeEmployee = function (args, callback) {
 exports.custom = function (req, callback) {
   connection.query('ALTER TABLE tiers ALTER COLUMN cost varchar(255) COLLATE utf8_general_ci',
     function (err, result) {
-    callback(err, result);
-  });
+      callback(err, result);
+    });
 };
 // CREATE TABLE tiers (id varchar(255), cost int(11));

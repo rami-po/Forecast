@@ -258,6 +258,12 @@ export class ForecastService {
     }
   }
 
+  getEmployee(id) {
+    return this.http.get(this.apiBase + '/person/' + id)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
 
   getEmployees(params) {
     console.log('getEmployees' + JSON.stringify(params));
