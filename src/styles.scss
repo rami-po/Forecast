@@ -3,13 +3,17 @@
 //@import "~@angular/material/prebuilt-themes/indigo-pink.css";
 //@import "~normalize.css";
 
-$primary-blue: rgb(33, 150, 243);
-$primary-blue-trans: rgba(33, 150, 243, .4);
+// colors
+$dark-blue: #3d465d;
 
 // typography
 $mat-font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-.page-wrapper {
+body {
+  background-color: #eff1f4;
+  color: $dark-blue;
+  -webkit-font-smoothing: antialiased;
+}
 
 body,
 .mat-button-toggle,
@@ -38,10 +42,10 @@ body,
 }
 
 .mat-menu-panel {
-  overflow-x: hidden !important;
-  max-height: 275px !important;
+  overflow-x: hidden!important;
+  max-height: 275px!important;
 }
 
-md-dialog-container{
+md-dialog-container {
   overflow: visible!important;
 }
