@@ -1,0 +1,9 @@
+.background-icon {
+  height: 50rem;
+  left: 50%;
+  opacity: .4;
+  position: absolute;
+  top: 0;
+  width: 50rem;
+  z-index: -1;
+}
