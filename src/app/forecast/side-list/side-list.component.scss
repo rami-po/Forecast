@@ -14,7 +14,6 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
 
 .project-client {
   color: $primary-blue;
-  font-family: Arial;
   display: flex;
   position: relative;
   width: 33%;
@@ -100,4 +99,3 @@ input:focus {
 /deep/ md-menu.mat-menu-panel {
   max-height: 50vh!important;
 }
-
