@@ -37,6 +37,10 @@ nav {
       >a {
         padding: .5rem;
       }
+
+      + li {
+        margin-left: .5rem;
+      }
     }
   }
 }
