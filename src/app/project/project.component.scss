@@ -2,6 +2,7 @@
   height: 475px;
   display: flex;
   flex-direction: row;
+  margin: 2rem auto 4rem;
 }
 
 .data-wrapper {
@@ -20,14 +21,10 @@
   padding: 5px;
 }
 
-app-graph {
-  margin-left: 25%;
-  position: absolute;
-}
-
-.forecast-wrapper {
-
-}
+// app-graph {
+//   margin-left: 25%;
+//   position: absolute;
+// }
 
 .spacer {
   flex: 1 1 auto;

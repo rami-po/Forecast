@@ -24,7 +24,7 @@
 </md-menu>
 
 
-<div *ngIf="isGraphShowing" class="graph-data-wrapper">
+<div *ngIf="isGraphShowing" class="graph-data-wrapper constrain wrap">
   <div class="data-wrapper">
     <div class="data"><b>Budget:&nbsp;</b>${{budget | number: '1.0-0'}}</div>
     <div class="data"><b>Internal Cost to Date:&nbsp;</b>${{internalCost | number: '1.0-0'}}</div>
@@ -36,6 +36,6 @@
 </div>
 
 
-<div class="forecast-wrapper">
+<div class="wrap">
   <app-forecast [height]="height" [isProjectView]="isGraphShowing" [params]="params" [forecastHeight]="forecastHeight"></app-forecast>
 </div>

@@ -1,39 +1,14 @@
+@import "../../../assets/css/colors";
 $width: 240px;
 
 .table-wrapper {
   overflow: scroll;
   display: block;
   white-space: nowrap;
-
-}
-
-.cell {
-  margin: 0 25px 0 25px;
-}
-
-.cell-date {
-  text-align: center;
-}
-
-.cell-revenue {
-  text-align: center;
-}
-
-.cell-confidence {
-  text-align: center;
-}
-
-.cell-duration-weeks {
-  text-align: center;
-}
-
-.cell-duration-months {
-  @extend .cell;
-  text-align: center;
 }
 
 table {
-  border-spacing:0; /* Removes the cell spacing via CSS */
+  border-spacing: 0; /* Removes the cell spacing via CSS */
   border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
 }
 
@@ -55,27 +30,15 @@ th {
 
 input {
   width: $width;
-  height: 50px;
+  height: 30px;
   border: 0;
 }
 
-tr {
-  margin-right: 26px;
-  width: $width;
-  height: 50px;
-}
-
-td {
-  margin-right: 26px;
-}
-
-
-
 tr:nth-child(even) {
-  background-color: #cccccc;
+  background-color: $extra-light-blue;
 
   input {
-    background-color: #cccccc;
+    background-color: $extra-light-blue;
   }
 }
 
@@ -83,12 +46,3 @@ md-input-container {
   width: $width;
   height: 62px;
 }
-
-md-select {
-  text-align: center;
-}
-
-.no-edit {
-  text-align: center;
-}
-
