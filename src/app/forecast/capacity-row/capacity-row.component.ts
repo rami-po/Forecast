@@ -51,4 +51,14 @@ export class CapacityRowComponent implements OnInit {
     }
     return '0';
   }
+
+  getPercentage(week, index) {
+    const totalCap = this.getTotalCapacity(week, index);
+    const filteredCap = this.getFilteredCapacity(week, index);
+    if (totalCap > 0) {
+      const val = (filteredCap * 100) / totalCap;
+      return `${Math.floor(val)}`;
+    }
+    return '0';
+  }
 }

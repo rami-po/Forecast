@@ -1,6 +1,9 @@
 <div class="row-container">
   <div *ngFor="let week of weeks, let i = index">
-    <div class="capacity">{{getTotalCapacity(week, i)}}</div>
-    <div class="capacity">{{getFilteredCapacity(week, i)}}</div>
+    <div class="capacity percentage">
+      {{getPercentage(week, i)}}%
+    </div>
+    <!-- <div class="capacity">{{getTotalCapacity(week, i)}}</div>
+    <div class="capacity">{{getFilteredCapacity(week, i)}}</div> -->
   </div>
 </div>
