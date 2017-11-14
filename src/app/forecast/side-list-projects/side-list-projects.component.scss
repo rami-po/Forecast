@@ -13,7 +13,6 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
 }
 
 .project-client {
-  color: $primary-blue;
   display: flex;
   position: relative;
   width: 33%;
@@ -29,7 +28,6 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
 
 .name {
   @extend .project-client;
-  color: black;
   width: 50%;
   font-weight: bold;
   justify-content: center;

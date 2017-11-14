@@ -10,3 +10,11 @@
     z-index: -1;
   }
 }
+
+.dot {
+  background: $light-gray;
+  border-radius: 50%;
+  display: block;
+  height: 1rem;
+  width: 1rem;
+}

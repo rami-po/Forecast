@@ -1,5 +1,5 @@
-<div class="row-container">
-  <div *ngFor="let week of weeks, let i = index" class="row">
-    <div class="capacity">{{week | date: 'MM/dd'}}</div>
+<div class="flex-row">
+  <div *ngFor="let week of weeks, let i = index">
+    <div class="forecast-cell">{{week | date: 'MM/dd'}}</div>
   </div>
 </div>

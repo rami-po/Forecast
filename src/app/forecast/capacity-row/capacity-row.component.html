@@ -1,6 +1,6 @@
-<div class="row-container">
+<div class="flex-row">
   <div *ngFor="let week of weeks, let i = index">
-    <div class="capacity percentage">
+    <div class="forecast-cell forecast-cell--percentage">
       {{getPercentage(week, i)}}%
     </div>
     <!-- <div class="capacity">{{getTotalCapacity(week, i)}}</div>

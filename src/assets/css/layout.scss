@@ -8,3 +8,13 @@
   background: #fff;
   box-shadow: $box-shadow;
 }
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}

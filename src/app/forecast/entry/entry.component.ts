@@ -119,7 +119,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return '#EF9A9A';
       }
     }
-    return 'white';
+    return '#ddd';
   }
 
   getColor2(week, index) {

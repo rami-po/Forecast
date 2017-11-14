@@ -7,6 +7,7 @@
 @import "assets/css/forms";
 @import "assets/css/tables";
 @import "assets/css/layout";
+@import "assets/css/forecast";
 
 
 body {
@@ -22,4 +23,8 @@ body {
 
 md-dialog-container {
   overflow: visible!important;
+}
+
+.header_name {
+  color: $gray;
 }
