@@ -1,44 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css?family=Lato:300,400,400i,700');
-//@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-//@import "~normalize.css";
+@import "assets/css/variables";
+@import "assets/css/colors";
+@import "assets/css/typography";
+@import "assets/css/buttons";
+@import "assets/css/icons";
+@import "assets/css/forms";
+@import "assets/css/tables";
+@import "assets/css/layout";
 
-// colors
-$dark-blue: #3d465d;
-
-// typography
-$mat-font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
 body {
-  background-color: #eff1f4;
+  background-color: $extra-light-blue;
   color: $dark-blue;
   -webkit-font-smoothing: antialiased;
-}
-
-body,
-.mat-button-toggle,
-.mat-button-base,
-.mat-button,
-.mat-raised-button,
-.mat-fab,
-.mat-icon-button,
-.mat-mini-fab,
-.mat-card,
-.mat-checkbox,
-.mat-input-container,
-.mat-list,
-.mat-menu-item,
-.mat-radio-button,
-.mat-select,
-.mat-list .mat-list-item .mat-list-item-content,
-.mat-nav-list .mat-list-item .mat-list-item-content,
-.mat-simple-snackbar,
-.mat-tab-label,
-.mat-slide-toggle-content,
-.mat-toolbar,
-.mat-tooltip,
-.mat-typography  {
-  font-family: $mat-font-family;
 }
 
 .mat-menu-panel {

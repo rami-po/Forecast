@@ -1,0 +1,25 @@
+// Material Select
+.mat-select {
+  border-radius: 3px;
+  background: $pale-blue;
+}
+
+.mat-select-value {
+  font-size: .875rem;
+  padding-left: .75rem;
+}
+
+.mat-select-underline {
+  display: none;
+}
+
+.mat-select-trigger {
+  padding-right: .75rem;
+}
+
+.mat-select-arrow,
+.mat-select-disabled
+.mat-select-value,
+.mat-select-trigger {
+  color: $dark-blue;
+}
