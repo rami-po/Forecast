@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {DomSanitizer} from "@angular/platform-browser";
+import {MdIconRegistry} from "@angular/material";
 import {ForecastService} from '../forecast/forecast.service';
 import {isNullOrUndefined} from 'util';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -21,15 +23,26 @@ export class PersonnelComponent implements OnInit {
 
   public items = [
     'Compensation',
-    'blah',
-    'bleh',
-    'bloh?'
+    'Review'
   ];
 
-  constructor(private route: ActivatedRoute,
-              private router: Router,
-              private personnelService: PersonnelService,
-              private forecastService: ForecastService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private personnelService: PersonnelService,
+    private forecastService: ForecastService,
+    private iconRegistry: MdIconRegistry,
+    private sanitizer: DomSanitizer
+  ) {
+    iconRegistry.addSvgIcon(
+      'remove',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'));
+    iconRegistry.addSvgIcon(
+      'heart',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_heart.svg'));
+    iconRegistry.addSvgIcon(
+      'map-marker',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_map_marker.svg'));
   }
 
   ngOnInit() {

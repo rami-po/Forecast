@@ -1,0 +1,16 @@
+.card {
+  background-color: #fff;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem 2rem;
+
+  &--bordered {
+    border-top: 6px solid $soft-blue;
+  }
+
+  .card__heading {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 0;
+  }
+}
