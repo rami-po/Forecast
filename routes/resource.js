@@ -1501,8 +1501,10 @@ router.get('/rollups', function (req, res, next) {
             }
             let projectIds = [];
             let keyedAssignments = {};
+
             for (const assignment of results[0]) {
               const employee = keyedEmployees[assignment.employee_id];
+
               assignment.forecast = {'data': [], 'totals': employee.total_capacities, 'total': employee.total};
               employee.entries.push(assignment);
               employee.assignments[assignment.id] = assignment;
@@ -1540,13 +1542,13 @@ router.get('/rollups', function (req, res, next) {
                     //assignment.forecast.totals = employee.total_capacities;
                   }
                   else {
-                    console.log('UNDEFINED ASSIGNMENT:');
-                    console.log(' ENTRY:');
-                    console.log(entry);
-                    console.log('  ASSIGNMENT IDS:');
-                    console.log(employee.assignmentIds);
-                    console.log('  ASSIGNMENTS:');
-                    console.log(employee.assignments);
+                    // console.log('UNDEFINED ASSIGNMENT:');
+                    // console.log(' ENTRY:');
+                    // console.log(entry);
+                    // console.log('  ASSIGNMENT IDS:');
+                    // console.log(employee.assignmentIds);
+                    // console.log('  ASSIGNMENTS:');
+                    // console.log(employee.assignments);
                   }
                 }
                 let rollUps = [];
@@ -1562,11 +1564,7 @@ router.get('/rollups', function (req, res, next) {
 
                 }
 
-                rollUpsCache.set(cacheKey, {'employees': employees, 'rollUps': rollUps});
-                console.log('CACHE SET for ' + cacheKey);
-                const timeSpent = (new Date().getTime() - startTime) / 1000;
-                console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
-
+                // sort rollups
                 //1) combine the arrays:
                 const list = [];
                 for (let j = 0; j < employees.length; j++) {
@@ -1577,8 +1575,10 @@ router.get('/rollups', function (req, res, next) {
                 list.sort(function (a, b) {
                   const hoursA = (a.rollUps[0].forecast.total[0] != null ? a.rollUps[0].forecast.total[0].hours : 0);
                   const hoursB = (b.rollUps[0].forecast.total[0] != null ? b.rollUps[0].forecast.total[0].hours : 0);
+                  const amountOfTotalsA = a.rollUps[0].forecast.totals.length;
+                  const amountOfTotalsB = b.rollUps[0].forecast.totals.length;
 
-                  return ((hoursA < hoursB) ? -1 : ((hoursA == hoursB) ? 0 : 1));
+                  return ((amountOfTotalsA < amountOfTotalsB) ? -1 : ((amountOfTotalsA == amountOfTotalsB) ? 0 : 1));
                 });
 
                 //3) separate them back out:
@@ -1586,6 +1586,13 @@ router.get('/rollups', function (req, res, next) {
                   employees[k] = list[k].employees;
                   rollUps[k] = list[k].rollUps;
                 }
+
+                rollUpsCache.set(cacheKey, {'employees': employees, 'rollUps': rollUps});
+                console.log('CACHE SET for ' + cacheKey);
+                const timeSpent = (new Date().getTime() - startTime) / 1000;
+                console.log('    ROLLUPS ' + reqId + ' COMPLETED IN ' + timeSpent + ' SECONDS');
+
+
 
 
                 return res.status(200).json({
@@ -1713,13 +1720,13 @@ router.get('/rollups/projects', function (req, res, next) {
                     assignment.forecast.data.push(entry);
                   }
                   else {
-                    console.log('UNDEFINED ASSIGNMENT:');
-                    console.log(' ENTRY:');
-                    console.log(entry);
-                    console.log('  ASSIGNMENT IDS:');
-                    console.log(project.assignmentIds);
-                    console.log('  ASSIGNMENTS:');
-                    console.log(project.assignments);
+                    // console.log('UNDEFINED ASSIGNMENT:');
+                    // console.log(' ENTRY:');
+                    // console.log(entry);
+                    // console.log('  ASSIGNMENT IDS:');
+                    // console.log(project.assignmentIds);
+                    // console.log('  ASSIGNMENTS:');
+                    // console.log(project.assignments);
                   }
                 }
                 let rollUps = [];

@@ -76,7 +76,7 @@ input:focus {
 .header_name {
   @extend .name;
   cursor: pointer;
-  width: 100%;
+  width: 90%;
   align-items: flex-start;
   justify-content: flex-start;
 }
@@ -84,7 +84,7 @@ input:focus {
 .add-employee {
   @extend .user_name;
   color: $primary-blue;
-  width: 100%;
+  width: 10%;
   justify-content: flex-start;
   align-items: flex-start;
 }

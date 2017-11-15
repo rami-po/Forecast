@@ -39,6 +39,9 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
   text-align: center;
 }
 
+.user_icon {
+  cursor: pointer;
+}
 
 .add-user {
   @extend .name;
