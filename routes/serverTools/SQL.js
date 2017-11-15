@@ -543,20 +543,25 @@ exports.getAssignmentsAndTotalCapacity = function (args, callback) {
     `;
 
     const totalsQuery =
-      ' SELECT employee_id, SUM(capacity) as hours, week_of FROM resourceManagement ' +
-      ' WHERE employee_id IN (' + employeeIds + ') ' +
-      ' AND capacity <> \'\' ' +
-      ' AND week_of >= ' + monday +
-      ' GROUP BY employee_id, week_of ' +
-      ' ORDER BY week_of ASC;';
+      ' SELECT r.employee_id, SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+      ' LEFT OUTER JOIN assignments a ON a.user_id = r.employee_id AND a.project_id = r.project_id ' +
+      ' WHERE r.employee_id IN (' + employeeIds + ') ' +
+      ' AND r.capacity <> \'\' ' +
+      ' AND r.week_of >= ' + monday +
+      ' AND a.deactivated = 0 ' +
+      ' GROUP BY r.employee_id, r.week_of ' +
+      ' ORDER BY r.week_of ASC;';
+
 
     const totalQuery =
-      ' SELECT employee_id, SUM(capacity) as hours FROM resourceManagement ' +
-      ' WHERE employee_id in (' + employeeIds + ') ' +
-      ' AND capacity <> \'\' ' +
-      ' AND week_of >= ' + monday +
-      ' GROUP by employee_id ' +
-      ' ORDER BY week_of ASC;';
+      ' SELECT r.employee_id, SUM(r.capacity) as hours FROM resourceManagement r ' +
+      ' LEFT OUTER JOIN assignments a ON a.user_id = r.employee_id AND a.project_id = r.project_id ' +
+      ' WHERE r.employee_id in (' + employeeIds + ') ' +
+      ' AND r.capacity <> \'\' ' +
+      ' AND r.week_of >= ' + monday +
+      ' AND a.deactivated = 0 ' +
+      ' GROUP by r.employee_id ' +
+      ' ORDER BY r.week_of ASC;';
 
     const query = assignmentsQuery + totalsQuery + totalQuery;
 
@@ -624,12 +629,14 @@ exports.getAssignmentsAndTotalCapacityForProjects = function (args, callback) {
     `;
 
     const totalsQuery =
-      ' SELECT project_id, SUM(capacity) as hours, week_of FROM resourceManagement ' +
-      ' WHERE project_id IN (' + projectIds + ') ' +
-      ' AND capacity <> \'\' ' +
-      ' AND week_of >= ' + monday +
-      ' GROUP BY project_id, week_of ' +
-      ' ORDER BY week_of ASC;';
+      ' SELECT r.project_id, SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+      ' LEFT OUTER JOIN assignments a ON a.user_id = r.employee_id AND a.project_id = r.project_id ' +
+      ' WHERE r.project_id IN (' + projectIds + ') ' +
+      ' AND r.capacity <> \'\' ' +
+      ' AND r.week_of >= ' + monday +
+      ' AND a.deactivated = 0 ' +
+      ' GROUP BY r.project_id, r.week_of ' +
+      ' ORDER BY r.week_of, r.project_id, r.client_id ASC;';
 
     const query = assignmentsQuery + totalsQuery;
 
@@ -700,6 +707,8 @@ exports.getEntriesCapacityHours = function (args, callback) {
       ' AND r.capacity <> \'\' ' +
       active +
       ' ORDER BY r.week_of ASC;';
+
+    console.log(query);
 
     connection.query(query, function (err, result) {
       if (!err) {

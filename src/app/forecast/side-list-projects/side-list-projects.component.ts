@@ -10,6 +10,7 @@ import {MdDialog, MdIconRegistry} from '@angular/material';
 import {StatusMessageDialogComponent} from '../status-message/status-message.component';
 import {Subject} from 'rxjs/Subject';
 import * as io from 'socket.io-client';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-side-list-projects',
@@ -29,6 +30,7 @@ export class SideListProjectsComponent implements OnInit {
   public unassignedEmployees;
 
   constructor(private forecastService: ForecastService,
+              private router: Router,
               private iconRegistry: MdIconRegistry,
               private sanitizer: DomSanitizer,
               private dialog: MdDialog) {
@@ -47,6 +49,10 @@ export class SideListProjectsComponent implements OnInit {
         this.entries = data.entries;
       }
     );
+  }
+
+  goToPersonnelPage(employeeId) {
+    this.router.navigate(['/user', employeeId]);
   }
 
   updateUnassignedEmployees(project, index) {

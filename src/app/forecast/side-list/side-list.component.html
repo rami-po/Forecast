@@ -2,6 +2,7 @@
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
+      <md-icon class="user_icon" svgIcon="user" (click)="goToPersonnelPage(employee.id)"></md-icon>
       <div md-button *ngIf="employee.email == null" class="fake-user-icon" (click)="openConsole(employee)">
         <md-icon svgIcon="more"></md-icon>
       </div>
