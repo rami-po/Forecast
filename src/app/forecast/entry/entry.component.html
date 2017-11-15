@@ -11,10 +11,18 @@
       [style.background-color]="params.path !== '/projects' ? getColor(week, i) : getColor2(week, i)"
       [disabled]="isHeader"> -->
     <div class="forecast-cell">
-      <div class="dot"
+      <div *ngIf="isHeader" class="dot"
         [style.background-color]="params.path !== '/projects' ? getColor(week, i) : getColor2(week, i)"
-        [title]="!isHeader ? getCapacity(week, i) : getTotal(week, i)">
+        [title]="getTotal(week, i)">
       </div>
+
+      <input *ngIf="!isHeader"
+             maxlength="2"
+             onclick="select()"
+             (blur)="send($event.target.value, week)"
+             (input)="type($event.target.value, week)"
+             [value]="getCapacity(week, i)">
+
     </div>
   </div>
 </div>

@@ -106,7 +106,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   getColor(week, index) {
     if (!this.isHeader) {
-      return 'white';
+      return '#ddd';
     }
     if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
       if (this.forecast.totals[index].hours < this.employeeCapacity) {
@@ -124,7 +124,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   getColor2(week, index) {
     if (this.isHeader) {
-      return 'white';
+      return '#ddd';
     }
     if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
 
@@ -138,7 +138,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return '#EF9A9A';
       }
     }
-    return 'white';
+    return '#ddd';
   }
 
   getTextColor() {
