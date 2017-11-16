@@ -1,11 +1,29 @@
-<div class="row-container">
-  <div *ngFor="let week of getWeeks(), let i = index" class="row">
-    <input
+<div class="flex-row">
+  <div *ngFor="let week of getWeeks(), let i = index">
+    <!-- <input
       [style.color]="getTextColor()"
-      class="capacity"
-      maxlength="2" (blur)="send($event.target.value, week)" onclick="select()"
-      (input)="type($event.target.value, week)" [value]="!isHeader ? getCapacity(week, i) : getTotal(week, i)"
+      class="forecast-cell"
+      maxlength="2"
+      (blur)="send($event.target.value, week)"
+      onclick="select()"
+      (input)="type($event.target.value, week)"
+      [value]="!isHeader ? getCapacity(week, i) : getTotal(week, i)"
       [style.background-color]="params.path !== '/projects' ? getColor(week, i) : getColor2(week, i)"
-      [disabled]="isHeader">
+      [disabled]="isHeader"> -->
+    <div class="forecast-cell">
+      <div *ngIf="isHeader" class="dot"
+           [style.background-color]="params.path !== '/projects' ? getColor(week, i) : getColor2(week, i)"
+           [title]="getTotal(week, i)">
+      </div>
+
+      <input *ngIf="!isHeader"
+             class="temp-input"
+             maxlength="2"
+             onclick="select()"
+             (blur)="send($event.target.value, week)"
+             (input)="type($event.target.value, week)"
+             [value]="getCapacity(week, i)">
+
+    </div>
   </div>
 </div>

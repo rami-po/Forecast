@@ -33,6 +33,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   public timerSubscription;
   public graphSubscription;
   public messageSubscription;
+  @Input() public headerData;
   @Input() public entry: Entry;
   @Input() public forecast;
   @Input() public employeeCapacity;
@@ -46,7 +47,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   constructor(public entryService: EntryService,
               public graphService: GraphService,
               private forecastService: ForecastService,
-              private rollUpComponent: RollUpComponent,
               private rollUpService: RollUpService) {
   }
 
@@ -71,6 +71,7 @@ export class EntryComponent implements OnInit, OnDestroy {
     if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
       return this.forecast.data[index].capacity;
     }
+
     this.forecast.data.splice(index, 0, {
       employee_id: this.entry.employeeId,
       project_id: this.entry.projectId,
@@ -106,7 +107,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   getColor(week, index) {
     if (!this.isHeader) {
-      return 'white';
+      return '#ddd';
     }
     if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
       if (this.forecast.totals[index].hours < this.employeeCapacity) {
@@ -119,12 +120,12 @@ export class EntryComponent implements OnInit, OnDestroy {
         return '#EF9A9A';
       }
     }
-    return 'white';
+    return '#ddd';
   }
 
   getColor2(week, index) {
     if (this.isHeader) {
-      return 'white';
+      return '#ddd';
     }
     if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
 
@@ -138,7 +139,7 @@ export class EntryComponent implements OnInit, OnDestroy {
         return '#EF9A9A';
       }
     }
-    return 'white';
+    return '#ddd';
   }
 
   getTextColor() {
@@ -149,6 +150,8 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   send(value: string, week) {
+    console.log('initiate send!!');
+
     if (this.isSubscribed) {
 
       this.timerSubscription.unsubscribe();
@@ -185,6 +188,7 @@ export class EntryComponent implements OnInit, OnDestroy {
             });
           }
 
+
           const messageTimer = Observable.timer(2000);
           this.messageSubscription = messageTimer.subscribe(t => {
             console.log('send an updateEntry message');
@@ -197,6 +201,8 @@ export class EntryComponent implements OnInit, OnDestroy {
             };
             this.forecastService.socket.emit('broadcastUpdatedRollUps', message); // everyone but the sender gets it
           });
+
+
 
           for (let i = 0; i < this.forecast.data.length; i++) {
             if (this.forecast.data[i].week_of.slice(0, 10) === week) {
@@ -211,14 +217,15 @@ export class EntryComponent implements OnInit, OnDestroy {
               if (this.params.path === '/projects') {
                 this.forecastService.getProjectRowData(this.entry.projectId).subscribe(
                   data => {
-                    this.rollUpComponent.filteredEntry.totals = data.result;
+                    console.log(data.result);
+                    this.headerData.totals = data.result;
                   }
                 );
               } else {
-                this.rollUpComponent.filteredEntry.totals = resources.employeeData;
+                this.headerData.totals = resources.employeeData;
               }
               if (this.entry.projectId === Number(this.params.id)) {
-                this.rollUpComponent.filteredEntry.data = this.forecast.data;
+                this.headerData.data = this.forecast.data;
               }
               break;
             }

@@ -1,0 +1,46 @@
+$dark-blue: #3d465d;
+$accent-color: #87aaf0;
+
+.mat-toolbar {
+  background: $dark-blue;
+}
+
+.mat-toolbar__brand {
+  color: #fff;
+  font-size: 1.75rem;
+  letter-spacing: -0.5px;
+
+  .mat-icon {
+    margin-right: .25rem;
+    position: relative;
+    top: .2rem;
+  }
+}
+
+nav {
+  ul {
+    >li {
+      display: inline-block;
+      font-size: 1rem;
+      letter-spacing: -0.1px;
+
+      a {
+        color: #fff;
+        text-decoration: none;
+
+        &:hover,
+        &.active {
+          color: $accent-color;
+        }
+      }
+
+      >a {
+        padding: .5rem;
+      }
+
+      + li {
+        margin-left: .5rem;
+      }
+    }
+  }
+}

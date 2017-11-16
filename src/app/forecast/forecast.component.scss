@@ -1,3 +1,4 @@
+@import "../../assets/css/colors";
 $title_height: 64px;
 $entry_side_height: 81.4vh;
 
@@ -10,17 +11,17 @@ $entry_side_height: 81.4vh;
 }
 
 .capacity-row-container {
+  color: $gray;
   margin-left: 25%;
-  background-color: white;
   top: 0;
   left: 0;
   right: 0;
   overflow: hidden;
   position: absolute;
-  margin-right: 15px;
 }
 
 .header-row-container {
+  background-color: $pale-blue;
   @extend .capacity-row-container;
   margin-top: $title_height;
   margin-left: 25%;
@@ -51,18 +52,7 @@ $entry_side_height: 81.4vh;
   position: absolute;
   left: 0;
   top: 0;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-}
-
-.title-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.space {
-
 }
 
 .title {

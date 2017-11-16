@@ -10,11 +10,11 @@ import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
-  MdButtonModule, MdCheckboxModule, MdDatepicker, MdDatepickerModule, MdDialogModule, MdIconModule, MdInputModule,
-  MdMenuModule, MdNativeDateModule,
-  MdProgressSpinnerModule, MdSelectModule,
-  MdToolbarModule,
-  MdTooltipModule
+  MdButtonModule, MdCheckboxModule, MdChipsModule,
+  MdDatepicker, MdDatepickerModule, MdDialogModule,
+  MdIconModule, MdInputModule, MdMenuModule,
+  MdNativeDateModule, MdProgressSpinnerModule, MdSelectModule,
+  MdToolbarModule, MdTooltipModule
 } from '@angular/material';
 import {DatePipe} from '@angular/common';
 import {ProjectComponent} from './project/project.component';
@@ -38,11 +38,13 @@ import {StatusMessageDialogComponent} from "./forecast/status-message/status-mes
 import {RollUpService} from "./forecast/roll-up/roll-up.service";
 import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-employee.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
-import { FunnelComponent } from './funnel/funnel.component';
-import { TableComponent } from './funnel/table/table.component';
+import {FunnelComponent} from './funnel/funnel.component';
+import {TableComponent} from './funnel/table/table.component';
 import {AddFunnelItemComponent} from "./funnel/add-funnel-item/add-funnel-item.component";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { SideListProjectsComponent } from './forecast/side-list-projects/side-list-projects.component';
+import {SideListProjectsComponent} from './forecast/side-list-projects/side-list-projects.component';
+import {PersonnelComponent} from './personnel/personnel.component';
+import {MainNavComponent} from './main-nav/main-nav.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +68,9 @@ import { SideListProjectsComponent } from './forecast/side-list-projects/side-li
     FunnelComponent,
     TableComponent,
     AddFunnelItemComponent,
-    SideListProjectsComponent
+    SideListProjectsComponent,
+    PersonnelComponent,
+    MainNavComponent
   ],
   imports: [
     BrowserModule,
@@ -76,6 +80,7 @@ import { SideListProjectsComponent } from './forecast/side-list-projects/side-li
     HttpModule,
     MdTooltipModule,
     MdButtonModule,
+    MdChipsModule,
     MdToolbarModule,
     MdDialogModule,
     MdMenuModule,

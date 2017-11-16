@@ -1,0 +1,22 @@
+.mat-chip-list-wrapper {
+  margin-bottom: 1rem;
+
+  .mat-chip:not(.mat-basic-chip) {
+    background-color: $pale-blue;
+    border-radius: 2px;
+    color: $dark-blue;
+    font-weight: 600;
+    padding: .25rem .5rem;
+
+    + .mat-chip:not(.mat-basic-chip) {
+      margin-left: .5rem;
+    }
+
+    .mat-icon {
+      fill: $gray-blue;
+      height: .5rem;
+      padding-left: .5rem;
+      width: .5rem;
+    }
+  }
+}

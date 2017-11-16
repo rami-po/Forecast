@@ -1,11 +1,5 @@
-<md-toolbar>
-  <span>Funnel View</span>
-
-  <!-- This fills the remaining space of the current row -->
-  <span class="fill-space"></span>
-
-  <md-icon (click)="addFunnelItem()" svgIcon="add"></md-icon>
-
-</md-toolbar>
+<!-- This fills the remaining space of the current row -->
+<span class="fill-space"></span>
+<md-icon (click)="addFunnelItem()" svgIcon="add"></md-icon>
 
 <app-table *ngIf="isDataReady" [projects]="projects" [funnelItems]="funnelItems"></app-table>

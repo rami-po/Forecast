@@ -1,13 +1,9 @@
 $primary-blue: rgb(33, 150, 243);
 $primary-blue-trans: rgba(33, 150, 243, .4);
 
-.row-container {
+.highlight {
   display: flex;
   flex-direction: row;
-}
-
-.highlight {
-  @extend .row-container;
   border: 1px solid $primary-blue;
 }
 
@@ -16,56 +12,63 @@ input:focus {
   outline-color: $primary-blue;
 }
 
-.capacity {
-  background-color: white;
-  color: $primary-blue;
-  font-family: Arial;
-  border: 1px solid rgba(224, 224, 224, .35);
-  height: 20px;
+.temp-input {
+  border: 0;
   text-align: center;
   width: 55px;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  padding: 5px;
+  height: 22px;
 }
 
-.capacity:focus {
-  border: 2px solid $primary-blue;
-  padding: 4px;
-}
+// .capacity {
+//   background-color: white;
+//   color: $primary-blue;
+//   border: 1px solid rgba(224, 224, 224, .35);
+//   height: 20px;
+//   text-align: center;
+//   width: 55px;
+//   font-size: 15px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   padding: 5px;
+// }
+//
+// .capacity:focus {
+//   border: 2px solid $primary-blue;
+//   padding: 4px;
+// }
 
-.week-red {
-  @extend .capacity;
-  background-color: #EF9A9A;
-}
-
-
-.week-orange {
-  @extend .capacity;
-  background-color: #FFB74D;
-  color: white;
-}
-
-
-.week-yellow {
-  @extend .capacity;
-  background-color: #FFF59D;
-}
-
-.week-lime {
-  @extend .capacity;
-  background-color: #DCE775;
-  color: white;
-}
-
-.week-green {
-  @extend .capacity;
-  background-color: #81C784;
-  color: white;
-}
-
-.week-default {
-  @extend .capacity;
-  background-color: white;
-}
+// .week-red {
+//   @extend .capacity;
+//   background-color: #EF9A9A;
+// }
+//
+//
+// .week-orange {
+//   @extend .capacity;
+//   background-color: #FFB74D;
+//   color: white;
+// }
+//
+//
+// .week-yellow {
+//   @extend .capacity;
+//   background-color: #FFF59D;
+// }
+//
+// .week-lime {
+//   @extend .capacity;
+//   background-color: #DCE775;
+//   color: white;
+// }
+//
+// .week-green {
+//   @extend .capacity;
+//   background-color: #81C784;
+//   color: white;
+// }
+//
+// .week-default {
+//   @extend .capacity;
+//   background-color: white;
+// }

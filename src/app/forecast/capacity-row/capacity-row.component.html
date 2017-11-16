@@ -1,6 +1,9 @@
-<div class="row-container">
+<div *ngIf="isDataAvailable1 && isDataAvailable2" class="flex-row">
   <div *ngFor="let week of weeks, let i = index">
-    <div class="capacity">{{getTotalCapacity(week, i)}}</div>
-    <div class="capacity">{{getFilteredCapacity(week, i)}}</div>
+    <div class="forecast-cell forecast-cell--percentage">
+      {{getPercentage(week, i)}}%
+    </div>
+    <!-- <div class="capacity">{{getTotalCapacity(week, i)}}</div>
+    <div class="capacity">{{getFilteredCapacity(week, i)}}</div> -->
   </div>
 </div>

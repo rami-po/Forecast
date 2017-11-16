@@ -1,0 +1,103 @@
+<div *ngIf="isDataAvailable" class="three-column profile constrain">
+
+  <div class="three-column__column">
+    <div class="profile__details card">
+      <div class="profile__photo"></div>
+      <h1>{{employee.first_name}} {{employee.last_name}}</h1>
+      <h2>Software Engineer</h2>
+      <ul class="icon-list">
+        <li class="icon-list-item icon-list-item--phone">
+          <md-icon svgIcon="heart"></md-icon>
+          <a href="tel:{{employee.p_home_phone}}">{{employee.p_home_phone}}</a>
+        </li>
+        <li class="icon-list-item icon-list-item--email">
+          <md-icon svgIcon="heart"></md-icon>
+          <a href="mailto:">{{employee.email}}</a>
+        </li>
+        <li class="icon-list-item icon-list-item--address">
+          <md-icon svgIcon="map-marker"></md-icon>
+          {{employee.p_street_address}}<br>
+          {{employee.p_city}}, {{employee.p_state}} {{employee.p_zip_code}}
+        </li>
+        <li class="icon-list-item icon-list-item--relationship">
+          <md-icon svgIcon="heart"></md-icon>
+          Married to Someone Great
+        </li>
+        <!-- <li *ngIf="employee.spouse_name" class="icon-list-item--relationship">Married to {{employee.spouse_name}}</li> -->
+      </ul>
+    </div>
+  </div>
+
+  <div class="three-column__column">
+    <div class="card card--bordered">
+      <h3 class="card__heading">Employee Timeline</h3>
+      <ul class="timeline-list">
+        <!-- NOTE: remove these hard-coded examples -->
+        <li class="timeline-list-item type--review">
+          <div class="timeline-list-item__date">Jan 1, 1970</div>
+          <div class="timeline-list-item__event">Review</div>
+        </li>
+        <li class="timeline-list-item type--compensation">
+          <div class="timeline-list-item__date">Jan 1, 1970</div>
+          <div class="timeline-list-item__event">Compensation</div>
+        </li>
+
+        <li *ngFor="let event of employee.events" class="timeline-list-item">
+          <div class="timeline-list-item__date">{{event.date | date: 'MMM d, y'}}</div>
+          <div class="timeline-list-item__event">{{event.event}}</div>
+        </li>
+      </ul>
+
+      <hr>
+
+      <h4>Add Timeline Event</h4>
+      <form [formGroup]="timelineForm" (ngSubmit)="submitTimelineForm()">
+        <div class="form-group">
+          <input formControlName="event" placeholder="Event" class="form-control">
+        </div>
+        <div class="form-group">
+          <md-select placeholder="Type" formControlName="type" name="item" floatPlaceholder="never">
+            <md-option *ngFor="let item of items" [value]="item">
+              {{item}}
+            </md-option>
+          </md-select>
+        </div>
+        <md-input-container floatPlaceholder="never" class="form-group">
+          <input readonly="readonly" formControlName="date" mdInput [mdDatepicker]="picker" placeholder="mm/dd/yyyy" class="form-control">
+          <button mdSuffix [mdDatepickerToggle]="picker"></button>
+        </md-input-container>
+        <md-datepicker #picker></md-datepicker>
+        <button md-button class="btn btn--secondary">Add</button>
+      </form>
+    </div>
+    <div class="card">
+      <h3 class="card__heading">Vacation Days</h3>
+    </div>
+  </div>
+
+  <div class="three-column__column">
+    <div class="card card--bordered">
+      <h3 class="card__heading">Skills</h3>
+      <md-chip-list>
+        <md-chip *ngFor="let skill of employee.skills">
+          {{skill.skill}}<md-icon mdChipRemove svgIcon="remove"></md-icon>
+        </md-chip>
+      </md-chip-list>
+      <form [formGroup]="skillsForm" (ngSubmit)="submitSkillsForm()" class="form-horizontal">
+        <input formControlName="skill" placeholder="New Skill" class="form-control">
+        <button md-button class="btn btn--secondary">Add</button>
+      </form>
+    </div>
+    <div class="card card--bordered">
+      <h3 class="card__heading">Notes</h3>
+      <ul class="notes-list">
+        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}}</li>
+      </ul>
+      <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()" class="form-horizontal">
+        <input formControlName="notes" class="form-control">
+        <button md-button class="btn btn--secondary">Add</button>
+      </form>
+    </div>
+  </div>
+
+</div>

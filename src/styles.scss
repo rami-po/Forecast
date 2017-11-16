@@ -1,20 +1,47 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import "~normalize.css";
+@import "assets/css/variables";
+@import "assets/css/colors";
+@import "assets/css/typography";
+@import "assets/css/buttons";
+@import "assets/css/icons";
+@import "assets/css/chips";
+@import "assets/css/lists";
+@import "assets/css/forms";
+@import "assets/css/tables";
+@import "assets/css/layout";
+@import "assets/css/card";
+@import "assets/css/forecast";
+@import "assets/css/profile";
 
-$primary-blue: rgb(33, 150, 243);
-$primary-blue-trans: rgba(33, 150, 243, .4);
 
-
-.page-wrapper {
-
+body {
+  background-color: $extra-light-blue;
+  color: $dark-blue;
+  -webkit-font-smoothing: antialiased;
 }
 
 .mat-menu-panel {
-  overflow-x: hidden !important;
-  max-height: 275px !important;
+  overflow-x: hidden!important;
+  max-height: 275px!important;
 }
 
-md-dialog-container{
+md-dialog-container {
   overflow: visible!important;
+}
+
+.header_name {
+  color: $gray;
+}
+
+a {
+  color: $blue;
+  text-decoration: none;
+}
+
+hr {
+  border-top: 1px solid $extra-light-gray;
+  border-bottom: 1px solid #fff;
+  border-left: 0;
+  border-right: 0;
+  margin: 1.5rem 0;
 }

@@ -9,6 +9,7 @@ import {BobComponent} from './bob/bob.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {FunnelComponent} from "./funnel/funnel.component";
+import {PersonnelComponent} from "./personnel/personnel.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -38,6 +39,10 @@ const APP_ROUTES: Routes = [
   {
     path: 'company',
     component: CompanyComponent
+  },
+  {
+    path: 'user/:id',
+    component: PersonnelComponent
   },
   {
     path: 'all',

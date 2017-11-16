@@ -12,6 +12,7 @@ import {Subject} from "rxjs/Subject";
 import {FakeEmployeeComponent} from "./fake-employee/fake-employee.component";
 import * as io from 'socket.io-client';
 import {SideListService} from "./side-list.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-side-list',
@@ -37,10 +38,12 @@ export class SideListComponent implements OnInit {
   constructor(private forecastService: ForecastService,
               private iconRegistry: MdIconRegistry,
               private sanitizer: DomSanitizer,
+              private router: Router,
               private dialog: MdDialog,
               private sideListService: SideListService) {
     iconRegistry
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
+      .addSvgIcon('user', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_person_pin_black_48px.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
     this.socket = this.forecastService.socket;
   }
@@ -72,6 +75,7 @@ export class SideListComponent implements OnInit {
       }
     );
 
+
     this.forecastService.allEmployees$.subscribe(
       data => {
         console.log('RECEIVED UPDATED allEmployees data in side-list.components ' + data.length); console.log(data);
@@ -99,6 +103,11 @@ export class SideListComponent implements OnInit {
         });
       }
     );
+  }
+
+
+  goToPersonnelPage(employeeId) {
+    this.router.navigate(['/user', employeeId])
   }
 
   addUser(employee) {

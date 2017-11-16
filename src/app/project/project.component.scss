@@ -1,10 +1,8 @@
-$primary-blue: rgb(33, 150, 243);
-$primary-blue-trans: rgba(33, 150, 243, .4);
-
 .graph-data-wrapper {
   height: 475px;
   display: flex;
   flex-direction: row;
+  margin: 2rem auto 4rem;
 }
 
 .data-wrapper {
@@ -15,7 +13,6 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
 }
 
 .data {
-  font-family: Arial;
   height: 20px;
   text-align: center;
   font-size: 15px;
@@ -24,14 +21,10 @@ $primary-blue-trans: rgba(33, 150, 243, .4);
   padding: 5px;
 }
 
-app-graph {
-  margin-left: 25%;
-  position: absolute;
-}
-
-.forecast-wrapper {
-
-}
+// app-graph {
+//   margin-left: 25%;
+//   position: absolute;
+// }
 
 .spacer {
   flex: 1 1 auto;
@@ -40,9 +33,3 @@ app-graph {
 button {
   margin-left: 16px;
 }
-
-md-toolbar {
-  background-color: $primary-blue;
-  color: white;
-}
-
