@@ -17,6 +17,7 @@
       </div>
 
       <input *ngIf="!isHeader"
+             class="temp-input"
              maxlength="2"
              onclick="select()"
              (blur)="send($event.target.value, week)"

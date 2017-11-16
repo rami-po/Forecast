@@ -217,6 +217,7 @@ export class EntryComponent implements OnInit, OnDestroy {
               if (this.params.path === '/projects') {
                 this.forecastService.getProjectRowData(this.entry.projectId).subscribe(
                   data => {
+                    console.log(data.result);
                     this.headerData.totals = data.result;
                   }
                 );
@@ -259,7 +260,6 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   type(value: string, week) {
-    debugger;
     console.log('sending...');
     if (!isNaN(Number(value))) {
       if (!isNullOrUndefined(this.timerSubscription) && week === this.lastWeek) {

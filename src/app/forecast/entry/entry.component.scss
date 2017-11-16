@@ -12,6 +12,13 @@ input:focus {
   outline-color: $primary-blue;
 }
 
+.temp-input {
+  border: 0;
+  text-align: center;
+  width: 55px;
+  height: 22px;
+}
+
 // .capacity {
 //   background-color: white;
 //   color: $primary-blue;

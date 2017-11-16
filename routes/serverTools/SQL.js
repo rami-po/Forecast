@@ -789,11 +789,22 @@ exports.getProjectRowData = function (req, callback) {
 
   const monday = mysql.escape(tools.getMondayFormatted());
 
-  connection.query('SELECT project_id, SUM(capacity) as hours, week_of FROM resourceManagement WHERE ' +
-    'project_id=' + projectId + 'AND week_of >= ' + monday +
-    ' GROUP BY week_of ORDER BY week_of', function (err, result) {
+  connection.query(' SELECT r.project_id, SUM(r.capacity) as hours, r.week_of FROM resourceManagement r ' +
+    ' LEFT OUTER JOIN assignments a ON a.user_id = r.employee_id AND a.project_id = r.project_id ' +
+    ' WHERE r.project_id IN (' + projectId + ') ' +
+    ' AND r.capacity <> \'\' ' +
+    ' AND r.week_of >= ' + monday +
+    ' AND a.deactivated = 0 ' +
+    ' GROUP BY r.project_id, r.week_of ' +
+    ' ORDER BY r.week_of, r.project_id, r.client_id ASC;', function (err, result) {
     callback(err, result);
-  })
+  });
+
+  // connection.query('SELECT project_id, SUM(capacity) as hours, week_of FROM resourceManagement WHERE ' +
+  //   'project_id=' + projectId + 'AND week_of >= ' + monday +
+  //   ' GROUP BY week_of ORDER BY week_of', function (err, result) {
+  //   callback(err, result);
+  // })
 
 };
 

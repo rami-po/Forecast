@@ -989,7 +989,6 @@ router.post('/entry', function (req, res, next) {
  */
 
 router.get('/capacity/project', function (req, res, next) {
-  console.log('AY! ' + req);
   SQL.getProjectRowData(req.query, (err, result) => {
     if (err) {
       return res.status(500).json({

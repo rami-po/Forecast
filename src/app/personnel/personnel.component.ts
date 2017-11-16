@@ -90,15 +90,35 @@ export class PersonnelComponent implements OnInit {
         this.timelineForm.value.type,
         this.timelineForm.value.event).subscribe(
         () => {
-          this.employee.events.push({
-            id: this.employee.id,
-            date: new Date(this.timelineForm.value.date).toISOString(),
-            type: this.timelineForm.value.type,
-            event: this.timelineForm.value.event
-          });
+          const date = new Date(this.timelineForm.value.date).toISOString();
+          if (this.employee.events.length > 0) {
+            for (let i = 0; i < this.employee.events.length; i++) {
+              const event = this.employee.events[i];
+              if (event.date > date) {
+                this.addEvent(i);
+                break;
+              }
+              const j = i + 1;
+              if (j == this.employee.events.length) {
+                this.addEvent(j);
+                break;
+              }
+            }
+          } else {
+            this.addEvent(0);
+          }
         }
       );
     }
+  }
+
+  addEvent(index) {
+    this.employee.events.splice(index, 0, {
+      id: this.employee.id,
+      date: new Date(this.timelineForm.value.date).toISOString(),
+      type: this.timelineForm.value.type,
+      event: this.timelineForm.value.event
+    });
   }
 
   submitNotesForm() {
