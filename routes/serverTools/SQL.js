@@ -728,6 +728,14 @@ exports.getEntriesCapacityHours = function (args, callback) {
   }
 };
 
+exports.getTotalCapacities = function (req, callback) {
+  // (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)
+  connection.query('SELECT SUM(e.capacity)/3600 as total FROM employees as e WHERE e.is_active=1',
+  function (err, result) {
+    callback(err, result);
+  })
+};
+
 exports.getCapacityHours = function (args, callback) {
   const types = ['overall', 'client', 'project'];
   const type = (types.indexOf(args.type) != -1 ? args.type : false);

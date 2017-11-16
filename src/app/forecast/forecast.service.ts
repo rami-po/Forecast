@@ -617,6 +617,8 @@ export class ForecastService {
         // client/project hours - was originally outside of the getRollUps subscription
         if (params.id !== '') {
           this.updateClientProjectHours(params);
+        } else {
+          this.updateClientProjectHours({path: 'overall', id: ''});
         }
       }
     );
@@ -637,6 +639,12 @@ export class ForecastService {
     );
   }
 
+  getTotalCapacities() {
+    return this.http.get(this.apiBase + '/capacity/total')
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   getOverallHours() {
     return this.http.get(this.apiBase + '/capacity/hours/overall')
       .map((response: Response) => response.json())
@@ -644,11 +652,12 @@ export class ForecastService {
   }
 
   updateOverallHours() {
+    console.log('UPDATE OVERALL HOURS');
     this.getOverallHours().subscribe(
       data => {
         this.resources.next(data.result);
       }
-    )
+    );
   }
 
   getUpdateMessages() {

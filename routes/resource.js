@@ -1021,6 +1021,22 @@ router.get('/capacity/hours/:type/:id?', function (req, res, next) {
   })
 });
 
+router.get('/capacity/total', function (req, res, next) {
+  SQL.getTotalCapacities(req, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
 
 router.get('/data', function (req, res, next) {
   const clientId = (req.query.client_id !== undefined ? 'clientId:' + req.query.client_id + ':' : '' );

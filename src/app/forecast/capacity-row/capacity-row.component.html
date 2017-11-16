@@ -1,4 +1,4 @@
-<div class="flex-row">
+<div *ngIf="isDataAvailable1 && isDataAvailable2" class="flex-row">
   <div *ngFor="let week of weeks, let i = index">
     <div class="forecast-cell forecast-cell--percentage">
       {{getPercentage(week, i)}}%
