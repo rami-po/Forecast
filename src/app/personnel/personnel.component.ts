@@ -43,6 +43,12 @@ export class PersonnelComponent implements OnInit {
     iconRegistry.addSvgIcon(
       'map-marker',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_map_marker.svg'));
+    iconRegistry.addSvgIcon(
+      'envelope',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_envelope.svg'));
+    iconRegistry.addSvgIcon(
+      'phone',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_phone.svg'));
   }
 
   ngOnInit() {
