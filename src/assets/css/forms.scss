@@ -11,7 +11,7 @@ input {
 .form-control {
   border: 1px solid $pale-blue;
   border-radius: 3px;
-  padding: .375rem .75rem;
+  padding: .5rem .75rem;
 }
 
 .form-horizontal {
@@ -68,15 +68,19 @@ input {
 
 // Material Select
 .mat-select {
-  border-radius: 3px;
-  background: $pale-blue;
+  .mat-select-trigger {
+    border-radius: 3px;
+    background: $pale-blue;
+    height: 34px;
+  }
+
+  .mat-select-value,
+  .mat-select-placeholder {
+    font-size: .875rem;
+    padding-left: .75rem;
+  }
 }
 
-.mat-select-value,
-.mat-select .mat-select-placeholder {
-  font-size: .875rem;
-  padding-left: .75rem;
-}
 
 .mat-select-underline {
   display: none;

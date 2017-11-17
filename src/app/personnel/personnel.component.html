@@ -67,7 +67,7 @@
           <button mdSuffix [mdDatepickerToggle]="picker"></button>
         </md-input-container>
         <md-datepicker #picker></md-datepicker>
-        <button md-button class="btn btn--secondary">Add</button>
+        <button md-button class="btn">Add</button>
       </form>
     </div>
     <div class="card">
@@ -85,7 +85,7 @@
       </md-chip-list>
       <form [formGroup]="skillsForm" (ngSubmit)="submitSkillsForm()" class="form-horizontal">
         <input formControlName="skill" placeholder="New Skill" class="form-control">
-        <button md-button class="btn btn--secondary">Add</button>
+        <button md-button class="btn">Add</button>
       </form>
     </div>
     <div class="card card--bordered">
@@ -95,7 +95,7 @@
       </ul>
       <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()" class="form-horizontal">
         <input formControlName="notes" class="form-control">
-        <button md-button class="btn btn--secondary">Add</button>
+        <button md-button class="btn">Add</button>
       </form>
     </div>
   </div>

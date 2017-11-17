@@ -1,13 +1,14 @@
 .btn {
+  background-color: $gray-blue;
   color: #fff;
   display: block;
   font-size: .85rem;
-  line-height: 1.15rem;
+  line-height: 1.4rem;
   min-width: 0;
-  padding: .375rem 1.25rem;
+  padding: .5rem 1.25rem;
 
   &--secondary {
-    background-color: $gray-blue;
+    background-color: $dark-blue;
   }
 }
 
@@ -17,12 +18,20 @@
   &.btn {
     @extend .btn;
 
+    .mat-icon {
+      height: 1rem;
+      vertical-align: text-top;
+      width: 1rem;
+    }
+
     &--jumbo {
       font-size: 1.375rem;
       padding: .65rem 1.25rem;
 
       .mat-icon {
+        height: 24px;
         vertical-align: text-top;
+        width: 24px;
       }
     }
   }
