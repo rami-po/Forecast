@@ -1,0 +1,28 @@
+.progress {
+  &--confidence {
+    background-color: $dark-blue;
+    border-radius: 2px;
+    min-width: 40px;
+    padding: 0 2px;
+
+    &.progress--positive {
+      background-color: rgba($bright-green, .75);
+    }
+
+    &.progress--warning {
+      background-color: $yellow;
+    }
+
+    &.progress--negative {
+      background-color: $red;
+    }
+
+    input {
+      background: transparent;
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      width: 40px;
+    }
+  }
+}

@@ -61,10 +61,8 @@
           </div>
         </td>
         <td>
-          <div>
-            <input class="cell-confidence" [(ngModel)]="item.confidence" (blur)="send(item)" (input)="type(item)" type="number"
-                   value="{{item.confidence}}">
-            <span>%</span>
+          <div class="progress progress--confidence progress--positive" [style.width]="item.confidence + 'px'">
+            <input class="cell-confidence" [(ngModel)]="item.confidence" (blur)="send(item)" (input)="type(item)" type="number" value="{{item.confidence}}" max="100">
           </div>
         </td>
         <td>
