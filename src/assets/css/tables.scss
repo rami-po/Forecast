@@ -16,6 +16,14 @@ td {
   padding: .5rem 1rem;
 }
 
+.utility-buttons {
+  .mat-icon {
+    height: 1.2rem;
+    fill: $dark-blue;
+    width: 1.2rem;
+  }
+}
+
 .striped-rows {
   >*:nth-child(even) {
     background-color: $extra-light-blue;

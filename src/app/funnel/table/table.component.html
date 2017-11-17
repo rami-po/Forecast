@@ -3,7 +3,6 @@
     <thead>
     <tr>
       <th></th>
-      <th></th>
       <th>Client Name</th>
       <th>New Client?</th>
       <th>Project Name</th>
@@ -26,15 +25,14 @@
       <th>Notes</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody class="striped-rows">
     <tr *ngFor="let item of funnelItems">
-      <!-- EDIT -->
-      <td>
-        <md-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit"></md-icon>
-      </td>
-      <!-- DELETE -->
-      <td>
-        <md-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete"></md-icon>
+
+      <td class="utility-buttons">
+        <!-- EDIT -->
+        <md-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit" title="Edit"></md-icon>
+        <!-- DELETE -->
+        <md-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete" title="Delete"></md-icon>
       </td>
       <td>
         <div>
