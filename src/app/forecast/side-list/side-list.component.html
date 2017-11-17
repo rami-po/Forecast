@@ -1,4 +1,4 @@
-<div class="name-container">
+<div class="name-container striped-rows">
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
@@ -37,4 +37,3 @@
 
 
 </div>
-

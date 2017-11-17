@@ -34,14 +34,6 @@ input {
   border: 0;
 }
 
-tr:nth-child(even) {
-  background-color: $extra-light-blue;
-
-  input {
-    background-color: transparent;
-  }
-}
-
 md-input-container {
   width: $width;
   height: 62px;

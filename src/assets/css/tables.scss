@@ -15,3 +15,15 @@ td {
   color: $dark-blue;
   padding: .5rem 1rem;
 }
+
+.striped-rows {
+  >*:nth-child(even) {
+    background-color: $extra-light-blue;
+  }
+
+  input,
+  .form-control {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}

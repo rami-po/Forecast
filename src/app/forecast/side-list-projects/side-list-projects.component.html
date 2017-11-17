@@ -1,4 +1,4 @@
-<div class="name-container">
+<div class="name-container striped-rows">
   <div *ngFor="let project of projects, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(project)">{{project.client_name}} - {{project.name}}</div>
@@ -25,4 +25,3 @@
   </md-menu>
 
 </div>
-
