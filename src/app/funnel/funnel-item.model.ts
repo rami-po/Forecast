@@ -35,4 +35,5 @@ export class Funnel {
     this.isCompleted = isCompleted;
     this.notes = notes;
   }
+
 }

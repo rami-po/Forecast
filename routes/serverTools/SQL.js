@@ -392,7 +392,7 @@ exports.getPerson = function (req, callback) {
       "; SELECT * FROM personnelNotes WHERE employee_id=" + id +
       "; SELECT * FROM personnelSkills WHERE employee_id=" + id, function (err, results) {
       console.log(result[0]);
-    if (result != null && results != null) {
+      if (result != null && results != null) {
         result[0]['events'] = results[0];
         result[0]['notes'] = results[1];
         result[0]['skills'] = results[2];
@@ -731,9 +731,9 @@ exports.getEntriesCapacityHours = function (args, callback) {
 exports.getTotalCapacities = function (req, callback) {
   // (SELECT * FROM employees UNION ALL SELECT * FROM employees_fake)
   connection.query('SELECT SUM(e.capacity)/3600 as total FROM employees as e WHERE e.is_active=1',
-  function (err, result) {
-    callback(err, result);
-  })
+    function (err, result) {
+      callback(err, result);
+    })
 };
 
 exports.getCapacityHours = function (args, callback) {
@@ -1398,6 +1398,7 @@ exports.updateData = function (req, callback) {
 };
 
 exports.updateFunnelItem = function (req, callback) {
+  console.log(req.body);
   const item = req.body;
   connection.query('UPDATE funnel SET client_name=' + mysql.escape(item.client_name) + ', is_new_client=' + mysql.escape(item.is_new_client) +
     ', project_name=' + mysql.escape(item.project_name) + ', project_manager=' + mysql.escape(item.project_manager) + ', revenue=' + mysql.escape(item.revenue) +
@@ -1419,6 +1420,13 @@ exports.deactivateAssignment = function (req, callback) {
 /*
  * DELETE METHODS
  */
+
+exports.deleteFunnelItem = function (req, callback) {
+  connection.query('DELETE FROM funnel WHERE id = ' + mysql.escape(req.query.id),
+    function (err, result) {
+      callback(err, result);
+    })
+};
 
 exports.deleteFakeAssignment = function (req, callback) {
   connection.query('DELETE FROM assignments_fake WHERE id = ' + mysql.escape(req.params.assignment_id),

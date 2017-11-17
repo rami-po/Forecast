@@ -31,6 +31,12 @@ export class FunnelService {
       .catch((error: Response) => Observable.throw(error.json()));
   }
 
+  deleteFunnelItem(item) {
+    return this.http.delete(this.apiBase + '/funnel?id=' + item.id)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   addFunnelItem(item) {
     const headers = new Headers({'Content-Type': 'application/json'});
     return this.http.post(this.apiBase + '/funnel', item, {headers: headers})
@@ -39,6 +45,7 @@ export class FunnelService {
   }
 
   updateFunnelItem(item) {
+    console.log(item);
     const headers = new Headers({'Content-Type': 'application/json'});
     return this.http.put(this.apiBase + '/funnel', item, {headers: headers})
       .map((response: Response) => response.json())

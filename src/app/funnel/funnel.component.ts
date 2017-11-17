@@ -9,7 +9,8 @@ import {ForecastService} from "../forecast/forecast.service";
   selector: 'app-funnel',
   templateUrl: './funnel.component.html',
   styleUrls: ['./funnel.component.scss'],
-  providers: [FunnelService]
+  providers: [FunnelService],
+  entryComponents: [AddFunnelItemComponent]
 })
 export class FunnelComponent implements OnInit, OnDestroy {
 
@@ -32,6 +33,7 @@ export class FunnelComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.funnelService.funnelItems$.subscribe(
       data => {
+        console.log('FUNNEL ITEMS!!!');
         this.funnelItems = data;
       }
     ));
