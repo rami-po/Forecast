@@ -56,7 +56,7 @@
         <td>
           <div>
             <span class="text-money">$</span>
-            <input class="cell-revenue" [(ngModel)]="item.revenue" (blur)="send(item)" (input)="type(item)" type="number"
+            <input class="cell-revenue text-money" [(ngModel)]="item.revenue" (blur)="send(item)" (input)="type(item)" type="number"
                    value="{{item.revenue}}">
           </div>
         </td>
@@ -120,13 +120,13 @@
           </div>
         </td>
         <td class="no-edit">
-          <div>${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
+          <div class="text-money">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
         </td>
         <td class="no-edit">
-          <div>{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
+          <div class="text-money">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
         </td>
         <td class="no-edit">
-          <div>${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
+          <div class="text-money">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
         </td>
         <td>
           <div>
