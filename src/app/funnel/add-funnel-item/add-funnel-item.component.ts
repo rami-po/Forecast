@@ -3,6 +3,7 @@ import {MdDialogRef} from '@angular/material';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Funnel} from '../funnel-item.model';
 import {FunnelService} from '../funnel.service';
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-add-funnel-item',
@@ -21,6 +22,21 @@ export class AddFunnelItemComponent implements OnInit {
   public projects;
   public inputText;
   myForm: FormGroup;
+
+  public id = null;
+  public clientName = null;
+  public newClient = null;
+  public projectName = null;
+  public projectManager = null;
+  public estimatedRevenue = null;
+  public confidence = null;
+  public status = null;
+  public estimatedSigningDate = null;
+  public projectedStartDate = null;
+  public projectDuration = null;
+  public scalaProjectId = null;
+  public isCompleted = null;
+  public notes = null;
 
   public entries = [
     {name: 'Client Name', formValue: 'clientName'},
@@ -61,19 +77,19 @@ export class AddFunnelItemComponent implements OnInit {
     this.selectEntries.push({name: 'Scala Project', formValue: 'scalaProjectId', options: this.projects});
 
     this.myForm = new FormGroup({
-      clientName: new FormControl(null, Validators.required),
-      newClient: new FormControl(null, Validators.required),
-      projectName: new FormControl(null, Validators.required),
-      projectManager: new FormControl(null, Validators.required),
-      estimatedRevenue: new FormControl(null, Validators.required),
-      confidence: new FormControl(null, Validators.required),
-      status: new FormControl(null, Validators.required),
-      estimatedSigningDate: new FormControl(null, Validators.required),
-      projectedStartDate: new FormControl(null, Validators.required),
-      projectDuration: new FormControl(null, Validators.required),
-      scalaProjectId: new FormControl(null, Validators.required),
-      isCompleted: new FormControl(null, Validators.required),
-      notes: new FormControl(null, Validators.required)
+      clientName: new FormControl(this.clientName, Validators.required),
+      newClient: new FormControl(this.newClient, Validators.required),
+      projectName: new FormControl(this.projectName, Validators.required),
+      projectManager: new FormControl(this.projectManager, Validators.required),
+      estimatedRevenue: new FormControl(this.estimatedRevenue, Validators.required),
+      confidence: new FormControl(this.confidence, Validators.required),
+      status: new FormControl(this.status, Validators.required),
+      estimatedSigningDate: new FormControl(this.estimatedSigningDate, Validators.required),
+      projectedStartDate: new FormControl(this.projectedStartDate, Validators.required),
+      projectDuration: new FormControl(this.projectDuration, Validators.required),
+      scalaProjectId: new FormControl(this.scalaProjectId, Validators.required),
+      isCompleted: new FormControl(this.isCompleted, Validators.required),
+      notes: new FormControl(this.notes, Validators.required)
     });
   }
 
@@ -81,13 +97,34 @@ export class AddFunnelItemComponent implements OnInit {
     if (this.myForm.valid) {
       const form = this.myForm.value;
 
-      const funnel = new Funnel(
-        form.clientName, form.newClient, form.projectName, form.projectManager, form.estimatedRevenue, form.confidence,
-        form.status, form.estimatedSigningDate, form.projectedStartDate, form.projectDuration, form.scalaProjectId,
-        form.isCompleted, form.notes
-      );
 
-      this.funnelService.addFunnelItem(funnel).subscribe();
+
+      if (this.id !== null) {
+        const funnel = {
+          id: this.id,
+          client_name: form.clientName,
+          is_new_client: form.newClient,
+          project_name: form.projectName,
+          project_manager: form.projectManager,
+          revenue: form.estimatedRevenue,
+          confidence: form.confidence,
+          status: form.status,
+          signing_date: form.estimatedSigningDate,
+          start_date: form.projectedStartDate,
+          duration_weeks: form.projectDuration,
+          project_id: form.scalaProjectId,
+          completed: form.isCompleted,
+          notes: form.notes
+        }
+        this.funnelService.updateFunnelItem(funnel).subscribe();
+      } else {
+        const funnel = new Funnel(
+          form.clientName, form.newClient, form.projectName, form.projectManager, form.estimatedRevenue, form.confidence,
+          form.status, form.estimatedSigningDate, form.projectedStartDate, form.projectDuration, form.scalaProjectId,
+          form.isCompleted, form.notes
+        );
+        this.funnelService.addFunnelItem(funnel).subscribe();
+      }
 
       this.dialogRef.close(true);
     }

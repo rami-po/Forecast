@@ -2,12 +2,15 @@ import {Component, Input, OnInit} from '@angular/core';
 import {isNullOrUndefined} from "util";
 import {Observable} from "rxjs/Observable";
 import {FunnelService} from "../funnel.service";
+import {MdDialog, MdIconRegistry} from "@angular/material";
+import {DomSanitizer} from "@angular/platform-browser";
+import {AddFunnelItemComponent} from "../add-funnel-item/add-funnel-item.component";
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
-  providers: [FunnelService]
+  providers: []
 })
 export class TableComponent implements OnInit {
 
@@ -29,10 +32,62 @@ export class TableComponent implements OnInit {
     {name: 'SOW Signed', value: 'SOW Signed'}
   ];
 
-  constructor(private funnelService: FunnelService) {
+  constructor(private funnelService: FunnelService,
+              private iconRegistry: MdIconRegistry,
+              private sanitizer: DomSanitizer,
+              private dialog: MdDialog) {
+    iconRegistry.addSvgIcon(
+      'edit',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit_black_48px.svg'));
+    iconRegistry.addSvgIcon(
+      'delete',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'));
   }
 
   ngOnInit() {
+  }
+
+  edit(item) {
+    console.log(item);
+
+    const dialog = this.dialog.open(AddFunnelItemComponent);
+    dialog.componentInstance.custom = true;
+    dialog.componentInstance.dismissible = true;
+    dialog.componentInstance.projects = JSON.parse(JSON.stringify(this.projects));
+    dialog.componentInstance.title = 'Add Funnel Item';
+
+    dialog.componentInstance.id = item.id;
+    dialog.componentInstance.clientName = item.client_name;
+    dialog.componentInstance.newClient = item.is_new_client == 1;
+    dialog.componentInstance.projectName = item.project_name;
+    dialog.componentInstance.projectManager = item.project_manager;
+    dialog.componentInstance.estimatedRevenue = item.revenue;
+    dialog.componentInstance.confidence = item.confidence;
+    dialog.componentInstance.status = item.status;
+    dialog.componentInstance.estimatedSigningDate = item.signing_date;
+    dialog.componentInstance.projectedStartDate = item.start_date;
+    dialog.componentInstance.projectDuration = item.duration_weeks;
+    dialog.componentInstance.scalaProjectId = item.project_id;
+    dialog.componentInstance.isCompleted = item.completed == 1;
+    dialog.componentInstance.notes = item.notes;
+
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.funnelService.updateFunnelItems();
+        }
+        console.log(confirmed);
+      }
+    );
+  }
+
+  remove(item) {
+    this.funnelService.deleteFunnelItem(item).subscribe(
+      () => {
+        console.log('DELETED!');
+        this.funnelService.updateFunnelItems();
+      }
+    );
   }
 
   equalsThisMonth(signingDate) {
