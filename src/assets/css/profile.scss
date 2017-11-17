@@ -26,5 +26,14 @@
       margin: -4rem auto .5rem;
       width: 6.25rem;
     }
+
+    a {
+      color: $dark-blue;
+
+      &:hover,
+      &:focus {
+        color: $blue;
+      }
+    }
   }
 }

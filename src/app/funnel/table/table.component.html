@@ -36,14 +36,12 @@
       <td>
         <md-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete"></md-icon>
       </td>
-      <!-- CLIENT NAME -->
       <td>
         <div>
           <input [(ngModel)]="item.client_name" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.client_name}}">
         </div>
       </td>
-      <!-- NEW CLIENT? -->
       <td>
         <div>
           <md-select [(ngModel)]="item.is_new_client" name="option">
@@ -53,36 +51,30 @@
           </md-select>
         </div>
       </td>
-      <!-- PROJECT NAME -->
       <td>
         <div>
           <input [(ngModel)]="item.project_name" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.project_name}}">
         </div>
       </td>
-      <!-- PROJECT MANAGER -->
       <td>
         <div>
           <input [(ngModel)]="item.project_manager" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.project_manager}}">
         </div>
       </td>
-      <!-- ESTIMATED REVENUE -->
       <td>
         <div>
           <span class="text-money">$</span>
-          <input class="cell-revenue" (ngModelChange)="item.revenue = $event" [ngModel]="item.revenue"
-                 (input)="type(item)" (blur)="send(item)"
+          <input class="cell-revenue text-money" [(ngModel)]="item.revenue" (blur)="send(item)" (input)="type(item)"
+                 type="number"
                  value="{{item.revenue}}">
         </div>
       </td>
-      <!-- CONFIDENCE -->
       <td>
-        <div>
+        <div class="progress progress--confidence progress--positive" [style.width]="item.confidence + 'px'">
           <input class="cell-confidence" [(ngModel)]="item.confidence" (blur)="send(item)" (input)="type(item)"
-                 type="number"
-                 value="{{item.confidence}}">
-          <span>%</span>
+                 type="number" value="{{item.confidence}}" max="100">
         </div>
       </td>
       <td>
@@ -141,13 +133,13 @@
         </div>
       </td>
       <td class="no-edit">
-        <div>${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
+        <div class="text-money">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
       </td>
       <td class="no-edit">
-        <div>{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
+        <div class="text-money">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
       </td>
       <td class="no-edit">
-        <div>${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
+        <div class="text-money">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
       </td>
       <td>
         <div>
