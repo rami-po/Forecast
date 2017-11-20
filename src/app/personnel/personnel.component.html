@@ -97,7 +97,7 @@
     <div class="card card--bordered">
       <h3 class="card__heading">Notes</h3>
       <ul class="notes-list">
-        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}} <md-icon [style.cursor]="'pointer'" svgIcon="remove"></md-icon></li>
+        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}} <md-icon svgIcon="remove" title="Delete Note"></md-icon></li>
       </ul>
 
       <hr>
