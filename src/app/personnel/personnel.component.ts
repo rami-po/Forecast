@@ -118,6 +118,31 @@ export class PersonnelComponent implements OnInit {
     }
   }
 
+  fileChange(event) {
+    const files = event.target.files;
+    console.log(files);
+
+    if (files.length > 0) {
+      const file = files[0];
+      console.log(file);
+      const formData = new FormData();
+      formData.append('file', file);
+      console.log(formData);
+      console.log(formData.get('file'));
+      this.personnelService.uploadPicture(this.employee.id, formData).subscribe();
+    }
+  }
+
+  remove(skill, index) {
+    console.log(skill);
+    console.log(index);
+    this.personnelService.removeSkill(skill).subscribe(
+      () => {
+        this.employee.skills.splice(index, 1);
+      }
+    );
+  }
+
   addEvent(index) {
     this.employee.events.splice(index, 0, {
       id: this.employee.id,

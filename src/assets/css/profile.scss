@@ -25,6 +25,14 @@
       height: 6.25rem;
       margin: -4rem auto .5rem;
       width: 6.25rem;
+
+      &:hover {
+        cursor: pointer;
+        background-image: url("./assets/icons/ic_file_upload_white_48px.svg");
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
     }
 
     a {

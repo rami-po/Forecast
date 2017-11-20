@@ -1421,6 +1421,24 @@ exports.deactivateAssignment = function (req, callback) {
  * DELETE METHODS
  */
 
+exports.removeTimelineEvent = function (req, callback) {
+  connection.query('DELETE FROM personnelTimelineEvents WHERE id = ' + mysql.escape(req.params.id), function (err, result) {
+    callback(err, result);
+  });
+};
+
+exports.removeNote = function (req, callback) {
+  connection.query('DELETE FROM personnelNotes WHERE id = ' + mysql.escape(req.params.id), function (err, result) {
+    callback(err, result);
+  });
+};
+
+exports.removeSkill = function (req, callback) {
+  connection.query('DELETE FROM personnelSkills WHERE id = ' + mysql.escape(req.params.id), function (err, result) {
+    callback(err, result);
+  });
+};
+
 exports.deleteFunnelItem = function (req, callback) {
   connection.query('DELETE FROM funnel WHERE id = ' + mysql.escape(req.query.id),
     function (err, result) {
