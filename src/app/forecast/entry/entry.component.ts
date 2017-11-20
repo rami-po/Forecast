@@ -107,20 +107,20 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   getColor(week, index) {
     if (!this.isHeader) {
-      return '#ddd';
+      return 'rgba(158,163,174,0.65)';
     }
     if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
       if (this.forecast.totals[index].hours < this.employeeCapacity) {
-        return '#EF9A9A';
+        return '#e16363';
       } else if (this.forecast.totals[index].hours > this.employeeCapacity) {
-        return '#FFF59D';
+        return '#f2b66f';
       }
     } else {
       if (0 < this.employeeCapacity) {
-        return '#EF9A9A';
+        return '#e16363';
       }
     }
-    return '#ddd';
+    return 'rgba(158,163,174,0.75)';
   }
 
   getColor2(week, index) {

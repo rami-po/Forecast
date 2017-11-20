@@ -13,6 +13,11 @@
     box-shadow: none;
     padding: 1rem 0;
   }
+
+  &--spaced {
+    margin: 2rem auto 4rem;
+    padding: 1rem;
+  }
 }
 
 .flex-row {

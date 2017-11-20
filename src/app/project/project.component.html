@@ -1,33 +1,35 @@
-<ul class="tabs-list">
-  <li routerLinkActive="active"><a routerLink="/projects">Projects</a></li>
-  <li routerLinkActive="active"><a routerLink="/all">Teams</a></li>
-</ul>
+<div class="forecast-top">
+  <ul class="tabs-list">
+    <li routerLinkActive="active"><a routerLink="/projects">Projects</a></li>
+    <li routerLinkActive="active"><a routerLink="/all">Teams</a></li>
+  </ul>
 
-<div class="wrap wrap--accent">
-  <button #parentMenu="mdMenuTrigger" md-button [mdMenuTriggerFor]="filter_menu" class="btn btn--default btn--jumbo">{{filterName}}
-    <md-icon svgIcon="drop-down"></md-icon>
-  </button>
+  <div class="wrap wrap--accent">
+    <button #parentMenu="mdMenuTrigger" md-button [mdMenuTriggerFor]="filter_menu" class="btn btn--default btn--jumbo">{{filterName}}
+      <md-icon svgIcon="drop-down"></md-icon>
+    </button>
 
-  <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
-    <button (click)="filter('ap', 'All Projects')" md-menu-item><span>All Projects</span></button>
-    <button (click)="filter('pvw', 'View by Projects')" md-menu-item><span>View by Projects</span></button>
-    <div *ngFor="let client of filterList">
-      <button *ngIf="!checkForChildren(client.projects.length)"
-              (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" md-menu-item>
-        <span>{{client.name}}</span>
-      </button>
-      <button *ngIf="checkForChildren(client.projects.length)" (click)="$event.stopPropagation()"
-              [mdMenuTriggerFor]="project_menu" md-menu-item>
-        <span>{{client.name}}</span>
-        <md-menu [overlapTrigger]="false" #project_menu="mdMenu">
-          <button *ngFor="let project of client.projects"
-                  (click)="filter(project.id, client.name + ' - ' + project.name)" md-menu-item="">
-            <span>{{project.name}}</span>
-          </button>
-        </md-menu>
-      </button>
-    </div>
-  </md-menu>
+    <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
+      <button (click)="filter('ap', 'All Projects')" md-menu-item><span>All Projects</span></button>
+      <button (click)="filter('pvw', 'View by Projects')" md-menu-item><span>View by Projects</span></button>
+      <div *ngFor="let client of filterList">
+        <button *ngIf="!checkForChildren(client.projects.length)"
+                (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" md-menu-item>
+          <span>{{client.name}}</span>
+        </button>
+        <button *ngIf="checkForChildren(client.projects.length)" (click)="$event.stopPropagation()"
+                [mdMenuTriggerFor]="project_menu" md-menu-item>
+          <span>{{client.name}}</span>
+          <md-menu [overlapTrigger]="false" #project_menu="mdMenu">
+            <button *ngFor="let project of client.projects"
+                    (click)="filter(project.id, client.name + ' - ' + project.name)" md-menu-item="">
+              <span>{{project.name}}</span>
+            </button>
+          </md-menu>
+        </button>
+      </div>
+    </md-menu>
+  </div>
 </div>
 
 <div *ngIf="isGraphShowing" class="graph-data-wrapper constrain wrap">

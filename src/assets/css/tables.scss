@@ -25,7 +25,7 @@ td {
 }
 
 .striped-rows {
-  >*:nth-child(even) {
+  >*:nth-child(odd) {
     background-color: $extra-light-blue;
   }
 

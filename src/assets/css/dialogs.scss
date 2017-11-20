@@ -14,9 +14,9 @@
     margin: 2rem 0 1rem;
     overflow: scroll;
     padding: 0;
+    width: 30rem;
 
     &.two-col-form {
-      width: 30rem;
       display: grid;
       grid-gap: 8%;
       grid-template-columns: 46% 46%;

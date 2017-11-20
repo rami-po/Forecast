@@ -1,7 +1,9 @@
 .btn {
+  border: 0;
   color: #fff;
   display: block;
   font-size: .85rem;
+  font-weight: 700;
   line-height: 1.4rem;
   min-width: 0;
   padding: .5rem 1.25rem;
@@ -21,6 +23,10 @@
   + .btn {
     margin-left: .5rem;
   }
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .mat-button {
@@ -37,7 +43,7 @@
 
     &--jumbo {
       font-size: 1.375rem;
-      padding: .65rem 1.25rem;
+      padding: .85rem 1.25rem 1rem;
 
       .mat-icon {
         height: 24px;

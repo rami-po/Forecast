@@ -1,4 +1,6 @@
 input {
+  color: $gray;
+  
   &:focus {
     outline-color: $blue;
   }
