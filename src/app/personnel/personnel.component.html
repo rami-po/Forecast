@@ -43,9 +43,11 @@
         </li>
 
         <li *ngFor="let event of employee.events" class="timeline-list-item">
-          <div class="timeline-list-item__date">{{event.date | date: 'MMM d, y'}}</div>
+          <div class="timeline-list-item__date">
+            {{event.date | date: 'MMM d, y'}}
+            <md-icon [style.cursor]="'pointer'" svgIcon="remove" title="Delete Event"></md-icon>
+          </div>
           <div class="timeline-list-item__event">{{event.event}}</div>
-          <md-icon [style.cursor]="'pointer'" svgIcon="remove"></md-icon>
         </li>
       </ul>
 

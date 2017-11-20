@@ -81,10 +81,35 @@ ul {
         letter-spacing: 0.5px;
         line-height: 1rem;
         text-transform: uppercase;
+
+        .mat-icon {
+          height: .5rem;
+          fill: $red;
+          opacity: 0;
+          -webkit-transition: opacity .1s ease-out;
+          -moz-transition: opacity .1s ease-out;
+          -o-transition: opacity .1s ease-out;
+          transition: opacity .1s ease-out;
+          padding: 0 .1rem;
+          position: relative;
+          top: -1px;
+          width: .5rem;
+        }
       }
 
       &__event {
         font-size: 1rem;
+      }
+
+      &:hover {
+        cursor: default;
+
+        .timeline-list-item__date {
+          .mat-icon {
+            cursor: pointer;
+            opacity: 1;
+          }
+        }
       }
     }
   }
