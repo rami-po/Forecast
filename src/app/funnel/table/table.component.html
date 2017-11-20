@@ -42,7 +42,7 @@
       </td>
       <td>
         <div>
-          <md-select [(ngModel)]="item.is_new_client" name="option">
+          <md-select [(ngModel)]="item.is_new_client" name="option" class="yes-no-select">
             <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
               {{option.name}}
             </md-option>
@@ -122,7 +122,7 @@
       </td>
       <td>
         <div>
-          <md-select class="project-select" [(ngModel)]="item.project_id" name="project">
+          <md-select class="project-select" [(ngModel)]="item.project_id" name="project" class="project-name-select">
             <md-option (click)="update(item)" *ngFor="let project of projects" [value]="project.id">
               {{project.name}}
             </md-option>
@@ -140,7 +140,7 @@
       </td>
       <td>
         <div>
-          <md-select [(ngModel)]="item.completed" name="option">
+          <md-select [(ngModel)]="item.completed" name="option" class="yes-no-select">
             <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
               {{option.name}}
             </md-option>

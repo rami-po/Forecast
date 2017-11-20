@@ -34,4 +34,26 @@ td {
     background-color: transparent;
     border-color: transparent;
   }
+
+  .mat-select {
+    .mat-select-trigger {
+      background-color: $pale-blue;
+    }
+  }
+}
+
+// Yes/No selects
+.mat-select.yes-no-select {
+  .mat-select-trigger {
+    min-width: 80px;
+    width: 80px;
+  }
+}
+
+// Project Name selects
+.mat-select.project-name-select {
+  .mat-select-trigger {
+    min-width: 200px;
+    width: 200px;
+  }
 }
