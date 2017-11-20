@@ -32,15 +32,34 @@
   </div>
 </div>
 
-<div *ngIf="isGraphShowing" class="graph-data-wrapper constrain wrap">
-  <div class="data-wrapper">
-    <div class="data"><b>Budget:&nbsp;</b>${{budget | number: '1.0-0'}}</div>
-    <div class="data"><b>Internal Cost to Date:&nbsp;</b>${{internalCost | number: '1.0-0'}}</div>
-    <div class="data"><b>Budget Spent:&nbsp;</b>${{budgetSpent | number: '1.0-0'}}</div>
-    <div class="data"><b>Projected Profit:&nbsp;</b>${{projectedProfit | number: '1.0-0'}}</div>
-    <div class="data"><b>Project Profit Margin:&nbsp;</b>{{projectedProfitMargin | number:'2.2-2'}}%</div>
+<div *ngIf="isGraphShowing" class="constrain wrap wrap--spaced">
+  <div class="flex-row">
+    <div class="flex-column">
+      <ul class="financials">
+        <li class="financials__item">
+          <span>Budget:</span>
+          <div class="text-money text-money--jumbo">${{budget | number: '1.0-0'}}</div>
+        </li>
+        <li class="financials__item">
+          <span>Internal Cost to Date:</span>
+          <div class="text-money text-money--jumbo">${{internalCost | number: '1.0-0'}}</div>
+        </li>
+        <li class="financials__item">
+          <span>Budget Spent:</span>
+          <div class="text-money text-money--jumbo">${{budgetSpent | number: '1.0-0'}}</div>
+        </li>
+        <li class="financials__item">
+          <span>Projected Profit:</span>
+          <div class="text-money text-money--jumbo">${{projectedProfit | number: '1.0-0'}}</div>
+        </li>
+        <li class="financials__item">
+          <span>Project Profit Margin:</span>
+          <div class="text-money text-money--jumbo">{{projectedProfitMargin | number:'2.2-2'}}%</div>
+        </li>
+      </ul>
+    </div>
+    <app-graph [params]="params"></app-graph>
   </div>
-  <app-graph [params]="params"></app-graph>
 </div>
 
 
