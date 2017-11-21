@@ -105,48 +105,43 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   }
 
-  getColor(week, index) {
+  getColorClass(week, index) {
+    const colorClass = "dot dot--";
     if (!this.isHeader) {
-      return 'rgba(158,163,174,0.65)';
+      return colorClass + "gray";
     }
     if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
       if (this.forecast.totals[index].hours < this.employeeCapacity) {
-        return '#e16363';
+        return colorClass + "red";
       } else if (this.forecast.totals[index].hours > this.employeeCapacity) {
-        return '#f2b66f';
+        return colorClass + "yellow";
       }
     } else {
       if (0 < this.employeeCapacity) {
-        return '#e16363';
+        return colorClass + "red";
       }
     }
-    return 'rgba(158,163,174,0.75)';
+    return colorClass + "gray";
   }
 
-  getColor2(week, index) {
+  getColorClass2(week, index) {
+    const colorClass = "dot dot--";
     if (this.isHeader) {
-      return '#ddd';
+      return colorClass + "gray";
     }
     if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
 
       if (this.forecast.data[index].capacity < this.forecast.data[0].capacity) {
-        return '#EF9A9A';
+        return colorClass + "red";
       } else if (this.forecast.data[index].capacity > this.forecast.data[0].capacity) {
-        return '#FFF59D';
+        return colorClass + "yellow";
       }
     } else {
       if (0 < this.forecast.data[0].capacity) {
-        return '#EF9A9A';
+        return colorClass + "red";
       }
     }
-    return '#ddd';
-  }
-
-  getTextColor() {
-    if (!this.isHeader) {
-      return 'rgb(33, 150, 243)';
-    }
-    return 'black';
+    return colorClass + "gray";
   }
 
   send(value: string, week) {
