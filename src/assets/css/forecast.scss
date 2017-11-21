@@ -46,7 +46,6 @@
   font-weight: bold;
   justify-content: center;
   align-items: center;
-  text-align: center;
 }
 
 .name-container {
@@ -60,6 +59,7 @@
   display: flex;
   flex-direction: row;
   padding-left: .75rem;
+  padding-right: .75rem;
 
   .mat-icon {
     height: 1.2rem;
@@ -74,6 +74,11 @@
       width: .7rem;
     }
 
+    &.add {
+      height: .75rem;
+      width: .75rem;
+    }
+
     &:hover {
       cursor: pointer;
       opacity: 1;
@@ -82,6 +87,11 @@
 
   &.name-row--indented {
     margin-left: .5rem;
+    margin-right: .5rem;
+
+    .project-client {
+      flex-grow: 1;
+    }
   }
 }
 
@@ -95,8 +105,9 @@
 .capacity {
   @extend .name;
   font-weight: normal;
+  max-width: 3rem;
   text-align: right;
-  width: 4rem;
+  width: 3rem;
 }
 
 .capacity:focus {
@@ -125,9 +136,11 @@
 .header_name {
   @extend .name;
   cursor: pointer;
-  width: 90%;
+  display: block;
+  width: 85%;
   align-items: flex-start;
   justify-content: flex-start;
+  margin-right: 1rem;
 }
 
 /deep/ md-menu.mat-menu-panel {

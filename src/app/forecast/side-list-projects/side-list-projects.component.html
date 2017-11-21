@@ -2,10 +2,12 @@
   <div *ngFor="let project of projects, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(project)">{{project.client_name}} - {{project.name}}</div>
-      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">+</div>
+      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">
+        <md-icon svgIcon="add" title="Add Employee" class="add"></md-icon>
+      </div>
     </div>
     <div *ngIf="project.opened">
-      <div class="name-row" *ngFor="let entry of entries[i]">
+      <div class="name-row name-row--indented" *ngFor="let entry of entries[i]">
         <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject">
           <md-icon svgIcon="delete" title="Remove User" class="remove"></md-icon>
         </div>
