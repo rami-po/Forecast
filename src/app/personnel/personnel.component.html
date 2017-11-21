@@ -2,9 +2,13 @@
 
   <div class="three-column__column">
     <div class="profile__details card">
-      <input (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" class="profile__photo">
-      <h1>{{employee.first_name}} {{employee.last_name}}</h1>
-      <h2>Software Engineer</h2>
+      <div class="profile_details__top flex-column">
+        <div class="profile__photo">
+          <input (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" title="Upload Photo">
+        </div>
+        <h1>{{employee.first_name}} {{employee.last_name}}</h1>
+        <h2>Software Engineer</h2>
+      </div>
       <ul class="icon-list">
         <li class="icon-list-item icon-list-item--phone">
           <md-icon svgIcon="phone"></md-icon>
