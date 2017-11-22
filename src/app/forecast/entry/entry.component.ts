@@ -42,6 +42,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public isHeader = false;
 
   private isSubscribed = false;
+  private total;
 
 
   constructor(public entryService: EntryService,
@@ -123,19 +124,18 @@ export class EntryComponent implements OnInit, OnDestroy {
     return '#ddd';
   }
 
-  getColor2(week, index) {
-    if (this.isHeader) {
-      return '#ddd';
-    }
-    if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
 
-      if (this.forecast.data[index].capacity < this.forecast.data[0].capacity) {
+  getColor2(week, index) {
+
+    if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
+      this.total = this.forecast.totals[0].hours;
+      if (this.forecast.totals[index].hours < this.forecast.totals[0].hours) {
         return '#EF9A9A';
-      } else if (this.forecast.data[index].capacity > this.forecast.data[0].capacity) {
+      } else if (this.forecast.totals[index].hours > this.forecast.totals[0].hours) {
         return '#FFF59D';
       }
     } else {
-      if (0 < this.forecast.data[0].capacity) {
+      if (this.total != null && 0 < this.total) {
         return '#EF9A9A';
       }
     }
