@@ -24,13 +24,13 @@ export class TableComponent implements OnInit {
   ];
 
   public statusOptions = [
+    {name: 'Initial Contact', value: 'Initial Contact'},
     {name: 'Pitched', value: 'Pitched'},
     {name: 'Scoped', value: 'Scoped'},
     {name: 'SOW Drafted', value: 'SOW Drafted'},
     {name: 'SOW Presented', value: 'SOW Presented'},
     {name: 'SOW Negotiation', value: 'SOW Negotiation'},
-    {name: 'SOW Signed', value: 'SOW Signed'},
-    {name: 'Not Yet Pitched', value: 'Not Yet Pitched'}
+    {name: 'SOW Signed', value: 'SOW Signed'}
   ];
 
   constructor(private funnelService: FunnelService,
