@@ -65,7 +65,8 @@ export class AddFunnelItemComponent implements OnInit {
       {name: 'Scoped', id: 'Scoped'},
       {name: 'SOW Presented', id: 'SOW Presented'},
       {name: 'SOW Negotiation', id: 'SOW Negotiation'},
-      {name: 'SOW Signed', id: 'SOW Signed'}
+      {name: 'SOW Signed', id: 'SOW Signed'},
+      {name: 'Not Yet Pitched', value: 'Not Yet Pitched'}
       ]}
   ];
 
@@ -115,7 +116,7 @@ export class AddFunnelItemComponent implements OnInit {
           project_id: form.scalaProjectId,
           completed: form.isCompleted,
           notes: form.notes
-        }
+        };
         this.funnelService.updateFunnelItem(funnel).subscribe();
       } else {
         const funnel = new Funnel(
