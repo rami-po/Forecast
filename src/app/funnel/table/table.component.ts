@@ -29,7 +29,8 @@ export class TableComponent implements OnInit {
     {name: 'SOW Drafted', value: 'SOW Drafted'},
     {name: 'SOW Presented', value: 'SOW Presented'},
     {name: 'SOW Negotiation', value: 'SOW Negotiation'},
-    {name: 'SOW Signed', value: 'SOW Signed'}
+    {name: 'SOW Signed', value: 'SOW Signed'},
+    {name: 'Not Yet Pitched', value: 'Not Yet Pitched'}
   ];
 
   constructor(private funnelService: FunnelService,

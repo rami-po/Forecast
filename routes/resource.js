@@ -48,6 +48,14 @@ router.get('/cache/clear', (req, res, next) => {
  * PERSONNEL ROUTES
  */
 
+router.post('/personnel/picture', function (req, res, next) {
+  console.log(req.body);
+  return res.status(200).json({
+    message: 'test',
+    result: req.body
+  });
+});
+
 router.post('/personnel/timeline', function (req, res, next) {
   SQL.addTimelineEvent(req, function (err, result) {
     if (err) {
@@ -62,6 +70,22 @@ router.post('/personnel/timeline', function (req, res, next) {
       });
     }
   })
+});
+
+router.delete('/personnel/timeline/:id', function (req, res, next) {
+  SQL.removeTimelineEvent(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
 });
 
 router.post('/personnel/notes', function (req, res, next) {
@@ -80,8 +104,40 @@ router.post('/personnel/notes', function (req, res, next) {
   })
 });
 
+router.delete('/personnel/notes/:id', function (req, res, next) {
+  SQL.removeNote(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 router.post('/personnel/skills', function (req, res, next) {
   SQL.addSkills(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+router.delete('/personnel/skills/:id', function (req, res, next) {
+  SQL.removeSkill(req, function (err, result) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',
