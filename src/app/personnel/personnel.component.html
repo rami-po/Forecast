@@ -2,7 +2,7 @@
 
   <div class="three-column__column">
     <div class="profile__details card">
-      <input (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" class="profile__photo">
+      <div (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" class="profile__photo"></div>
       <h1>{{employee.first_name}} {{employee.last_name}}</h1>
       <h2>Software Engineer</h2>
       <ul class="icon-list">
@@ -45,7 +45,6 @@
         <li *ngFor="let event of employee.events" class="timeline-list-item">
           <div class="timeline-list-item__date">{{event.date | date: 'MMM d, y'}}</div>
           <div class="timeline-list-item__event">{{event.event}}</div>
-          <md-icon [style.cursor]="'pointer'" svgIcon="remove"></md-icon>
         </li>
       </ul>
 
@@ -93,7 +92,7 @@
     <div class="card card--bordered">
       <h3 class="card__heading">Notes</h3>
       <ul class="notes-list">
-        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}} <md-icon [style.cursor]="'pointer'" svgIcon="remove"></md-icon></li>
+        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}}</li>
       </ul>
       <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()" class="form-horizontal">
         <input formControlName="notes" class="form-control">
