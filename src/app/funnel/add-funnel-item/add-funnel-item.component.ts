@@ -61,12 +61,12 @@ export class AddFunnelItemComponent implements OnInit {
       {name: 'No', id: false}
     ]},
     {name: 'Status', formValue: 'status', options: [
+      {name: 'Initial Contact', value: 'Initial Contact'},
       {name: 'Pitched', id: 'Pitched'},
       {name: 'Scoped', id: 'Scoped'},
       {name: 'SOW Presented', id: 'SOW Presented'},
       {name: 'SOW Negotiation', id: 'SOW Negotiation'},
-      {name: 'SOW Signed', id: 'SOW Signed'},
-      {name: 'Not Yet Pitched', value: 'Not Yet Pitched'}
+      {name: 'SOW Signed', id: 'SOW Signed'}
       ]}
   ];
 
