@@ -11,10 +11,10 @@
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row" *ngFor="let entry of entries[i]">
-        <div class="project-client"
+        <div class="project-client" (click)="goToClientsPage(entry.client_id)"
              [style.font-weight]="params.id === entry.project_id + '' ? 'bold' : 'normal'">
           {{entry.client_name}}</div>
-        <div class="project-client"
+        <div class="project-client" (click)="goToProjectsPage(entry.project_id)"
              [style.font-weight]="params.id === entry.project_id + '' ? 'bold' : 'normal'">
           {{entry.project_name}}</div>
         <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name">
