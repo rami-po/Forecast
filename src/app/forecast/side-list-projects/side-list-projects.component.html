@@ -11,7 +11,7 @@
         <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject">
           <md-icon svgIcon="delete" title="Remove User" class="remove"></md-icon>
         </div>
-        <div class="project-client" (click)="goToPersonnelPage(entry.employee_id)">
+        <div [style.cursor]="'pointer'" class="project-client" (click)="goToPersonnelPage(entry.employee_id)">
           {{entry.first_name}} {{entry.last_name}}
         </div>
         <input maxlength="2" onclick="select()"
