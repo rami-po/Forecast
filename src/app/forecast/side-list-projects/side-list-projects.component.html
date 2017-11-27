@@ -1,28 +1,29 @@
-<div class="name-container">
+<div class="name-container striped-rows">
   <div *ngFor="let project of projects, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(project)">{{project.client_name}} - {{project.name}}</div>
-      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">+</div>
+      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">
+        <md-icon svgIcon="add" title="Add Employee" class="add"></md-icon>
+      </div>
     </div>
     <div *ngIf="project.opened">
-      <div class="name-row" *ngFor="let entry of entries[i]">
-        <div class="project-client" (click)="goToPersonnelPage(entry.employee_id)">{{entry.first_name}} {{entry.last_name}}</div>
-        <input maxlength="2" onclick="select()"
-               class="capacity"
-               (input)="type($event.target.value, entry)"
-               [value]="entry.capacity/3600">
-        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject" class="user_name">
-          <md-icon svgIcon="delete"></md-icon>
+      <div class="name-row name-row--indented" *ngFor="let entry of entries[i]">
+        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject">
+          <md-icon svgIcon="delete" title="Remove User" class="remove"></md-icon>
         </div>
+        <div class="project-client" (click)="goToPersonnelPage(entry.employee_id)">
+          {{entry.first_name}} {{entry.last_name}}
+        </div>
+        <input maxlength="2" onclick="select()"
+           class="capacity"
+           (input)="type($event.target.value, entry)"
+           [value]="entry.capacity/3600">
       </div>
     </div>
   </div>
 
-
   <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
-    <button type="button" [class.blue-text]="employee.id === 'fake_id'"
-            *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+    <button type="button" [class.text-blue]="employee.id === 'fake_id'"
+      *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
   </md-menu>
-
 </div>
-

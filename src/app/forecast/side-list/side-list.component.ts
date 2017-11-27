@@ -34,6 +34,7 @@ export class SideListComponent implements OnInit {
   private timerSubscription2;
   public realEmployees;
   private socket;
+  private clients = [];
 
   constructor(private forecastService: ForecastService,
               private iconRegistry: MdIconRegistry,
@@ -42,8 +43,8 @@ export class SideListComponent implements OnInit {
               private dialog: MdDialog,
               private sideListService: SideListService) {
     iconRegistry
-      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
-      .addSvgIcon('user', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_person_pin_black_48px.svg'))
+      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'))
+      .addSvgIcon('user', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_user.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
     this.socket = this.forecastService.socket;
   }
@@ -51,6 +52,12 @@ export class SideListComponent implements OnInit {
 
   ngOnInit() {
     console.log('ngOnInit: side-list.component params:' + JSON.stringify(this.params));
+
+    this.forecastService.getClientsAndProjects().subscribe(
+      data => {
+        this.clients = data.result;
+      }
+    );
 
     this.forecastService.employees$.subscribe(
       data => {
@@ -107,7 +114,23 @@ export class SideListComponent implements OnInit {
 
 
   goToPersonnelPage(employeeId) {
-    this.router.navigate(['/user', employeeId])
+    this.router.navigate(['/user', employeeId]);
+  }
+
+  goToProjectsPage(projectId) {
+    this.router.navigate(['/project', projectId]);
+  }
+
+  goToClientsPage(clientId) {
+    for (const client of this.clients) {
+      if (client.id === clientId) {
+        if (client.projects.length > 1) {
+          this.router.navigate(['/client', clientId]);
+        } else {
+          this.router.navigate(['/project', client.projects[0].id]);
+        }
+      }
+    }
   }
 
   addUser(employee) {

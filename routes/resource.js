@@ -57,7 +57,7 @@ router.post('/personnel/picture', function (req, res, next) {
 });
 
 router.post('/personnel/timeline', function (req, res, next) {
-  SQL.addTimelineEvent(req, function (err, result) {
+  SQL.addTimelineEvent(req, function (err, result, eventId) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',
@@ -66,7 +66,8 @@ router.post('/personnel/timeline', function (req, res, next) {
     } else {
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result,
+        id: eventId
       });
     }
   })
@@ -89,7 +90,7 @@ router.delete('/personnel/timeline/:id', function (req, res, next) {
 });
 
 router.post('/personnel/notes', function (req, res, next) {
-  SQL.addNotes(req, function (err, result) {
+  SQL.addNotes(req, function (err, result, noteId) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',
@@ -98,7 +99,8 @@ router.post('/personnel/notes', function (req, res, next) {
     } else {
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result,
+        id: noteId
       });
     }
   })
@@ -121,7 +123,7 @@ router.delete('/personnel/notes/:id', function (req, res, next) {
 });
 
 router.post('/personnel/skills', function (req, res, next) {
-  SQL.addSkills(req, function (err, result) {
+  SQL.addSkills(req, function (err, result, skillId) {
     if (err) {
       return res.status(500).json({
         message: 'Error!',
@@ -130,7 +132,8 @@ router.post('/personnel/skills', function (req, res, next) {
     } else {
       return res.status(200).json({
         message: 'Success!',
-        result: result
+        result: result,
+        id: skillId
       });
     }
   })

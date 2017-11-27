@@ -39,10 +39,10 @@ export class TableComponent implements OnInit {
               private dialog: MdDialog) {
     iconRegistry.addSvgIcon(
       'edit',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit_black_48px.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit.svg'));
     iconRegistry.addSvgIcon(
       'delete',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete.svg'));
   }
 
   ngOnInit() {

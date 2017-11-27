@@ -5,6 +5,10 @@
     margin-top: 1rem;
     padding: 1.5rem 1rem;
 
+    .profile_details__top {
+      margin-bottom: 1rem;
+    }
+
     h1 {
       font-size: 1.25rem;
       font-weight: 500;
@@ -26,8 +30,17 @@
       margin: -4rem auto .5rem;
       width: 6.25rem;
 
+      input[type="file"] {
+        height: 6.25rem;
+        opacity: 0;
+        width: 6.25rem;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
       &:hover {
-        cursor: pointer;
         background-image: url("./assets/icons/ic_file_upload_white_48px.svg");
         background-position: center;
         background-repeat: no-repeat;

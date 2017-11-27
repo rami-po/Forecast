@@ -6,7 +6,7 @@
 <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
 
 
-  <md-dialog-content>
+  <md-dialog-content class="two-col-form">
     <md-input-container *ngFor="let entry of entries">
       <input mdInput formControlName="{{entry.formValue}}"
              placeholder="{{entry.name}}"
@@ -51,16 +51,9 @@
   </md-dialog-content>
 
 
-  <md-dialog-actions align="center">
-    <button md-button
-            *ngIf="dismissible"
-            (click)="dialogRef.close(false)">Cancel
-    </button>
-    <button md-raised-button
-            color="primary"
-            autofocus="true"
-            type="submit">OK
-    </button>
+  <md-dialog-actions>
+    <button md-button *ngIf="dismissible" class="btn btn--secondary" (click)="dialogRef.close(false)">Cancel</button>
+    <button md-button class="btn btn--primary" autofocus="true" type="submit">OK</button>
     <span class="clear"></span>
   </md-dialog-actions>
 

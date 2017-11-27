@@ -12,7 +12,7 @@
       [disabled]="isHeader"> -->
     <div class="forecast-cell">
       <div *ngIf="isHeader" class="dot"
-           [style.background-color]="params.path !== '/projects' ? getColor(week, i) : getColor2(week, i)"
+           [class]="params.path !== '/projects' ? getColorClass(week, i) : getColorClass2(week, i)"
            [title]="getTotal(week, i)">
       </div>
 

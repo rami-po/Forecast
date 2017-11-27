@@ -36,6 +36,11 @@ textarea,
 .text-money {
   color: $green;
   font-weight: 700;
+
+  &--jumbo {
+    color: rgba($bright-green, .75);
+    font-size: 2rem;
+  }
 }
 
 .text-blue {

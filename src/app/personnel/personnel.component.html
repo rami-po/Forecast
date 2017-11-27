@@ -2,9 +2,13 @@
 
   <div class="three-column__column">
     <div class="profile__details card">
-      <div (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" class="profile__photo"></div>
-      <h1>{{employee.first_name}} {{employee.last_name}}</h1>
-      <h2>Software Engineer</h2>
+      <div class="profile_details__top flex-column">
+        <div class="profile__photo">
+          <input (change)="fileChange($event)" type="file" accept=".jpeg,.jpg,.png" title="Upload Photo">
+        </div>
+        <h1>{{employee.first_name}} {{employee.last_name}}</h1>
+        <h2>Software Engineer</h2>
+      </div>
       <ul class="icon-list">
         <li class="icon-list-item icon-list-item--phone">
           <md-icon svgIcon="phone"></md-icon>
@@ -42,8 +46,11 @@
           <div class="timeline-list-item__event">Compensation</div>
         </li>
 
-        <li *ngFor="let event of employee.events" class="timeline-list-item">
-          <div class="timeline-list-item__date">{{event.date | date: 'MMM d, y'}}</div>
+        <li *ngFor="let event of employee.events, let i = index" class="timeline-list-item">
+          <div class="timeline-list-item__date">
+            {{event.date | date: 'MMM d, y'}}
+            <md-icon svgIcon="remove" title="Delete Event" (click)="removeTimelineEvent(event, i)"></md-icon>
+          </div>
           <div class="timeline-list-item__event">{{event.event}}</div>
         </li>
       </ul>
@@ -52,9 +59,9 @@
 
       <h4>Add Timeline Event</h4>
       <form [formGroup]="timelineForm" (ngSubmit)="submitTimelineForm()">
-        <div class="form-group">
-          <input formControlName="event" placeholder="Event" class="form-control">
-        </div>
+        <md-input-container class="form-group">
+          <input mdInput formControlName="event" placeholder="Event" type="text">
+        </md-input-container>
         <div class="form-group">
           <md-select placeholder="Type" formControlName="type" name="item" floatPlaceholder="never">
             <md-option *ngFor="let item of items" [value]="item">
@@ -67,7 +74,7 @@
           <button mdSuffix [mdDatepickerToggle]="picker"></button>
         </md-input-container>
         <md-datepicker #picker></md-datepicker>
-        <button md-button class="btn">Add</button>
+        <button md-button class="btn btn--default">Add</button>
       </form>
     </div>
     <div class="card">
@@ -81,22 +88,29 @@
       <div *ngIf="employee.skills.length == 0">No skills :(</div>
       <md-chip-list>
         <md-chip *ngFor="let skill of employee.skills, let i = index">
-          {{skill.skill}}<md-icon (click)="remove(skill, i)" [style.cursor]="'pointer'" svgIcon="remove"></md-icon>
+          {{skill.skill}}<md-icon (click)="removeSkill(skill, i)" [style.cursor]="'pointer'" svgIcon="remove"></md-icon>
         </md-chip>
       </md-chip-list>
       <form [formGroup]="skillsForm" (ngSubmit)="submitSkillsForm()" class="form-horizontal">
-        <input formControlName="skill" placeholder="New Skill" class="form-control">
-        <button md-button class="btn">Add</button>
+        <md-input-container>
+          <input mdInput formControlName="skill" placeholder="New Skill" type="text">
+        </md-input-container>
+        <button md-button class="btn btn--default">Add</button>
       </form>
     </div>
     <div class="card card--bordered">
       <h3 class="card__heading">Notes</h3>
       <ul class="notes-list">
-        <li *ngFor="let note of employee.notes" class="notes-list-item">{{note.notes}}</li>
+        <li *ngFor="let note of employee.notes, let i = index" class="notes-list-item">{{note.notes}} <md-icon svgIcon="remove" title="Delete Note" (click)="removeNote(note, i)"></md-icon></li>
       </ul>
-      <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()" class="form-horizontal">
-        <input formControlName="notes" class="form-control">
-        <button md-button class="btn">Add</button>
+
+      <hr>
+      <h4>Add Note</h4>
+      <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()">
+        <md-input-container>
+          <textarea mdInput formControlName="notes"></textarea>
+        </md-input-container>
+        <button md-button class="btn btn--default">Add</button>
       </form>
     </div>
   </div>

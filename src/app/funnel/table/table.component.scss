@@ -24,22 +24,10 @@ table {
   width: 20%;
 }
 
-th {
-  width: 50px;
-}
-
 input {
   //width: $width;
   //height: 30px;
   border: 0;
-}
-
-tr:nth-child(even) {
-  background-color: $extra-light-blue;
-
-  input {
-    background-color: transparent;
-  }
 }
 
 md-input-container {

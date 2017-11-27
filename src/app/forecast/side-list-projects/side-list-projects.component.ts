@@ -35,7 +35,8 @@ export class SideListProjectsComponent implements OnInit {
               private sanitizer: DomSanitizer,
               private dialog: MdDialog) {
     iconRegistry
-      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'));
+      .addSvgIcon('add', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_add.svg'))
+      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'));
     this.socket = this.forecastService.socket;
   }
 

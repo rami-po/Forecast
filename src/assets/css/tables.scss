@@ -15,3 +15,45 @@ td {
   color: $dark-blue;
   padding: .5rem 1rem;
 }
+
+.utility-buttons {
+  .mat-icon {
+    height: 1.2rem;
+    fill: $dark-blue;
+    width: 1.2rem;
+  }
+}
+
+.striped-rows {
+  >*:nth-child(odd) {
+    background-color: $extra-light-blue;
+  }
+
+  input,
+  .form-control {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .mat-select {
+    .mat-select-trigger {
+      background-color: $pale-blue;
+    }
+  }
+}
+
+// Yes/No selects
+.mat-select.yes-no-select {
+  .mat-select-trigger {
+    min-width: 80px;
+    width: 80px;
+  }
+}
+
+// Project Name selects
+.mat-select.project-name-select {
+  .mat-select-trigger {
+    min-width: 200px;
+    width: 200px;
+  }
+}

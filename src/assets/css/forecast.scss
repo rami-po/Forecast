@@ -1,3 +1,9 @@
+.forecast-top {
+  .btn--jumbo {
+    margin-left: 1rem;
+  }
+}
+
 .forecast-cell {
   height: 22px;
   text-align: center;
@@ -19,4 +25,137 @@
       font-size: 1rem;
     }
   }
+}
+
+.project-client {
+  display: flex;
+  position: relative;
+  //width: 33%;
+  border: 1px solid transparent;
+  height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.name {
+  @extend .project-client;
+  color: $gray;
+  width: 50%;
+  font-weight: bold;
+  justify-content: center;
+  align-items: center;
+}
+
+.name-container {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.name-row {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  padding-left: .75rem;
+  padding-right: .75rem;
+
+  .mat-icon {
+    height: 1.2rem;
+    opacity: .6;
+    width: 1.2rem;
+
+    &.remove {
+      fill: $red;
+      height: .7rem;
+      opacity: .75;
+      margin: 0 .25rem;
+      width: .7rem;
+    }
+
+    &.add {
+      height: .75rem;
+      width: .75rem;
+    }
+
+    &:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
+  }
+
+  &.name-row--indented {
+    margin-left: .5rem;
+    margin-right: .5rem;
+
+    .project-client {
+      flex-grow: 1;
+    }
+  }
+}
+
+.add-user {
+  @extend .name;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+
+.capacity {
+  @extend .name;
+  font-weight: normal;
+  max-width: 3rem;
+  text-align: right;
+  width: 3rem;
+}
+
+.capacity:focus {
+  padding: 4px;
+  border: 2px solid $blue;
+}
+
+.fake-user-name {
+  @extend .capacity;
+}
+
+.fake-user-capacity {
+  @extend .capacity;
+  width: 60%;
+}
+
+.fake-user-icon {
+  cursor: pointer;
+}
+
+.user_name {
+  @extend .name;
+  cursor: pointer;
+}
+
+.header_name {
+  @extend .name;
+  cursor: pointer;
+  display: block;
+  width: 85%;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-right: 1rem;
+}
+
+/deep/ md-menu.mat-menu-panel {
+  max-height: 50px!important;
+}
+
+.mat-menu-panel {
+  max-height: 51px!important;
+}
+
+.name2 {
+  @extend .name;
+  width: 100%;
+}
+
+.user_icon {
+  cursor: pointer;
 }

@@ -42,6 +42,7 @@ export class PersonnelService {
   }
 
   removeNote(note) {
+    console.log(note.id);
     return this.http.delete(this.apiBase + '/personnel/notes/' + note.id)
       .map((response: Response) => response.json())
       .catch((error: Response) => Observable.throw(error.json()));
