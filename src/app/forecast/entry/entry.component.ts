@@ -43,6 +43,7 @@ export class EntryComponent implements OnInit, OnDestroy {
 
   private isSubscribed = false;
   private total;
+  private colorClass = 'dot dot--';
 
 
   constructor(public entryService: EntryService,
@@ -107,42 +108,37 @@ export class EntryComponent implements OnInit, OnDestroy {
   }
 
   getColorClass(week, index) {
-    const colorClass = "dot dot--";
     if (!this.isHeader) {
-      return colorClass + "gray";
+      return this.colorClass + 'gray';
     }
     if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
       if (this.forecast.totals[index].hours < this.employeeCapacity) {
-        return colorClass + "red";
+        return this.colorClass + 'red';
       } else if (this.forecast.totals[index].hours > this.employeeCapacity) {
-        return colorClass + "yellow";
+        return this.colorClass + 'yellow';
       }
     } else {
       if (0 < this.employeeCapacity) {
-        return colorClass + "red";
+        return this.colorClass + 'red';
       }
     }
-    return colorClass + "gray";
+    return this.colorClass + 'gray';
   }
 
   getColorClass2(week, index) {
-    const colorClass = "dot dot--";
-    if (this.isHeader) {
-      return colorClass + "gray";
-    }
-    if (!isNullOrUndefined(this.forecast.data[index]) && this.forecast.data[index].week_of.slice(0, 10) === week) {
-
-      if (this.forecast.data[index].capacity < this.forecast.data[0].capacity) {
-        return colorClass + "red";
-      } else if (this.forecast.data[index].capacity > this.forecast.data[0].capacity) {
-        return colorClass + "yellow";
+    if (!isNullOrUndefined(this.forecast.totals[index]) && this.forecast.totals[index].week_of.slice(0, 10) === week) {
+      this.total = this.forecast.totals[0].hours;
+      if (this.forecast.totals[index].hours < this.total) {
+        return this.colorClass + 'red';
+      } else if (this.forecast.totals[index].hours > this.total) {
+        return this.colorClass + 'yellow';
       }
     } else {
-      if (0 < this.forecast.data[0].capacity) {
-        return colorClass + "red";
+      if (0 < this.total) {
+        return this.colorClass + 'red';
       }
     }
-    return colorClass + "gray";
+    return this.colorClass + 'gray';
   }
 
   send(value: string, week) {
