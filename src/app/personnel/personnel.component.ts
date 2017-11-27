@@ -95,23 +95,23 @@ export class PersonnelComponent implements OnInit {
         this.timelineForm.value.date,
         this.timelineForm.value.type,
         this.timelineForm.value.event).subscribe(
-        () => {
+        (data) => {
           const date = new Date(this.timelineForm.value.date).toISOString();
           if (this.employee.events.length > 0) {
             for (let i = 0; i < this.employee.events.length; i++) {
               const event = this.employee.events[i];
               if (event.date > date) {
-                this.addEvent(i);
+                this.addEvent(data.id, i);
                 break;
               }
               const j = i + 1;
               if (j == this.employee.events.length) {
-                this.addEvent(j);
+                this.addEvent(data.id, j);
                 break;
               }
             }
           } else {
-            this.addEvent(0);
+            this.addEvent(data.id, 0);
           }
         }
       );
@@ -133,9 +133,7 @@ export class PersonnelComponent implements OnInit {
     }
   }
 
-  remove(skill, index) {
-    console.log(skill);
-    console.log(index);
+  removeSkill(skill, index) {
     this.personnelService.removeSkill(skill).subscribe(
       () => {
         this.employee.skills.splice(index, 1);
@@ -143,13 +141,30 @@ export class PersonnelComponent implements OnInit {
     );
   }
 
-  addEvent(index) {
+  removeTimelineEvent(event, index) {
+    this.personnelService.removeTimelineEvent(event).subscribe(
+      () => {
+        this.employee.events.splice(index, 1);
+      }
+    );
+  }
+
+  removeNote(note, index) {
+    this.personnelService.removeNote(note).subscribe(
+      () => {
+        this.employee.notes.splice(index, 1);
+      }
+    );
+  }
+
+  addEvent(id, index) {
     this.employee.events.splice(index, 0, {
-      id: this.employee.id,
+      id: id,
       date: new Date(this.timelineForm.value.date).toISOString(),
       type: this.timelineForm.value.type,
       event: this.timelineForm.value.event
     });
+    this.timelineForm.reset();
   }
 
   submitNotesForm() {
@@ -158,14 +173,14 @@ export class PersonnelComponent implements OnInit {
         this.employee.id,
         this.notesForm.value.notes
       ).subscribe(
-        () => {
+        (data) => {
           this.employee.notes.push({
-            id: this.employee.id,
+            id: data.id,
             notes: this.notesForm.value.notes
           });
+          this.notesForm.reset();
         }
       );
-      console.log('VALID!!');
     }
   }
 
@@ -175,11 +190,12 @@ export class PersonnelComponent implements OnInit {
         this.employee.id,
         this.skillsForm.value.skill
       ).subscribe(
-        () => {
+        (data) => {
           this.employee.skills.push({
-            id: this.employee.id,
+            id: data.id,
             skill: this.skillsForm.value.skill
           });
+          this.skillsForm.reset();
         }
       );
     }

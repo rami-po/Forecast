@@ -1,4 +1,6 @@
 input {
+  color: $gray;
+  
   &:focus {
     outline-color: $blue;
   }
@@ -8,69 +10,52 @@ input {
   margin-bottom: .75rem;
 }
 
-.form-control {
-  border: 1px solid $pale-blue;
-  border-radius: 3px;
-  padding: .5rem .75rem;
-}
-
 .form-horizontal {
   margin-bottom: 1rem;
 
   .btn {
     display: inline-block;
-    padding: .375rem 1rem;
-  }
-}
-
-.mat-input-wrapper {
-  border: 1px solid $pale-blue;
-  border-radius: 3px;
-  padding: 0 .5rem;
-
-  .mat-input-underline {
-    bottom: 0;
-    left: 0;
-
-    .mat-input-ripple {
-      height: 1px;
-    }
+    padding: .3rem 1rem;
   }
 }
 
 .mat-input-infix {
-  border-top: 0;
+  padding: .45em 0 .5rem;
 }
 
 // placeholder text
 ::-webkit-input-placeholder { // Chrome/Opera/Safari
   color: $gray-blue;
   font-style: italic;
+  font-size: 1rem;
 }
 ::-moz-placeholder { // Firefox 19+
   color: $gray-blue;
   font-style: italic;
+  font-size: 1rem;
 }
 :-ms-input-placeholder { // IE 10+
   color: $gray-blue;
   font-style: italic;
+  font-size: 1rem;
 }
 :-moz-placeholder { // Firefox 18-
   color: $gray-blue;
   font-style: italic;
+  font-size: 1rem;
 }
 .mat-input-placeholder-wrapper { // Material
   .mat-input-placeholder {
-    color: $gray-blue;
-    font-style: italic;
+    color: $dark-blue;
+    font-size: .9rem;
   }
 }
 
 // Material Select
 .mat-select {
   .mat-select-trigger {
+    border: 1px solid $pale-blue;
     border-radius: 3px;
-    background: $pale-blue;
     height: 34px;
   }
 
@@ -79,8 +64,13 @@ input {
     font-size: .875rem;
     padding-left: .75rem;
   }
-}
 
+  .mat-select-placeholder.mat-floating-placeholder {
+    font-size: 1rem;
+    left: -.5rem;
+    top: -1.75rem;
+  }
+}
 
 .mat-select-underline {
   display: none;

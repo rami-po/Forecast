@@ -17,7 +17,7 @@
 
 
   <div id="table" class="entry-container" (scroll)="onScroll($event)">
-    <div *ngIf="isDataAvailable && employees != null">
+    <div *ngIf="isDataAvailable && employees != null" class="striped-rows">
       <div *ngFor="let employee of employees, let i = index">
         <app-roll-up [params]="params" [employee]="employee" [data]="rollUps[i]"></app-roll-up>
       </div>

@@ -1,3 +1,8 @@
-<p>
-  404 error!! Page not found.
-</p>
+<div class="server-error flex-column">
+  <h1>404 Not Found</h1>
+  <p>Sorry, the page you are looking for cannot be found.</p>
+  <div class="server-error__buttons">
+    <button (click)="goBack()" class="btn btn--primary">Go Back</button>
+    <button routerLink="/" class="btn btn--secondary">Go Home</button>
+  </div>
+</div>

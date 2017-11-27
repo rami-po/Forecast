@@ -1,5 +1,5 @@
 @import "../../assets/css/colors";
-$title_height: 64px;
+$title_height: 55px;
 $entry_side_height: 81.4vh;
 
 .entry-container {
@@ -13,7 +13,7 @@ $entry_side_height: 81.4vh;
 .capacity-row-container {
   color: $gray;
   margin-left: 25%;
-  top: 0;
+  top: 40px;
   left: 0;
   right: 0;
   overflow: hidden;
@@ -21,10 +21,14 @@ $entry_side_height: 81.4vh;
 }
 
 .header-row-container {
-  background-color: $pale-blue;
-  @extend .capacity-row-container;
-  margin-top: $title_height;
+  background-color: rgba($pale-blue, .7);
+  color: $gray;
   margin-left: 25%;
+  top: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  position: absolute;
 }
 
 .side-list-container {

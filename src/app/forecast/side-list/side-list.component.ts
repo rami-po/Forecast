@@ -43,8 +43,8 @@ export class SideListComponent implements OnInit {
               private dialog: MdDialog,
               private sideListService: SideListService) {
     iconRegistry
-      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete_black_48px.svg'))
-      .addSvgIcon('user', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_person_pin_black_48px.svg'))
+      .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'))
+      .addSvgIcon('user', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_user.svg'))
       .addSvgIcon('more', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_more_vert_black_48px.svg'));
     this.socket = this.forecastService.socket;
   }

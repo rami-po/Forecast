@@ -1204,25 +1204,28 @@ exports.getFunnelItems = function (req, callback) {
  */
 
 exports.addTimelineEvent = function (req, callback) {
+  const eventId = uuidv4();
   connection.query("INSERT INTO personnelTimelineEvents (id, employee_id, date, type, event) VALUES (" +
-    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.date) + ", " +
+    mysql.escape(eventId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.date) + ", " +
     mysql.escape(req.body.type) + ", " + mysql.escape(req.body.event) + ")",
     function (err, result) {
-      callback(err, result);
+      callback(err, result, eventId);
     })
 };
 
 exports.addNotes = function (req, callback) {
+  const noteId = uuidv4();
   connection.query("INSERT INTO personnelNotes (id, employee_id, notes) VALUES (" +
-    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.notes) + ")", function (err, result) {
-    callback(err, result);
+    mysql.escape(noteId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.notes) + ")", function (err, result) {
+    callback(err, result, noteId);
   })
 };
 
 exports.addSkills = function (req, callback) {
+  const skillId = uuidv4();
   connection.query("INSERT INTO personnelSkills (id, employee_id, skill) VALUES (" +
-    mysql.escape(uuidv4()) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.skill) + ")", function (err, result) {
-    callback(err, result);
+    mysql.escape(skillId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.skill) + ")", function (err, result) {
+    callback(err, result, skillId);
   })
 };
 
@@ -1428,7 +1431,9 @@ exports.removeTimelineEvent = function (req, callback) {
 };
 
 exports.removeNote = function (req, callback) {
+  console.log(req.params.id);
   connection.query('DELETE FROM personnelNotes WHERE id = ' + mysql.escape(req.params.id), function (err, result) {
+    console.log(result);
     callback(err, result);
   });
 };

@@ -17,4 +17,16 @@
   display: block;
   height: 1rem;
   width: 1rem;
+
+  &.dot--gray {
+    background: rgba($gray-blue-alt, .7);
+  }
+
+  &.dot--red {
+    background: $red;
+  }
+
+  &.dot--yellow {
+    background: $yellow;
+  }
 }
