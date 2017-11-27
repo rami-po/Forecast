@@ -42,6 +42,7 @@ export class EntryComponent implements OnInit, OnDestroy {
   @Input() public isHeader = false;
 
   private isSubscribed = false;
+  private total;
 
 
   constructor(public entryService: EntryService,

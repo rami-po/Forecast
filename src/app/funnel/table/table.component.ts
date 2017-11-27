@@ -24,6 +24,7 @@ export class TableComponent implements OnInit {
   ];
 
   public statusOptions = [
+    {name: 'Initial Contact', value: 'Initial Contact'},
     {name: 'Pitched', value: 'Pitched'},
     {name: 'Scoped', value: 'Scoped'},
     {name: 'SOW Drafted', value: 'SOW Drafted'},
