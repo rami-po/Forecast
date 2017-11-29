@@ -5,25 +5,30 @@
   </ul>
 
   <div class="wrap wrap--accent">
-    <button #parentMenu="matMenuTrigger" mat-button [matMenuTriggerFor]="filter_menu" class="btn btn--default btn--jumbo">{{filterName}}
+    <button #parentMenu="matMenuTrigger" mat-button (click)="requestParentMenuFocus()" [matMenuTriggerFor]="filterMenu" class="btn btn--default btn--jumbo">{{filterName}}
       <mat-icon svgIcon="drop-down"></mat-icon>
     </button>
 
-    <mat-menu [overlapTrigger]="false" #filter_menu="matMenu">
-      <button (click)="filter('ap', 'All Projects')" mat-menu-item><span>All Projects</span></button>
-      <button (click)="filter('pvw', 'View by Projects')" mat-menu-item><span>View by Projects</span></button>
+    <!-- PRIMARY MENU -->
+    <mat-menu [overlapTrigger]="false" #filterMenu="matMenu">
+      <button (click)="filter('ap', 'All Projects')" mat-menu-item>All Projects</button>
+      <button (click)="filter('pvw', 'View by Projects')" mat-menu-item>View by Projects</button>
       <div *ngFor="let client of filterList">
+        <!-- IF NO CHILDREN, NO SUB MENU -->
         <button *ngIf="!checkForChildren(client.projects.length)"
                 (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" mat-menu-item>
-          <span>{{client.name}}</span>
+          {{client.name}}
         </button>
-        <button *ngIf="checkForChildren(client.projects.length)" (click)="$event.stopPropagation()"
-                [matMenuTriggerFor]="project_menu" mat-menu-item>
-          <span>{{client.name}}</span>
-          <mat-menu [overlapTrigger]="false" #project_menu="matMenu">
+        <!-- IF CHILDREN, THEN SUB MENU -->
+        <button *ngIf="checkForChildren(client.projects.length)"
+                (click)="requestSubMenuFocus()"
+                [matMenuTriggerFor]="projectMenu" mat-menu-item>
+          {{client.name}}
+          <!-- SUB MENU -->
+          <mat-menu [overlapTrigger]="false" #projectMenu="matMenu">
             <button *ngFor="let project of client.projects"
-                    (click)="filter(project.id, client.name + ' - ' + project.name)" mat-menu-item="">
-              <span>{{project.name}}</span>
+                    (click)="filter(project.id, client.name + ' - ' + project.name)" mat-menu-item>
+              {{project.name}}
             </button>
           </mat-menu>
         </button>
@@ -31,6 +36,7 @@
     </mat-menu>
   </div>
 </div>
+
 
 <div *ngIf="isGraphShowing" class="constrain wrap wrap--spaced">
   <div class="flex-row">
@@ -64,5 +70,6 @@
 
 
 <div class="wrap">
-  <app-forecast [height]="height" [isProjectView]="isGraphShowing" [params]="params" [forecastHeight]="forecastHeight"></app-forecast>
+  <app-forecast [height]="height" [isProjectView]="isGraphShowing" [params]="params"
+                [forecastHeight]="forecastHeight"></app-forecast>
 </div>

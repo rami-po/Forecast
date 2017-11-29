@@ -23,6 +23,8 @@ import {Location} from '@angular/common';
 export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('parentMenu') parentMenu: MatMenuTrigger;
+  @ViewChild('filterMenu') filterMenu: MatMenu;
+  @ViewChild('projectMenu') projectMenu: MatMenu;
   @Input() public projectId;
   @Input() public tableEnabled = true;
   private lastParams = {
@@ -83,11 +85,18 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // this.forecastService.params.next(type);
     }
-    this.parentMenu.closeMenu();
   }
 
   checkForChildren(amountOfChildren) {
     return amountOfChildren > 1;
+  }
+
+  requestParentMenuFocus() {
+    this.filterMenu.focusFirstItem();
+  }
+
+  requestSubMenuFocus() {
+    this.projectMenu.focusFirstItem();
   }
 
   ngOnInit() {
