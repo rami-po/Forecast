@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-milestone-prompt',
@@ -8,7 +8,7 @@ import {MdDialogRef} from '@angular/material';
 })
 export class MilestonePromptComponent implements OnInit {
 
-  constructor(private dialogRef: MdDialogRef<MilestonePromptComponent>) {
+  constructor(private dialogRef: MatDialogRef<MilestonePromptComponent>) {
   }
 
   ngOnInit() {

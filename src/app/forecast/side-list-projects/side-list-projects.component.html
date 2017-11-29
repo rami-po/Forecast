@@ -2,14 +2,14 @@
   <div *ngFor="let project of projects, let i = index">
     <div class="name-row">
       <div class="header_name" (click)="updateState(project)">{{project.client_name}} - {{project.name}}</div>
-      <div class="add-employee" [mdMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">
-        <md-icon svgIcon="add" title="Add Employee" class="add"></md-icon>
+      <div class="add-employee" [matMenuTriggerFor]="unassignedEmployeesMenu" (click)="updateUnassignedEmployees(project, i)">
+        <mat-icon svgIcon="add" title="Add Employee" class="add"></mat-icon>
       </div>
     </div>
     <div *ngIf="project.opened">
       <div class="name-row name-row--indented" *ngFor="let entry of entries[i]">
-        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject">
-          <md-icon svgIcon="delete" title="Remove User" class="remove"></md-icon>
+        <div (click)="deleteUser(entry)" mat-button *ngIf="!hasProject">
+          <mat-icon svgIcon="delete" title="Remove User" class="remove"></mat-icon>
         </div>
         <div [style.cursor]="'pointer'" class="project-client" (click)="goToPersonnelPage(entry.employee_id)">
           {{entry.first_name}} {{entry.last_name}}
@@ -22,8 +22,8 @@
     </div>
   </div>
 
-  <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
+  <mat-menu [overlapTrigger]="false" #unassignedEmployeesMenu="matMenu">
     <button type="button" [class.text-blue]="employee.id === 'fake_id'"
-      *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
-  </md-menu>
+      *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" mat-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+  </mat-menu>
 </div>

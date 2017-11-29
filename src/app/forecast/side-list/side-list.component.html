@@ -1,18 +1,18 @@
 <div class="name-container striped-rows">
   <div *ngFor="let employee of employees, let i = index">
     <div class="name-row">
-      <md-icon class="user_icon" svgIcon="user" (click)="goToPersonnelPage(employee.id)" title="View Profile"></md-icon>
+      <mat-icon class="user_icon" svgIcon="user" (click)="goToPersonnelPage(employee.id)" title="View Profile"></mat-icon>
       <div class="header_name" (click)="updateState(employee)">{{employee.first_name}} {{employee.last_name}}</div>
-      <div md-button *ngIf="employee.email == null" class="fake-user-icon" (click)="openConsole(employee)">
-        <md-icon svgIcon="more"></md-icon>
+      <div mat-button *ngIf="employee.email == null" class="fake-user-icon" (click)="openConsole(employee)">
+        <mat-icon svgIcon="more"></mat-icon>
       </div>
       <input maxlength="2" onclick="select()" [class]="employee.email != null ? 'capacity' : 'fake-user-capacity' " (input)="type($event.target.value, employee)"
              [value]="employee.capacity/3600">
     </div>
     <div *ngIf="employee.opened">
       <div class="name-row name-row--indented" *ngFor="let entry of entries[i]">
-        <div (click)="deleteUser(entry)" md-button *ngIf="!hasProject">
-          <md-icon svgIcon="delete" class="remove" title="Remove User from Project"></md-icon>
+        <div (click)="deleteUser(entry)" mat-button *ngIf="!hasProject">
+          <mat-icon svgIcon="delete" class="remove" title="Remove User from Project"></mat-icon>
         </div>
         <!-- <div class="project-client"
              [style.font-weight]="params.id === entry.project_id + '' ? 'bold' : 'normal'">
@@ -28,12 +28,12 @@
     </div>
   </div>
 <!-- added type="button" below to prevent ngOnInit from running twice -->
-  <md-menu [overlapTrigger]="false" #unassignedEmployeesMenu="mdMenu">
+  <mat-menu [overlapTrigger]="false" #unassignedEmployeesMenu="matMenu">
     <button type="button" [class.text-blue]="employee.id === 'fake_id'"
-      *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" md-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
-  </md-menu>
+      *ngFor="let employee of unassignedEmployees" (click)="addUser(employee)" mat-menu-item><span>{{employee.first_name}} {{employee.last_name}}</span></button>
+  </mat-menu>
 </div>
 <div *ngIf="isProjectView">
-  <button class="add-employee btn btn--default" [mdMenuTriggerFor]="unassignedEmployeesMenu">+ Add Employee</button>
+  <button class="add-employee btn btn--default" [matMenuTriggerFor]="unassignedEmployeesMenu">+ Add Employee</button>
   <div class="add-employee"></div>
 </div>

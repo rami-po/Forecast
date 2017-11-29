@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FunnelService} from "./funnel.service";
 import {DomSanitizer} from "@angular/platform-browser";
-import {MdDialog, MdIconRegistry} from "@angular/material";
+import {MatDialog, MatIconRegistry} from "@angular/material";
 import {AddFunnelItemComponent} from "./add-funnel-item/add-funnel-item.component";
 import {ForecastService} from "../forecast/forecast.service";
 
@@ -21,9 +21,9 @@ export class FunnelComponent implements OnInit, OnDestroy {
 
   constructor(private funnelService: FunnelService,
               private forecastService: ForecastService,
-              private iconRegistry: MdIconRegistry,
+              private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
-              private dialog: MdDialog) {
+              private dialog: MatDialog) {
     iconRegistry.addSvgIcon(
       'add',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_add_white_48px.svg'));

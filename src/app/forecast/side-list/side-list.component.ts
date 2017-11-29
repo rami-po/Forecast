@@ -6,7 +6,7 @@ import {EntryComponent} from '../entry/entry.component';
 import {isNullOrUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {DomSanitizer} from "@angular/platform-browser";
-import {MdDialog, MdIconRegistry} from "@angular/material";
+import {MatDialog, MatIconRegistry} from "@angular/material";
 import {StatusMessageDialogComponent} from "../status-message/status-message.component";
 import {Subject} from "rxjs/Subject";
 import {FakeEmployeeComponent} from "./fake-employee/fake-employee.component";
@@ -37,10 +37,10 @@ export class SideListComponent implements OnInit {
   private clients = [];
 
   constructor(private forecastService: ForecastService,
-              private iconRegistry: MdIconRegistry,
+              private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
               private router: Router,
-              private dialog: MdDialog,
+              private dialog: MatDialog,
               private sideListService: SideListService) {
     iconRegistry
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'))

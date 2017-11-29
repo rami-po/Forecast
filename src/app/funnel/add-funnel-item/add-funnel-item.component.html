@@ -1,4 +1,4 @@
-<h3 md-dialog-title
+<h3 mat-dialog-title
     [class.error]="error"
     [class.success]="success"
     [class.warning]="warning"
@@ -6,55 +6,55 @@
 <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
 
 
-  <md-dialog-content class="two-col-form">
-    <md-input-container *ngFor="let entry of entries">
-      <input mdInput formControlName="{{entry.formValue}}"
+  <mat-dialog-content class="two-col-form">
+    <mat-input-container *ngFor="let entry of entries">
+      <input matInput formControlName="{{entry.formValue}}"
              placeholder="{{entry.name}}"
              type="text">
-    </md-input-container>
+    </mat-input-container>
 
-    <md-input-container *ngFor="let entry of numberEntries">
-      <input mdInput formControlName="{{entry.formValue}}"
+    <mat-input-container *ngFor="let entry of numberEntries">
+      <input matInput formControlName="{{entry.formValue}}"
              placeholder="{{entry.name}}"
              type="number">
-      <span *ngIf="entry.formValue == 'estimatedRevenue'" mdPrefix>$</span>
-      <span *ngIf="entry.formValue == 'confidence'" mdSuffix>%</span>
-    </md-input-container>
+      <span *ngIf="entry.formValue == 'estimatedRevenue'" matPrefix>$</span>
+      <span *ngIf="entry.formValue == 'confidence'" matSuffix>%</span>
+    </mat-input-container>
 
     <div *ngFor="let entry of selectEntries">
-      <md-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}" name="option">
-        <md-option *ngFor="let option of entry.options" [value]="option.id">
+      <mat-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}" name="option">
+        <mat-option *ngFor="let option of entry.options" [value]="option.id">
           {{option.name}}
-        </md-option>
-      </md-select>
+        </mat-option>
+      </mat-select>
     </div>
 
     <div>
-      <md-input-container>
-        <input readonly="readonly" formControlName="projectedStartDate" mdInput [mdDatepicker]="picker2"
+      <mat-input-container>
+        <input readonly="readonly" formControlName="projectedStartDate" matInput [matDatepicker]="picker2"
                placeholder="Projected Start Date">
-        <button mdSuffix [mdDatepickerToggle]="picker2"></button>
-      </md-input-container>
-      <md-datepicker #picker2></md-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      </mat-input-container>
+      <mat-datepicker #picker2></mat-datepicker>
     </div>
 
     <div>
-      <md-input-container>
-        <input readonly="readonly" formControlName="estimatedSigningDate" mdInput [mdDatepicker]="picker1"
+      <mat-input-container>
+        <input readonly="readonly" formControlName="estimatedSigningDate" matInput [matDatepicker]="picker1"
                placeholder="Estimated Signing Date">
-        <button mdSuffix [mdDatepickerToggle]="picker1"></button>
-      </md-input-container>
-      <md-datepicker #picker1></md-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      </mat-input-container>
+      <mat-datepicker #picker1></mat-datepicker>
     </div>
 
 
-  </md-dialog-content>
+  </mat-dialog-content>
 
 
-  <md-dialog-actions>
-    <button md-button *ngIf="dismissible" class="btn btn--secondary" (click)="dialogRef.close(false)">Cancel</button>
-    <button md-button class="btn btn--primary" autofocus="true" type="submit">OK</button>
+  <mat-dialog-actions>
+    <button mat-button *ngIf="dismissible" class="btn btn--secondary" (click)="dialogRef.close(false)">Cancel</button>
+    <button mat-button class="btn btn--primary" autofocus="true" type="submit">OK</button>
     <span class="clear"></span>
-  </md-dialog-actions>
+  </mat-dialog-actions>
 
 </form>

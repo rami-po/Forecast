@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MdDialog, MdDialogRef} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material';
 import {ForecastService} from "../../forecast.service";
 import {StatusMessageDialogComponent} from "../../status-message/status-message.component";
 import {isNullOrUndefined} from "util";
@@ -28,8 +28,8 @@ export class FakeEmployeeComponent implements OnInit {
   public params;
   private socket;
 
-  constructor(public dialogRef: MdDialogRef<FakeEmployeeComponent>,
-              private dialog: MdDialog,
+  constructor(public dialogRef: MatDialogRef<FakeEmployeeComponent>,
+              private dialog: MatDialog,
               private forecastService: ForecastService,
               private sideListService: SideListService) {
     this.socket = io(window.location.hostname + ':3000');

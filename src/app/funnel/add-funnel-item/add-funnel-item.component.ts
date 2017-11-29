@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Funnel} from '../funnel-item.model';
 import {FunnelService} from '../funnel.service';
@@ -70,7 +70,7 @@ export class AddFunnelItemComponent implements OnInit {
       ]}
   ];
 
-  constructor(public dialogRef: MdDialogRef<AddFunnelItemComponent>,
+  constructor(public dialogRef: MatDialogRef<AddFunnelItemComponent>,
               private funnelService: FunnelService) {
   }
 

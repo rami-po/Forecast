@@ -9,7 +9,7 @@ import {ForecastService} from '../forecast/forecast.service';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {GraphService} from './graph/graph.service';
 import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.component';
-import {MdDialog, MdIconRegistry, MdMenu, MdMenuTrigger} from '@angular/material';
+import {MatDialog, MatIconRegistry, MatMenu, MatMenuTrigger} from '@angular/material';
 import {DomSanitizer} from "@angular/platform-browser";
 import {Location} from '@angular/common';
 
@@ -22,7 +22,9 @@ import {Location} from '@angular/common';
 })
 export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('parentMenu') parentMenu: MdMenuTrigger;
+  @ViewChild('parentMenu') parentMenu: MatMenuTrigger;
+  @ViewChild('filterMenu') filterMenu: MatMenu;
+  @ViewChild('projectMenu') projectMenu: MatMenu;
   @Input() public projectId;
   @Input() public tableEnabled = true;
   private lastParams = {
@@ -51,9 +53,9 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private route: ActivatedRoute,
               private forecastService: ForecastService,
               public graphService: GraphService,
-              private dialog: MdDialog,
+              private dialog: MatDialog,
               private router: Router,
-              private iconRegistry: MdIconRegistry,
+              private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
               private location: Location) {
     iconRegistry.addSvgIcon(
@@ -83,11 +85,18 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       // this.forecastService.params.next(type);
     }
-    this.parentMenu.closeMenu();
   }
 
   checkForChildren(amountOfChildren) {
     return amountOfChildren > 1;
+  }
+
+  requestParentMenuFocus() {
+    this.filterMenu.focusFirstItem();
+  }
+
+  requestSubMenuFocus() {
+    this.projectMenu.focusFirstItem();
   }
 
   ngOnInit() {
@@ -284,7 +293,7 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    console.log('DESTROY PROJECT COMPONENT!')
+    console.log('DESTROY PROJECT COMPONENT!');
     for (const subscription of this.subscriptions) {
       subscription.unsubscribe();
     }
