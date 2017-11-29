@@ -49,6 +49,9 @@ router.get('/cache/clear', (req, res, next) => {
  */
 
 router.post('/personnel/picture', function (req, res, next) {
+  console.log('PICTURE:');
+  console.log(req);
+  console.log('BODY: ');
   console.log(req.body);
   return res.status(200).json({
     message: 'test',
@@ -1652,7 +1655,7 @@ router.get('/rollups', function (req, res, next) {
                   const amountOfTotalsA = a.rollUps[0].forecast.totals.length;
                   const amountOfTotalsB = b.rollUps[0].forecast.totals.length;
 
-                  return ((amountOfTotalsA < amountOfTotalsB) ? -1 : ((amountOfTotalsA == amountOfTotalsB) ? 0 : 1));
+                  return ((hoursA < hoursB) ? -1 : ((hoursA == hoursB) ? 0 : 1));
                 });
 
                 //3) separate them back out:

@@ -6,6 +6,7 @@ import {ForecastService} from '../forecast/forecast.service';
 import {isNullOrUndefined} from 'util';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {PersonnelService} from "./personnel.service";
+import {FileUploader} from "ng2-file-upload";
 
 @Component({
   selector: 'app-personnel',
@@ -20,6 +21,9 @@ export class PersonnelComponent implements OnInit {
   public timelineForm: FormGroup;
   public notesForm: FormGroup;
   public skillsForm: FormGroup;
+
+  private apiBase = document.location.protocol + '//' + window.location.hostname + ':3000/resource';
+  public uploader: FileUploader = new FileUploader({url: this.apiBase + '/personnel/picture', itemAlias: 'photo'});
 
   public items = [
     'Compensation',
@@ -52,6 +56,14 @@ export class PersonnelComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    // override the onAfterAddingfile property of the uploader so it doesn't authenticate with //credentials.
+    this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; };
+    // overide the onCompleteItem property of the uploader so we are
+    // able to deal with the server response.
+    this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+      console.log('ImageUpload:uploaded:', item, status, response);
+    };
 
     this.route.params.subscribe(
       data => {
@@ -116,6 +128,10 @@ export class PersonnelComponent implements OnInit {
         }
       );
     }
+  }
+
+  fileChange2(event) {
+    this.uploader.uploadAll();
   }
 
   fileChange(event) {

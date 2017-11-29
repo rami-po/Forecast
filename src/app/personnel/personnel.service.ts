@@ -17,10 +17,11 @@ export class PersonnelService {
 
   uploadPicture(id, picture) {
     const headers = new Headers({'Content-Type': 'image/jpeg'});
-    const h = new Headers({'Accept': 'multipart/form-data'});
+    const h = new Headers({'Encoding-Type': 'multipart/form-data'});
 
     console.log(picture.get('file'));
-    return this.http.post(this.apiBase + '/personnel/picture', picture, h)
+    console.log(picture);
+    return this.http.post(this.apiBase + '/personnel/picture', picture)
       .map((response: Response) => {
         console.log(response.json());
         return response.json();

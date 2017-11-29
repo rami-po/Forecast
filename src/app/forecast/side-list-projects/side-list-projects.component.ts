@@ -29,6 +29,8 @@ export class SideListProjectsComponent implements OnInit {
   private listOfUnassignedEmployees = [];
   public unassignedEmployees;
 
+  private currentProject;
+
   constructor(private forecastService: ForecastService,
               private router: Router,
               private iconRegistry: MdIconRegistry,
@@ -57,6 +59,7 @@ export class SideListProjectsComponent implements OnInit {
   }
 
   updateUnassignedEmployees(project, index) {
+    this.currentProject = project;
     this.unassignedEmployees = null;
     if (this.listOfUnassignedEmployees[index]) {
       this.unassignedEmployees = this.listOfUnassignedEmployees[index];
@@ -66,47 +69,38 @@ export class SideListProjectsComponent implements OnInit {
 
     this.forecastService.allEmployees$.subscribe(
       data => {
-        const dataCopy = JSON.parse(JSON.stringify(data));
-        const employeesHash = [];
-        for (const employee of dataCopy) {
-          employeesHash[employee.id] = employee;
-        }
+        const allEmployees = JSON.parse(JSON.stringify(data));
+
         // iterate through employees on projects
         for (let i = 0; i < this.entries[index].length; i++) {
-          for (let j = 0; j < dataCopy.length; j++) {
-            dataCopy[j].project = project;
-            if (this.entries[index][i].employee_id == dataCopy[j].id) {
-              dataCopy.splice(j, 1);
+          for (let j = 0; j < allEmployees.length; j++) {
+            if (this.entries[index][i].employee_id == allEmployees[j].id) {
+              allEmployees.splice(j, 1);
             }
           }
         }
-        dataCopy.splice(0, 0, {id: 'fake_id', first_name: 'Add', last_name: 'Other'});
-        this.listOfUnassignedEmployees[index] = dataCopy;
-        this.unassignedEmployees = dataCopy;
+        allEmployees.splice(0, 0, {id: 'fake_id', first_name: 'Add', last_name: 'Other'});
+        this.listOfUnassignedEmployees[index] = allEmployees;
+        this.unassignedEmployees = allEmployees;
       }
     );
   }
 
   addUser(employee) {
-    console.log(employee);
-    const project = employee.project;
-
     const dialog = this.dialog.open(StatusMessageDialogComponent);
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.title = 'Are you sure?';
     if (employee.id === 'fake_id') {
-      this.addFakeUser(dialog, project);
+      this.addFakeUser(dialog);
       return null;
     }
 
-
-
-    dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name + ' to the project: ' + project.name + '.'];
+    dialog.componentInstance.messages = ['You are adding ' + employee.first_name + ' ' + employee.last_name + ' to the project: ' + this.currentProject.name + '.'];
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {
-          this.forecastService.addEmployeeToProject(project.id, employee.id).subscribe(
+          this.forecastService.addEmployeeToProject(this.currentProject.id, employee.id).subscribe(
             () => {
               const message = {
                 action: 'addEmployeeToProject',
@@ -126,14 +120,14 @@ export class SideListProjectsComponent implements OnInit {
     );
   }
 
-  addFakeUser(dialog, project) {
+  addFakeUser(dialog) {
     dialog.componentInstance.title = 'Add Other Employee';
     dialog.componentInstance.input = true;
     dialog.componentInstance.messages = ['Enter a name please.'];
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {
-          this.forecastService.addFakeEmployee(dialog.componentInstance.inputText, project.id).subscribe(
+          this.forecastService.addFakeEmployee(dialog.componentInstance.inputText, this.currentProject.id).subscribe(
             () => {
               console.log('fake employee added: '); console.log(this.params);
               console.log('emit: userUpdatedRollUps - addFakeEmployee');

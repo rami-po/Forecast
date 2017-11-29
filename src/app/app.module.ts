@@ -46,6 +46,7 @@ import {SideListProjectsComponent} from './forecast/side-list-projects/side-list
 import {PersonnelComponent} from './personnel/personnel.component';
 import {MainNavComponent} from './main-nav/main-nav.component';
 import {FunnelService} from "./funnel/funnel.service";
+import {FileSelectDirective} from "ng2-file-upload";
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import {FunnelService} from "./funnel/funnel.service";
     AddFunnelItemComponent,
     SideListProjectsComponent,
     PersonnelComponent,
-    MainNavComponent
+    MainNavComponent,
+    FileSelectDirective
   ],
   imports: [
     BrowserModule,
