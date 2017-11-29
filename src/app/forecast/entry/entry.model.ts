@@ -4,7 +4,7 @@
 export class Entry {
     firstName: string;
     lastName: string;
-    employeeId: string;
+    employeeId: number;
     clientName: string;
     clientId: number;
     projectName: string;
@@ -12,7 +12,7 @@ export class Entry {
     weekOf: string;
     capacity: number;
 
-    constructor(firstName: string, lastName: string, employeeId: string, clientName: string, clientId: number,
+    constructor(firstName: string, lastName: string, employeeId: number, clientName: string, clientId: number,
                 projectName: string, projectId: number, weekOf: string, capacity: number) {
         this.firstName = firstName;
         this.lastName = lastName;

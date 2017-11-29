@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {isNullOrUndefined} from "util";
 import {Observable} from "rxjs/Observable";
 import {FunnelService} from "../funnel.service";
-import {MdDialog, MdIconRegistry} from "@angular/material";
+import {MatDialog, MatIconRegistry} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {AddFunnelItemComponent} from "../add-funnel-item/add-funnel-item.component";
 
@@ -34,9 +34,9 @@ export class TableComponent implements OnInit {
   ];
 
   constructor(private funnelService: FunnelService,
-              private iconRegistry: MdIconRegistry,
+              private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
-              private dialog: MdDialog) {
+              private dialog: MatDialog) {
     iconRegistry.addSvgIcon(
       'edit',
       sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit.svg'));

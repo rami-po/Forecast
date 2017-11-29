@@ -30,59 +30,76 @@
 
       <td class="utility-buttons">
         <!-- EDIT -->
-        <md-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit" title="Edit"></md-icon>
+        <mat-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit" title="Edit"></mat-icon>
         <!-- DELETE -->
-        <md-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete" title="Delete"></md-icon>
+        <mat-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete" title="Delete"></mat-icon>
       </td>
+
+      <!-- CLIENT NAME -->
       <td>
         <div>
           <input [(ngModel)]="item.client_name" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.client_name}}">
         </div>
       </td>
+
+      <!-- NEW CLIENT? -->
       <td>
         <div>
-          <md-select [(ngModel)]="item.is_new_client" name="option" class="yes-no-select">
-            <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
+          <mat-select [(ngModel)]="item.is_new_client" name="option" class="yes-no-select">
+            <mat-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
               {{option.name}}
-            </md-option>
-          </md-select>
+            </mat-option>
+          </mat-select>
         </div>
       </td>
+
+      <!-- PROJECT NAME -->
       <td>
         <div>
           <input [(ngModel)]="item.project_name" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.project_name}}">
         </div>
       </td>
+
+      <!-- PROJECT MANAGER -->
       <td>
         <div>
           <input [(ngModel)]="item.project_manager" (blur)="send(item)" (input)="type(item)" type="text"
                  value="{{item.project_manager}}">
         </div>
       </td>
+
+      <!-- ESTIMATED REVENUE -->
       <td>
         <div>
-          <input class="cell-revenue text-money text-right" [(ngModel)]="item.revenue" (blur)="send(item)" (input)="type(item)"
+          <input class="cell-revenue text-money text-right" [(ngModel)]="item.revenue" (blur)="send(item)"
+                 (input)="type(item)"
                  type="number"
                  value="{{item.revenue}}">
         </div>
       </td>
+
+      <!-- CONFIDENCE -->
       <td>
         <div class="progress progress--confidence progress--positive" [style.width]="item.confidence + 'px'">
           <input class="cell-confidence" [(ngModel)]="item.confidence" (blur)="send(item)" (input)="type(item)"
                  type="number" value="{{item.confidence}}" max="100">
         </div>
       </td>
+
+      <!-- STATUS -->
       <td>
         <div>
-          <md-select class="status-select" [(ngModel)]="item.status" name="option">
-            <md-option (click)="update(item)" *ngFor="let option of statusOptions" [value]="option.value">
+          <mat-select class="status-select" [(ngModel)]="item.status" name="option">
+            <mat-option (click)="update(item)" *ngFor="let option of statusOptions" [value]="option.value">
               {{option.name}}
-            </md-option>
-          </md-select>
+            </mat-option>
+          </mat-select>
         </div>
       </td>
+
+      <!-- ESTIAMTED SIGNING DATE -->
       <td>
         <div>
           <input class="cell-date" [ngModel]="item.signing_date | date: 'MM/dd/yyyy'"
@@ -90,11 +107,15 @@
                  (blur)="sendDate(item, 'signing_date', $event.target.value)" type="text">
         </div>
       </td>
+
+      <!-- SIGNING THIS MONTH? -->
       <td class="no-edit">
         <div>
           {{equalsThisMonth(item.signing_date)}}
         </div>
       </td>
+
+      <!-- PROJECTED START DATE -->
       <td>
         <div>
           <input class="cell-date" [ngModel]="item.start_date | date: 'MM/dd/yyyy'"
@@ -102,14 +123,20 @@
                  (blur)="sendDate(item, 'start_date', $event.target.value)" type="text">
         </div>
       </td>
+
+      <!-- STARTING THIS MONTH? -->
       <td class="no-edit">
         <div>{{equalsThisMonth(item.start_date)}}</div>
       </td>
+
+      <!-- PROJECT END DATE -->
       <td class="no-edit">
         <div>
           {{getEndDate(item.duration_weeks, item.start_date) | date: 'MM/dd/yyyy'}}
         </div>
       </td>
+
+      <!-- PROJECT DURATION (WEEKS) -->
       <td>
         <div>
           <input class="cell-duration-weeks" [(ngModel)]="item.duration_weeks" (blur)="send(item)" (input)="type(item)"
@@ -117,36 +144,52 @@
                  value="{{item.duration_weeks}}">
         </div>
       </td>
+
+      <!-- PROJECT DURATION (MONTHS) -->
       <td>
         <div class="cell-duration-months">{{getDurationMonths(item.duration_weeks) | number: '1.2-2'}}</div>
       </td>
+
+      <!-- SCALA PROJECT NAME -->
       <td>
         <div>
-          <md-select class="project-select" [(ngModel)]="item.project_id" name="project" class="project-name-select">
-            <md-option (click)="update(item)" *ngFor="let project of projects" [value]="project.id">
+          <mat-select class="project-select" [(ngModel)]="item.project_id" name="project" class="project-name-select">
+            <mat-option (click)="update(item)" *ngFor="let project of projects" [value]="project.id">
               {{project.name}}
-            </md-option>
-          </md-select>
+            </mat-option>
+          </mat-select>
         </div>
       </td>
+
+      <!-- ESTIMATED MONTHLY REVENUE -->
       <td class="no-edit">
-        <div class="text-money text-right">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}</div>
+        <div class="text-money text-right">${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}
+        </div>
       </td>
+
+      <!-- REVENUE FROM NEW BUSINESS -->
       <td class="no-edit">
         <div class="text-money text-right">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
       </td>
+
+      <!-- PIPELINE REVENUE -->
       <td class="no-edit">
-        <div class="text-money text-right">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}</div>
-      </td>
-      <td>
-        <div>
-          <md-select [(ngModel)]="item.completed" name="option" class="yes-no-select">
-            <md-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
-              {{option.name}}
-            </md-option>
-          </md-select>
+        <div class="text-money text-right">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}
         </div>
       </td>
+
+      <!-- COMPLETED? -->
+      <td>
+        <div>
+          <mat-select [(ngModel)]="item.completed" name="option" class="yes-no-select">
+            <mat-option (click)="update(item)" *ngFor="let option of ynOptions" [value]="option.value">
+              {{option.name}}
+            </mat-option>
+          </mat-select>
+        </div>
+      </td>
+
+      <!-- NOTES -->
       <td>
         <div><input [(ngModel)]="item.notes" (blur)="send(item)" (input)="type(item)" type="text"
                     value="{{item.notes}}"></div>

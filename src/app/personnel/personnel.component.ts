@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DomSanitizer} from "@angular/platform-browser";
-import {MdIconRegistry} from "@angular/material";
+import {MatIconRegistry} from "@angular/material";
 import {ForecastService} from '../forecast/forecast.service';
 import {isNullOrUndefined} from 'util';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -35,7 +35,7 @@ export class PersonnelComponent implements OnInit {
     private router: Router,
     private personnelService: PersonnelService,
     private forecastService: ForecastService,
-    private iconRegistry: MdIconRegistry,
+    private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer
   ) {
     iconRegistry.addSvgIcon(

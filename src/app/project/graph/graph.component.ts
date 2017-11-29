@@ -5,7 +5,7 @@ import {GraphService} from './graph.service';
 // import 'chartjs-plugin-zoom';
 import 'chartjs-plugin-annotation';
 import {ChartComponent} from 'angular2-chartjs';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {MilestonePromptComponent} from '../milestone-prompt/milestone-prompt.component';
 import {ProjectService} from '../project.service';
 import {BaseChartDirective} from "ng2-charts";
@@ -289,7 +289,7 @@ export class GraphComponent implements OnInit, OnDestroy {
               public graphService: GraphService,
               private projectService: ProjectService,
               private forecastService: ForecastService,
-              private dialog: MdDialog) {
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {

@@ -5,30 +5,30 @@
   </ul>
 
   <div class="wrap wrap--accent">
-    <button #parentMenu="mdMenuTrigger" md-button [mdMenuTriggerFor]="filter_menu" class="btn btn--default btn--jumbo">{{filterName}}
-      <md-icon svgIcon="drop-down"></md-icon>
+    <button #parentMenu="matMenuTrigger" mat-button [matMenuTriggerFor]="filter_menu" class="btn btn--default btn--jumbo">{{filterName}}
+      <mat-icon svgIcon="drop-down"></mat-icon>
     </button>
 
-    <md-menu [overlapTrigger]="false" #filter_menu="mdMenu">
-      <button (click)="filter('ap', 'All Projects')" md-menu-item><span>All Projects</span></button>
-      <button (click)="filter('pvw', 'View by Projects')" md-menu-item><span>View by Projects</span></button>
+    <mat-menu [overlapTrigger]="false" #filter_menu="matMenu">
+      <button (click)="filter('ap', 'All Projects')" mat-menu-item><span>All Projects</span></button>
+      <button (click)="filter('pvw', 'View by Projects')" mat-menu-item><span>View by Projects</span></button>
       <div *ngFor="let client of filterList">
         <button *ngIf="!checkForChildren(client.projects.length)"
-                (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" md-menu-item>
+                (click)="filter(client.projects[0].id, client.name + ' - ' + client.projects[0].name)" mat-menu-item>
           <span>{{client.name}}</span>
         </button>
         <button *ngIf="checkForChildren(client.projects.length)" (click)="$event.stopPropagation()"
-                [mdMenuTriggerFor]="project_menu" md-menu-item>
+                [matMenuTriggerFor]="project_menu" mat-menu-item>
           <span>{{client.name}}</span>
-          <md-menu [overlapTrigger]="false" #project_menu="mdMenu">
+          <mat-menu [overlapTrigger]="false" #project_menu="matMenu">
             <button *ngFor="let project of client.projects"
-                    (click)="filter(project.id, client.name + ' - ' + project.name)" md-menu-item="">
+                    (click)="filter(project.id, client.name + ' - ' + project.name)" mat-menu-item="">
               <span>{{project.name}}</span>
             </button>
-          </md-menu>
+          </mat-menu>
         </button>
       </div>
-    </md-menu>
+    </mat-menu>
   </div>
 </div>
 

@@ -6,7 +6,7 @@ import {EntryComponent} from '../entry/entry.component';
 import {isNullOrUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {DomSanitizer} from '@angular/platform-browser';
-import {MdDialog, MdIconRegistry} from '@angular/material';
+import {MatDialog, MatIconRegistry} from '@angular/material';
 import {StatusMessageDialogComponent} from '../status-message/status-message.component';
 import {Subject} from 'rxjs/Subject';
 import * as io from 'socket.io-client';
@@ -33,9 +33,9 @@ export class SideListProjectsComponent implements OnInit {
 
   constructor(private forecastService: ForecastService,
               private router: Router,
-              private iconRegistry: MdIconRegistry,
+              private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
-              private dialog: MdDialog) {
+              private dialog: MatDialog) {
     iconRegistry
       .addSvgIcon('add', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_add.svg'))
       .addSvgIcon('delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'));

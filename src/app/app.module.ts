@@ -10,11 +10,12 @@ import {EntryComponent} from './forecast/entry/entry.component';
 import {HttpModule} from '@angular/http';
 import {HeaderRowComponent} from './forecast/header-row/header-row.component';
 import {
-  MdButtonModule, MdCheckboxModule, MdChipsModule,
-  MdDatepicker, MdDatepickerModule, MdDialogModule,
-  MdIconModule, MdInputModule, MdMenuModule,
-  MdNativeDateModule, MdProgressSpinnerModule, MdSelectModule,
-  MdToolbarModule, MdTooltipModule
+  MatButtonModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule, MatDialogModule, MatIconModule,
+  MatInputModule, MatMenuModule,
+  MatNativeDateModule,
+  MatProgressSpinnerModule, MatSelectModule,
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 import {DatePipe} from '@angular/common';
 import {ProjectComponent} from './project/project.component';
@@ -34,19 +35,19 @@ import {RollUpComponent} from './forecast/roll-up/roll-up.component';
 import {BobComponent} from './bob/bob.component';
 import {ClientListComponent} from './bob/client-list/client-list.component';
 import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.component';
-import {StatusMessageDialogComponent} from "./forecast/status-message/status-message.component";
-import {RollUpService} from "./forecast/roll-up/roll-up.service";
-import {FakeEmployeeComponent} from "./forecast/side-list/fake-employee/fake-employee.component";
-import {NotFoundComponent} from "./not-found/not-found.component";
+import {StatusMessageDialogComponent} from './forecast/status-message/status-message.component';
+import {RollUpService} from './forecast/roll-up/roll-up.service';
+import {FakeEmployeeComponent} from './forecast/side-list/fake-employee/fake-employee.component';
+import {NotFoundComponent} from './not-found/not-found.component';
 import {FunnelComponent} from './funnel/funnel.component';
 import {TableComponent} from './funnel/table/table.component';
-import {AddFunnelItemComponent} from "./funnel/add-funnel-item/add-funnel-item.component";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AddFunnelItemComponent} from './funnel/add-funnel-item/add-funnel-item.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SideListProjectsComponent} from './forecast/side-list-projects/side-list-projects.component';
 import {PersonnelComponent} from './personnel/personnel.component';
 import {MainNavComponent} from './main-nav/main-nav.component';
-import {FunnelService} from "./funnel/funnel.service";
-import {FileSelectDirective} from "ng2-file-upload";
+import {FunnelService} from './funnel/funnel.service';
+import {FileSelectDirective} from 'ng2-file-upload';
 
 @NgModule({
   declarations: [
@@ -81,19 +82,19 @@ import {FileSelectDirective} from "ng2-file-upload";
     ReactiveFormsModule,
     BrowserAnimationsModule,
     HttpModule,
-    MdTooltipModule,
-    MdButtonModule,
-    MdChipsModule,
-    MdToolbarModule,
-    MdDialogModule,
-    MdMenuModule,
-    MdProgressSpinnerModule,
-    MdIconModule,
-    MdInputModule,
-    MdDatepickerModule,
-    MdNativeDateModule,
-    MdCheckboxModule,
-    MdSelectModule,
+    MatTooltipModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatToolbarModule,
+    MatDialogModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCheckboxModule,
+    MatSelectModule,
     ChartModule,
     routing],
   bootstrap: [AppComponent],

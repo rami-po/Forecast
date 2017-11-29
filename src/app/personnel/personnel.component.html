@@ -11,20 +11,20 @@
       </div>
       <ul class="icon-list">
         <li class="icon-list-item icon-list-item--phone">
-          <md-icon svgIcon="phone"></md-icon>
+          <mat-icon svgIcon="phone"></mat-icon>
           <a href="tel:{{employee.p_home_phone}}">{{employee.p_home_phone}}</a>
         </li>
         <li class="icon-list-item icon-list-item--email">
-          <md-icon svgIcon="envelope"></md-icon>
+          <mat-icon svgIcon="envelope"></mat-icon>
           <a href="mailto:">{{employee.email}}</a>
         </li>
         <li class="icon-list-item icon-list-item--address">
-          <md-icon svgIcon="map-marker"></md-icon>
+          <mat-icon svgIcon="map-marker"></mat-icon>
           {{employee.p_street_address}}<br>
           {{employee.p_city}}, {{employee.p_state}} {{employee.p_zip_code}}
         </li>
         <li class="icon-list-item icon-list-item--relationship">
-          <md-icon svgIcon="heart"></md-icon>
+          <mat-icon svgIcon="heart"></mat-icon>
           Married to Someone Great
         </li>
         <!-- <li *ngIf="employee.spouse_name" class="icon-list-item--relationship">Married to {{employee.spouse_name}}</li> -->
@@ -49,7 +49,7 @@
         <li *ngFor="let event of employee.events, let i = index" class="timeline-list-item">
           <div class="timeline-list-item__date">
             {{event.date | date: 'MMM d, y'}}
-            <md-icon svgIcon="remove" title="Delete Event" (click)="removeTimelineEvent(event, i)"></md-icon>
+            <mat-icon svgIcon="remove" title="Delete Event" (click)="removeTimelineEvent(event, i)"></mat-icon>
           </div>
           <div class="timeline-list-item__event">{{event.event}}</div>
         </li>
@@ -59,22 +59,22 @@
 
       <h4>Add Timeline Event</h4>
       <form [formGroup]="timelineForm" (ngSubmit)="submitTimelineForm()">
-        <md-input-container class="form-group">
-          <input mdInput formControlName="event" placeholder="Event" type="text">
-        </md-input-container>
+        <mat-input-container class="form-group">
+          <input matInput formControlName="event" placeholder="Event" type="text">
+        </mat-input-container>
         <div class="form-group">
-          <md-select placeholder="Type" formControlName="type" name="item" floatPlaceholder="never">
-            <md-option *ngFor="let item of items" [value]="item">
+          <mat-select placeholder="Type" formControlName="type" name="item" floatPlaceholder="never">
+            <mat-option *ngFor="let item of items" [value]="item">
               {{item}}
-            </md-option>
-          </md-select>
+            </mat-option>
+          </mat-select>
         </div>
-        <md-input-container floatPlaceholder="never" class="form-group">
-          <input readonly="readonly" formControlName="date" mdInput [mdDatepicker]="picker" placeholder="mm/dd/yyyy" class="form-control">
-          <button mdSuffix [mdDatepickerToggle]="picker"></button>
-        </md-input-container>
-        <md-datepicker #picker></md-datepicker>
-        <button md-button class="btn btn--default">Add</button>
+        <mat-input-container floatPlaceholder="never" class="form-group">
+          <input readonly="readonly" formControlName="date" matInput [matDatepicker]="picker" placeholder="mm/dd/yyyy" class="form-control">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        </mat-input-container>
+        <mat-datepicker #picker></mat-datepicker>
+        <button mat-button class="btn btn--default">Add</button>
       </form>
     </div>
     <div class="card">
@@ -86,31 +86,31 @@
     <div class="card card--bordered">
       <h3 class="card__heading">Skills</h3>
       <div *ngIf="employee.skills.length == 0">No skills :(</div>
-      <md-chip-list>
-        <md-chip *ngFor="let skill of employee.skills, let i = index">
-          {{skill.skill}}<md-icon (click)="removeSkill(skill, i)" [style.cursor]="'pointer'" svgIcon="remove"></md-icon>
-        </md-chip>
-      </md-chip-list>
+      <mat-chip-list>
+        <mat-chip *ngFor="let skill of employee.skills, let i = index">
+          {{skill.skill}}<mat-icon (click)="removeSkill(skill, i)" [style.cursor]="'pointer'" svgIcon="remove"></mat-icon>
+        </mat-chip>
+      </mat-chip-list>
       <form [formGroup]="skillsForm" (ngSubmit)="submitSkillsForm()" class="form-horizontal">
-        <md-input-container>
-          <input mdInput formControlName="skill" placeholder="New Skill" type="text">
-        </md-input-container>
-        <button md-button class="btn btn--default">Add</button>
+        <mat-input-container>
+          <input matInput formControlName="skill" placeholder="New Skill" type="text">
+        </mat-input-container>
+        <button mat-button class="btn btn--default">Add</button>
       </form>
     </div>
     <div class="card card--bordered">
       <h3 class="card__heading">Notes</h3>
       <ul class="notes-list">
-        <li *ngFor="let note of employee.notes, let i = index" class="notes-list-item">{{note.notes}} <md-icon svgIcon="remove" title="Delete Note" (click)="removeNote(note, i)"></md-icon></li>
+        <li *ngFor="let note of employee.notes, let i = index" class="notes-list-item">{{note.notes}} <mat-icon svgIcon="remove" title="Delete Note" (click)="removeNote(note, i)"></mat-icon></li>
       </ul>
 
       <hr>
       <h4>Add Note</h4>
       <form [formGroup]="notesForm" (ngSubmit)="submitNotesForm()">
-        <md-input-container>
-          <textarea mdInput formControlName="notes"></textarea>
-        </md-input-container>
-        <button md-button class="btn btn--default">Add</button>
+        <mat-input-container>
+          <textarea matInput formControlName="notes"></textarea>
+        </mat-input-container>
+        <button mat-button class="btn btn--default">Add</button>
       </form>
     </div>
   </div>
