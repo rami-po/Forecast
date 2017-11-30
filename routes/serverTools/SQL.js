@@ -62,6 +62,12 @@ console.log = tools.conditionalConsoleLog;
  * GET METHODS
  */
 
+exports.getSOW = function(req, callback) {
+  connection.query("SELECT * FROM SOWs WHERE project_id=" + req.params.project_id, function (err, result) {
+    callback(err, result);
+  })
+};
+
 exports.get = function (req) {
   connection.query('SELECT * FROM resourceManagement');
 };
@@ -1202,6 +1208,15 @@ exports.getFunnelItems = function (req, callback) {
 /*
  * POST METHODS
  */
+
+exports.addSOW = function (req, callback) {
+  const id = uuidv4();
+  connection.query("INSERT INTO SOWs (id, project_id, name, URL) VALUES (" + mysql.escape(id) + ", " +
+    mysql.escape(req.body.project_id) + ", " + mysql.escape(req.body.name) + ", " + mysql.escape(req.body.URL) + ")",
+    function (err, result) {
+      callback(err, result, id);
+  })
+};
 
 exports.addTimelineEvent = function (req, callback) {
   const eventId = uuidv4();

@@ -76,12 +76,32 @@ export class ForecastService {
     this.cacheOfObservables[cacheKey] = null;
   }
 
+  getSOWs(projectId) {
+    return this.http.get(this.apiBase + '/sow/' + projectId)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
+  addSOW(projectId, name, URL) {
+    const SOW = {
+      project_id: projectId,
+      name: name,
+      URL: URL
+    };
+    const headers = new Headers({'Content-Type': 'application/json'});
+
+    return this.http.post(this.apiBase + '/sow', JSON.stringify(SOW), {headers: headers})
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   updateAllActiveProjects() {
     console.log('updateAllActiveProjects');
     const clearCache = true;
     this.getAllActiveProjects().subscribe(
       data => {
-        console.log('updateAllActiveProjects has data'); console.log(data);
+        console.log('updateAllActiveProjects has data');
+        console.log(data);
         const projects = data.result;
         projects.splice(0, 0, {id: '', name: 'All'});
         console.log(projects);
@@ -116,7 +136,8 @@ export class ForecastService {
     if (!isNullOrUndefined(this.cache[cacheKey])) {
       // if available, just return it as an Observable
       console.log('getProjects: return cached value');
-      console.log('actual value'); console.log(this.cache[cacheKey]);
+      console.log('actual value');
+      console.log(this.cache[cacheKey]);
       return Observable.of(this.cache[cacheKey]);
     }
     else if (this.cacheOfObservables[cacheKey]) {
@@ -127,8 +148,8 @@ export class ForecastService {
     else {
       // create the request and store the Observable for subsequent subscribers
       console.log('getProjects: cache is empty. start a request');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/project' + params)
-        .map((response:Response) => {
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/project' + params)
+        .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
           // we could check for response.status here, and return an error if present
@@ -144,12 +165,12 @@ export class ForecastService {
   }
 
   /*
-  getProjectAndClient(projectId) {
-    return this.http.get(this.apiBase + '/project/' + projectId + '/client')
-      .map((response: Response) => response.json())
-      .catch((error: Response) => Observable.throw(error.json()));
-  }
-  */
+   getProjectAndClient(projectId) {
+   return this.http.get(this.apiBase + '/project/' + projectId + '/client')
+   .map((response: Response) => response.json())
+   .catch((error: Response) => Observable.throw(error.json()));
+   }
+   */
 
   // cached version of getProjects with params and shared cache
   getProjectAndClient(params) {
@@ -167,7 +188,7 @@ export class ForecastService {
     } else {
       // create the request and store the Observable for subsequent subscribers
       console.log('getProjectAndClient: cache is empty. start a request');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/project/' + projectId + '/client')
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/project/' + projectId + '/client')
         .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
@@ -209,7 +230,8 @@ export class ForecastService {
     // this.getAllEmployeesCached(clearCache).subscribe(
     this.getAllEmployees(clearCache).subscribe(
       data => {
-        console.log('updateAllEmployees has data'); console.log(data);
+        console.log('updateAllEmployees has data');
+        console.log(data);
         this.allEmployees.next(data.result);
       }
     );
@@ -243,7 +265,7 @@ export class ForecastService {
     } else {
       // create the request and store the Observable for subsequent subscribers
       console.log('getAllEmployees: cache is empty. start an API request');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/employees/all')
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/employees/all')
         .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
@@ -281,7 +303,8 @@ export class ForecastService {
   updateEmployees(params) {
     this.getEmployeesCached(true).subscribe(
       data => {
-        console.log('updateEmployees: ' + JSON.stringify(params)); console.log(data);
+        console.log('updateEmployees: ' + JSON.stringify(params));
+        console.log(data);
         this.employees.next(data.result);
       }
     );
@@ -309,7 +332,7 @@ export class ForecastService {
       console.log('CACHE MISS for ' + cacheKey);
       //    return this.http.get(this.apiBase +
       const request = '/employees' + idPath + '?' + active + real + isContractor;
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + request)
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + request)
         .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
@@ -373,7 +396,7 @@ export class ForecastService {
     } else {
       // create the request and store the Observable for subsequent subscribers
       console.log('CACHE MISS for ' + cacheKey + ': begin API call');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/client' + params)
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/client' + params)
         .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
@@ -455,7 +478,7 @@ export class ForecastService {
     } else {
       // create the request and store the Observable for subsequent subscribers
       console.log('CACHE MISS for ' + cacheKey + ': begin API call');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/data' + params)
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/data' + params)
         .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
@@ -471,9 +494,9 @@ export class ForecastService {
   }
 
 
-
   getRollUps(params) {
-    console.log('getRollUps:'); console.log(params);
+    console.log('getRollUps:');
+    console.log(params);
     const clearCache = (!isNullOrUndefined(params.clearcache) ? params.clearcache : false );
     const clearCacheParam = '&clearcache=' + clearCache;
 
@@ -497,8 +520,8 @@ export class ForecastService {
 
 
   /*
-  * params.path [client, project]
-  * params.id client or project ID
+   * params.path [client, project]
+   * params.id client or project ID
    *
    */
   // TODO - don't need to cache
@@ -511,7 +534,8 @@ export class ForecastService {
     const queryString = '?active=1' + idParam + openedParam + clearCacheParam;
     const cacheKey = 'getRollUpsCached?active=1' + idParam;
 
-    console.log(cacheKey); console.log(params);
+    console.log(cacheKey);
+    console.log(params);
 
     if (clearCache && !isNullOrUndefined(this.cache[cacheKey])) {
       console.log('CLEAR CACHE for ' + cacheKey);
@@ -532,8 +556,8 @@ export class ForecastService {
     else {
       // create the request and store the Observable for subsequent subscribers
       console.log('CACHE MISS for ' + cacheKey + ': begin API request');
-      this.cacheOfObservables[cacheKey] =  this.http.get(this.apiBase + '/rollups' + queryString)
-        .map((response:Response) => {
+      this.cacheOfObservables[cacheKey] = this.http.get(this.apiBase + '/rollups' + queryString)
+        .map((response: Response) => {
           // data is now available null out the Observable
           this.cacheOfObservables[cacheKey] = null;
           // we could check for response.status here, and return an error if present
@@ -602,7 +626,8 @@ export class ForecastService {
     this.rollUpsAvailable = false;
     this.getRollUps(params).subscribe(
       data => {
-        console.log('updateRollUps:'); console.log(data);
+        console.log('updateRollUps:');
+        console.log(data);
         if (isNullOrUndefined(data.projects)) {
           this.employees.next(data.employees);
         } else {

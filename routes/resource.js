@@ -45,6 +45,44 @@ router.get('/cache/clear', (req, res, next) => {
 });
 
 /*
+ * SOW ROUTES
+ */
+
+router.get('/sow/:project_id', function (req, res, next) {
+  SQL.getSOW(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  })
+});
+
+router.post('/sow', function (req, res, next) {
+  console.log(req.body);
+  SQL.addSOW(req, function (err, result, id) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result,
+        id: id
+      });
+    }
+  })
+});
+
+/*
  * PERSONNEL ROUTES
  */
 

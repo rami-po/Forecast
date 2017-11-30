@@ -66,6 +66,16 @@
     </div>
     <app-graph [params]="params"></app-graph>
   </div>
+
+  <!-- SOWS -->
+  <div *ngIf="isSOWReady">
+    <a *ngFor="let SOW of SOWs" href="{{SOW.URL}}" target="_blank">{{SOW.name}} - </a>
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+      <input title="name" formControlName="name">
+      <input title="URL" formControlName="URL">
+      <button>clickity</button>
+    </form>
+  </div>
 </div>
 
 

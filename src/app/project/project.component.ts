@@ -12,6 +12,7 @@ import {MilestonePromptComponent} from './milestone-prompt/milestone-prompt.comp
 import {MatDialog, MatIconRegistry, MatMenu, MatMenuTrigger} from '@angular/material';
 import {DomSanitizer} from "@angular/platform-browser";
 import {Location} from '@angular/common';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 
 @Component({
@@ -49,6 +50,15 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public height = '76.5vh';
   public forecastHeight = '91.3vh';
+
+  private current = null;
+  public SOWs = null;
+  public isSOWReady = false;
+  myForm: FormGroup;
+
+  test = [
+    'yo', 'ay', 'swag'
+  ];
 
   constructor(private route: ActivatedRoute,
               private forecastService: ForecastService,
@@ -99,6 +109,15 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.projectMenu.focusFirstItem();
   }
 
+  getSOWs() {
+    this.forecastService.getSOWs(this.current.id).subscribe(
+      SOWs => {
+        this.SOWs = SOWs.result;
+        this.isSOWReady = true;
+      }
+    );
+  }
+
   ngOnInit() {
 
     console.log('ngOnInit - project.components.ts');
@@ -128,6 +147,11 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     //   }
     // );
 
+    this.myForm = new FormGroup({
+      name: new FormControl(null, Validators.required),
+      URL: new FormControl(null, Validators.required),
+    });
+
     this.subscriptions.push(this.forecastService.params$.subscribe(
       params => {
         console.log('params!!!!!!!!!!! ' + JSON.stringify(params));
@@ -141,6 +165,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
                   this.forecastService.getProjectAndClient(this.params.id).subscribe(
                     project => {
                       this.forecastService.current.next(project.result[0]);
+                      this.current = project.result[0];
+                      this.getSOWs();
                       const projectName = project.result[0].name;
                       const clientName = project.result[0].client_name;
                       this.filterName = clientName + ' - ' + projectName;
@@ -152,6 +178,8 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
                 } else {
                   console.log('AH');
                   this.forecastService.current.next(client.result[0]);
+                  this.current = client.result[0];
+                  this.getSOWs();
                   const clientName = client.result[0].name;
                   this.filterName = clientName;
                   // this.location.replaceState('/client/' + this.params.id + '/' +
@@ -224,11 +252,11 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         /*
-        // moved initializeGraph to the forecast component to prevent another getEmployee call.
-        if (this.isGraphShowing) {
-          this.graphService.initializeGraph(this.params, true);
-        }
-        */
+         // moved initializeGraph to the forecast component to prevent another getEmployee call.
+         if (this.isGraphShowing) {
+         this.graphService.initializeGraph(this.params, true);
+         }
+         */
         this.forecastService.updateRollUps(this.params);
       }
     ));
@@ -245,7 +273,6 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
         this.projectedProfitMargin = 100 - ((projectedInternalCost / Number(this.budget)) * 100);
       }
     ));
-
 
 
     // this.route.queryParams.subscribe(
@@ -296,6 +323,19 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('DESTROY PROJECT COMPONENT!');
     for (const subscription of this.subscriptions) {
       subscription.unsubscribe();
+    }
+  }
+
+  onSubmit() {
+    if (this.myForm.valid) {
+      const form = this.myForm.value;
+      this.forecastService.addSOW(this.current.id, form.name, form.URL).subscribe(
+        data => {
+          this.SOWs.splice(1, 0, {id: data.id, project_id: this.current.id, name: form.name, URL: form.URL});
+          console.log(this.SOWs);
+        }
+      );
+
     }
   }
 

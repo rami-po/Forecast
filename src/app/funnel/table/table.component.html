@@ -72,10 +72,7 @@
       <!-- ESTIMATED REVENUE -->
       <td>
         <div>
-          <input class="cell-revenue text-money text-right" [(ngModel)]="item.revenue" (blur)="send(item)"
-                 (input)="type(item)"
-                 type="number"
-                 value="{{item.revenue}}">
+          <div class="cell-revenue text-money text-right">${{item.revenue | number: '1.2-2'}}</div>
         </div>
       </td>
 
@@ -98,7 +95,7 @@
         </div>
       </td>
 
-      <!-- ESTIAMTED SIGNING DATE -->
+      <!-- ESTIMATED SIGNING DATE -->
       <td>
         <div>
           <input class="cell-date" [ngModel]="item.signing_date | date: 'MM/dd/yyyy'"
@@ -168,7 +165,7 @@
 
       <!-- REVENUE FROM NEW BUSINESS -->
       <td class="no-edit">
-        <div class="text-money text-right">{{getRevenueFromNewBusiness(item.revenue, item.is_new_client)}}</div>
+        <div class="text-money text-right">${{getRevenueFromNewBusiness(item.revenue, item.is_new_client) | number: '1.2-2'}}</div>
       </td>
 
       <!-- PIPELINE REVENUE -->
