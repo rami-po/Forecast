@@ -38,8 +38,7 @@
       <!-- CLIENT NAME -->
       <td>
         <div>
-          <input [(ngModel)]="item.client_name" (blur)="send(item)" (input)="type(item)" type="text"
-                 value="{{item.client_name}}">
+          <a href="{{item.URL}}" target="_blank">{{item.client_name}}</a>
         </div>
       </td>
 

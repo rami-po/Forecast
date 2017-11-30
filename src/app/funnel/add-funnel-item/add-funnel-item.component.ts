@@ -37,12 +37,14 @@ export class AddFunnelItemComponent implements OnInit {
   public scalaProjectId = null;
   public isCompleted = null;
   public notes = null;
+  public URL = null;
 
   public entries = [
     {name: 'Client Name', formValue: 'clientName'},
     {name: 'Project Name', formValue: 'projectName'},
     {name: 'Project Manager', formValue: 'projectManager'},
-    {name: 'Notes', formValue: 'notes'}
+    {name: 'Notes', formValue: 'notes'},
+    {name: 'URL', formValue: 'URL'}
   ];
 
   public numberEntries = [
@@ -61,7 +63,7 @@ export class AddFunnelItemComponent implements OnInit {
       {name: 'No', id: false}
     ]},
     {name: 'Status', formValue: 'status', options: [
-      {name: 'Initial Contact', value: 'Initial Contact'},
+      {name: 'Initial Contact', id: 'Initial Contact'},
       {name: 'Pitched', id: 'Pitched'},
       {name: 'Scoped', id: 'Scoped'},
       {name: 'SOW Presented', id: 'SOW Presented'},
@@ -90,7 +92,8 @@ export class AddFunnelItemComponent implements OnInit {
       projectDuration: new FormControl(this.projectDuration, Validators.required),
       scalaProjectId: new FormControl(this.scalaProjectId, Validators.required),
       isCompleted: new FormControl(this.isCompleted, Validators.required),
-      notes: new FormControl(this.notes, Validators.required)
+      notes: new FormControl(this.notes, Validators.required),
+      URL: new FormControl(this.URL, Validators.required)
     });
   }
 
@@ -115,14 +118,15 @@ export class AddFunnelItemComponent implements OnInit {
           duration_weeks: form.projectDuration,
           project_id: form.scalaProjectId,
           completed: form.isCompleted,
-          notes: form.notes
+          notes: form.notes,
+          URL: form.URL
         };
         this.funnelService.updateFunnelItem(funnel).subscribe();
       } else {
         const funnel = new Funnel(
           form.clientName, form.newClient, form.projectName, form.projectManager, form.estimatedRevenue, form.confidence,
           form.status, form.estimatedSigningDate, form.projectedStartDate, form.projectDuration, form.scalaProjectId,
-          form.isCompleted, form.notes
+          form.isCompleted, form.notes, form.URL
         );
         this.funnelService.addFunnelItem(funnel).subscribe();
       }

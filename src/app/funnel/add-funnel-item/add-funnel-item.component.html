@@ -22,11 +22,14 @@
     </mat-input-container>
 
     <div *ngFor="let entry of selectEntries">
-      <mat-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}" name="option">
-        <mat-option *ngFor="let option of entry.options" [value]="option.id">
-          {{option.name}}
-        </mat-option>
-      </mat-select>
+      <mat-form-field>
+        <mat-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}">
+          <mat-option *ngFor="let option of entry.options" [value]="option.id">
+            {{option.name}}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>
     </div>
 
     <div>

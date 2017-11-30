@@ -30,35 +30,35 @@ export class PersonnelComponent implements OnInit {
     'Review'
   ];
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private personnelService: PersonnelService,
-    private forecastService: ForecastService,
-    private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer
-  ) {
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private personnelService: PersonnelService,
+              private forecastService: ForecastService,
+              private iconRegistry: MatIconRegistry,
+              private sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
       'remove',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'));
-    iconRegistry.addSvgIcon(
-      'heart',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_heart.svg'));
-    iconRegistry.addSvgIcon(
-      'map-marker',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_map_marker.svg'));
-    iconRegistry.addSvgIcon(
-      'envelope',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_envelope.svg'));
-    iconRegistry.addSvgIcon(
-      'phone',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_phone.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_remove.svg'))
+      .addSvgIcon(
+        'heart',
+        sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_heart.svg'))
+      .addSvgIcon(
+        'map-marker',
+        sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_map_marker.svg'))
+      .addSvgIcon(
+        'envelope',
+        sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_envelope.svg'))
+      .addSvgIcon(
+        'phone',
+        sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_phone.svg'));
   }
 
   ngOnInit() {
 
     // override the onAfterAddingfile property of the uploader so it doesn't authenticate with //credentials.
-    this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; };
+    this.uploader.onAfterAddingFile = (file) => {
+      file.withCredentials = false;
+    };
     // overide the onCompleteItem property of the uploader so we are
     // able to deal with the server response.
     this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {

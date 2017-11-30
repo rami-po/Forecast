@@ -1347,13 +1347,13 @@ exports.addFakeAssignment = function (assignment, callback) {
 
 exports.addFunnelItem = function (req, callback) {
   connection.query('REPLACE INTO funnel (id, client_name, is_new_client, project_name, project_manager, revenue, confidence, ' +
-    'status, signing_date, start_date, duration_weeks, project_id, completed, notes) VALUES (' +
+    'status, signing_date, start_date, duration_weeks, project_id, completed, notes, URL) VALUES (' +
     mysql.escape(req.body.id) + ', ' +
     mysql.escape(req.body.clientName) + ', ' + mysql.escape(req.body.newClient) + ', ' + mysql.escape(req.body.projectName) + ', ' +
     mysql.escape(req.body.projectManager) + ', ' + mysql.escape(req.body.estimatedRevenue) + ', ' + mysql.escape(req.body.confidence) + ', ' +
     mysql.escape(req.body.status) + ', ' + mysql.escape(req.body.estimatedSigningDate) + ', ' + mysql.escape(req.body.projectedStartDate) + ', ' +
     mysql.escape(req.body.projectDuration) + ', ' + mysql.escape(req.body.scalaProjectId) + ', ' +
-    mysql.escape(req.body.isCompleted) + ', ' + mysql.escape(req.body.notes) + ')', function (err, result) {
+    mysql.escape(req.body.isCompleted) + ', ' + mysql.escape(req.body.notes) + ', ' + mysql.escape(req.body.URL) + ')', function (err, result) {
     callback(err, result);
   })
 };
@@ -1407,7 +1407,7 @@ exports.updateFunnelItem = function (req, callback) {
     ', project_name=' + mysql.escape(item.project_name) + ', project_manager=' + mysql.escape(item.project_manager) + ', revenue=' + mysql.escape(item.revenue) +
     ', confidence=' + mysql.escape(item.confidence) + ', status=' + mysql.escape(item.status) + ', signing_date=' + mysql.escape(item.signing_date) +
     ', start_date=' + mysql.escape(item.start_date) + ', duration_weeks=' + mysql.escape(item.duration_weeks) + ', project_id=' + mysql.escape(item.project_id) +
-    ', completed=' + mysql.escape(item.completed) + ', notes=' + mysql.escape(item.notes) + ' WHERE id=' + mysql.escape(item.id),
+    ', completed=' + mysql.escape(item.completed) + ', notes=' + mysql.escape(item.notes) + ', URL=' + mysql.escape(item.URL) + ' WHERE id=' + mysql.escape(item.id),
     function (err, result) {
       callback(err, result);
     });

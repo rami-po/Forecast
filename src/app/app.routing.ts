@@ -10,6 +10,7 @@ import {CapacityRowComponent} from './forecast/capacity-row/capacity-row.compone
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {FunnelComponent} from "./funnel/funnel.component";
 import {PersonnelComponent} from "./personnel/personnel.component";
+import {PersonnelClientComponent} from "./personnel-client/personnel-client.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -43,6 +44,10 @@ const APP_ROUTES: Routes = [
   {
     path: 'user/:id',
     component: PersonnelComponent
+  },
+  {
+    path: 'client/personal/:id',
+    component: PersonnelClientComponent
   },
   {
     path: 'all',
