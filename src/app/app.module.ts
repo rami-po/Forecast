@@ -75,6 +75,7 @@ import {FunnelService} from './funnel/funnel.service';
 import {FileSelectDirective} from 'ng2-file-upload';
 import {CdkTableModule} from "@angular/cdk/table";
 import { PersonnelClientComponent } from './personnel-client/personnel-client.component';
+import { PersonnelProjectComponent } from './personnel-project/personnel-project.component';
 
 @NgModule({
   declarations: [
@@ -102,7 +103,8 @@ import { PersonnelClientComponent } from './personnel-client/personnel-client.co
     PersonnelComponent,
     MainNavComponent,
     FileSelectDirective,
-    PersonnelClientComponent
+    PersonnelClientComponent,
+    PersonnelProjectComponent
   ],
   imports: [
     BrowserModule,

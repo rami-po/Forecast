@@ -11,6 +11,7 @@ import {NotFoundComponent} from "./not-found/not-found.component";
 import {FunnelComponent} from "./funnel/funnel.component";
 import {PersonnelComponent} from "./personnel/personnel.component";
 import {PersonnelClientComponent} from "./personnel-client/personnel-client.component";
+import {PersonnelProjectComponent} from "./personnel-project/personnel-project.component";
 /**
  * Created by Rami Khadder on 7/17/2017.
  */
@@ -48,6 +49,10 @@ const APP_ROUTES: Routes = [
   {
     path: 'client/personal/:id',
     component: PersonnelClientComponent
+  },
+  {
+    path: 'project/personal/:id',
+    component: PersonnelProjectComponent
   },
   {
     path: 'all',

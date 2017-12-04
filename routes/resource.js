@@ -86,6 +86,39 @@ router.post('/sow', function (req, res, next) {
  * PERSONNEL ROUTES
  */
 
+router.get('/personnel/client/:id', function (req, res, next) {
+  SQL.getClientPersonnelData(req, function (err, result) {
+    console.log("DONE!!");
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
+router.get('/personnel/project/:id', function (req, res, next) {
+  SQL.getProjectPersonnelData(req, function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        message: 'Error!',
+        err: err
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Success!',
+        result: result
+      });
+    }
+  });
+});
+
 router.post('/personnel/picture', function (req, res, next) {
   console.log('PICTURE:');
   console.log(req);

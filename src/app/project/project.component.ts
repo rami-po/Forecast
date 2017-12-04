@@ -326,6 +326,10 @@ export class ProjectComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  goToPersonnelPage() {
+    this.router.navigate([this.params.path, 'personal', this.params.id]);
+  }
+
   onSubmit() {
     if (this.myForm.valid) {
       const form = this.myForm.value;

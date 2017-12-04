@@ -62,7 +62,94 @@ console.log = tools.conditionalConsoleLog;
  * GET METHODS
  */
 
-exports.getSOW = function(req, callback) {
+exports.getProjectPersonnelData = function (req, callback) {
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : null);
+  connection.query("SELECT * FROM projects WHERE id=" + id, function (err, result) {
+    connection.query(
+      "SELECT * FROM personnelTimelineEvents WHERE personnel_id=" + id + " ORDER by date ASC" +
+      "; SELECT * FROM personnelNotes WHERE personnel_id=" + id, function (err, results) {
+        if (result != null && results != null) {
+          result[0]['events'] = results[0];
+          result[0]['notes'] = results[1];
+        }
+        callback(err, result);
+      });
+
+  })
+};
+
+exports.getProjectPersonnelData = function (req, callback) {
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : null);
+  connection.query("SELECT * FROM projects WHERE id=" + id, function (err, result) {
+    connection.query(
+      "SELECT * FROM personnelTimelineEvents WHERE personnel_id=" + id + " ORDER by date ASC;" +
+      "SELECT * FROM personnelNotes WHERE personnel_id=" + id, function (err, results) {
+        if (result != null && results != null) {
+          result[0]['events'] = results[0];
+          result[0]['notes'] = results[1];
+        }
+        callback(err, result);
+      });
+
+  })
+};
+
+exports.getClientPersonnelData = function (req, callback) {
+  const id = (req.params.id !== undefined ? mysql.escape(req.params.id) : null);
+  connection.query("SELECT * FROM clients WHERE id=" + id + ";" +
+    "SELECT * FROM projects WHERE client_id=" + id + ";", function (err, result) {
+    const client = result[0];
+    const projects = result[1];
+    const IDs = [];
+    const keyedItems = [];
+    IDs.push(client[0].id);
+    keyedItems[client[0].id] = client[0].name;
+    for (const project of projects) {
+      IDs.push(project.id);
+      keyedItems[project.id] = project.name;
+    }
+    console.log("SELECT * FROM personnelTimelineEvents WHERE personnel_id IN (" + mysql.escape(IDs) + ") ORDER by date ASC;" +
+      "SELECT * FROM personnelNotes WHERE personnel_id IN (" + mysql.escape(IDs) + ");");
+
+    connection.query(
+      "SELECT * FROM personnelTimelineEvents WHERE personnel_id IN (" + mysql.escape(IDs) + ") ORDER by date ASC;" +
+      "SELECT * FROM personnelNotes WHERE personnel_id IN (" + mysql.escape(IDs) + ");", function (err, clientResults) {
+        if (client != null && clientResults != null) {
+          const events = clientResults[0];
+          const notes = clientResults[1];
+          for (const event of events) {
+            event["name"] = keyedItems[event.personnel_id];
+          }
+          for (const note of notes) {
+            note["name"] = keyedItems[note.personnel_id];
+          }
+          client[0]['events'] = events;
+          client[0]['notes'] = notes;
+          client[0]['projects'] = projects;
+          callback(err, client);
+        }
+        /*
+        let count = 0;
+        for (const project of projects) {
+          connection.query(
+            "SELECT * FROM personnelTimelineEvents WHERE personnel_id=" + project.id + " ORDER by date ASC;" +
+            "SELECT * FROM personnelNotes WHERE personnel_id=" + project.id, function (err, results) {
+              count++;
+              if (client != null && results != null) {
+                project['events'] = results[0];
+                project['notes'] = results[1];
+              }
+              if (count === projects.length) {
+                client[0]['projects'] = projects;
+                callback(err, client);
+              }
+            });
+        }*/
+      });
+  })
+};
+
+exports.getSOW = function (req, callback) {
   connection.query("SELECT * FROM SOWs WHERE project_id=" + req.params.project_id, function (err, result) {
     callback(err, result);
   })
@@ -394,17 +481,18 @@ exports.getPerson = function (req, callback) {
     'AND e.id = ' + id + ' ' +
     'AND p.street_address IS NOT NULL ' +
     'ORDER BY e.last_name', function (err, result) {
-    connection.query("SELECT * FROM personnelTimelineEvents WHERE employee_id=" + id + " ORDER by date ASC" +
-      "; SELECT * FROM personnelNotes WHERE employee_id=" + id +
-      "; SELECT * FROM personnelSkills WHERE employee_id=" + id, function (err, results) {
-      console.log(result[0]);
-      if (result != null && results != null) {
-        result[0]['events'] = results[0];
-        result[0]['notes'] = results[1];
-        result[0]['skills'] = results[2];
-      }
-      callback(err, result);
-    });
+    connection.query(
+      "SELECT * FROM personnelTimelineEvents WHERE personnel_id=" + id + " ORDER by date ASC" +
+      "; SELECT * FROM personnelNotes WHERE personnel_id=" + id +
+      "; SELECT * FROM personnelSkills WHERE personnel_id=" + id, function (err, results) {
+        console.log(result[0]);
+        if (result != null && results != null) {
+          result[0]['events'] = results[0];
+          result[0]['notes'] = results[1];
+          result[0]['skills'] = results[2];
+        }
+        callback(err, result);
+      });
   })
 };
 
@@ -1215,12 +1303,12 @@ exports.addSOW = function (req, callback) {
     mysql.escape(req.body.project_id) + ", " + mysql.escape(req.body.name) + ", " + mysql.escape(req.body.URL) + ")",
     function (err, result) {
       callback(err, result, id);
-  })
+    })
 };
 
 exports.addTimelineEvent = function (req, callback) {
   const eventId = uuidv4();
-  connection.query("INSERT INTO personnelTimelineEvents (id, employee_id, date, type, event) VALUES (" +
+  connection.query("INSERT INTO personnelTimelineEvents (id, personnel_id, date, type, event) VALUES (" +
     mysql.escape(eventId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.date) + ", " +
     mysql.escape(req.body.type) + ", " + mysql.escape(req.body.event) + ")",
     function (err, result) {
@@ -1230,7 +1318,7 @@ exports.addTimelineEvent = function (req, callback) {
 
 exports.addNotes = function (req, callback) {
   const noteId = uuidv4();
-  connection.query("INSERT INTO personnelNotes (id, employee_id, notes) VALUES (" +
+  connection.query("INSERT INTO personnelNotes (id, personnel_id, notes) VALUES (" +
     mysql.escape(noteId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.notes) + ")", function (err, result) {
     callback(err, result, noteId);
   })
@@ -1238,7 +1326,7 @@ exports.addNotes = function (req, callback) {
 
 exports.addSkills = function (req, callback) {
   const skillId = uuidv4();
-  connection.query("INSERT INTO personnelSkills (id, employee_id, skill) VALUES (" +
+  connection.query("INSERT INTO personnelSkills (id, personnel_id, skill) VALUES (" +
     mysql.escape(skillId) + ", " + mysql.escape(req.body.id) + ", " + mysql.escape(req.body.skill) + ")", function (err, result) {
     callback(err, result, skillId);
   })

@@ -1,25 +1,22 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {DomSanitizer} from "@angular/platform-browser";
-import {MatIconRegistry} from "@angular/material";
-import {ForecastService} from '../forecast/forecast.service';
-import {isNullOrUndefined} from 'util';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {FileUploader} from "ng2-file-upload";
-import {PersonnelClientService} from "./personnel-client.service";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {ActivatedRoute, Router} from "@angular/router";
 import {PersonnelService} from "../personnel/personnel.service";
+import {ForecastService} from "../forecast/forecast.service";
+import {MatIconRegistry} from "@angular/material";
+import {DomSanitizer} from "@angular/platform-browser";
+import {isNullOrUndefined} from "util";
 
 @Component({
-  selector: 'app-personnel-client',
-  templateUrl: './personnel-client.component.html',
-  styleUrls: ['./personnel-client.component.scss'],
+  selector: 'app-personnel-project',
+  templateUrl: './personnel-project.component.html',
+  styleUrls: ['./personnel-project.component.scss'],
   providers: [PersonnelService]
 })
-export class PersonnelClientComponent implements OnInit {
+export class PersonnelProjectComponent implements OnInit {
 
   public isDataAvailable = false;
-  public client;
-  public projects;
+  public project;
   public timelineForm: FormGroup;
   public notesForm: FormGroup;
   public items = [
@@ -54,13 +51,12 @@ export class PersonnelClientComponent implements OnInit {
     this.route.params.subscribe(
       params => {
         console.log(params);
-        this.personnelService.getPersonnelData(params.id, 'client').subscribe(
-          client => {
-            client = client.result[0];
-            console.log(client);
-            if (!isNullOrUndefined(client)) {
-              this.client = client;
-              this.projects = client.projects;
+        this.personnelService.getPersonnelData(params.id, 'project').subscribe(
+          project => {
+            project = project.result[0];
+            console.log(project);
+            if (!isNullOrUndefined(project)) {
+              this.project = project;
               this.isDataAvailable = true;
             } else {
               this.router.navigate(['404']);
@@ -81,10 +77,11 @@ export class PersonnelClientComponent implements OnInit {
       notes: new FormControl(null, Validators.required)
     });
   }
+
   removeTimelineEvent(event, index) {
     this.personnelService.removeTimelineEvent(event).subscribe(
       () => {
-        this.client.events.splice(index, 1);
+        this.project.events.splice(index, 1);
       }
     );
   }
@@ -92,13 +89,13 @@ export class PersonnelClientComponent implements OnInit {
   removeNote(note, index) {
     this.personnelService.removeNote(note).subscribe(
       () => {
-        this.client.notes.splice(index, 1);
+        this.project.notes.splice(index, 1);
       }
     );
   }
 
   addEvent(id, index) {
-    this.client.events.splice(index, 0, {
+    this.project.events.splice(index, 0, {
       id: id,
       date: new Date(this.timelineForm.value.date).toISOString(),
       type: this.timelineForm.value.type,
@@ -108,43 +105,43 @@ export class PersonnelClientComponent implements OnInit {
   }
 
   submitTimelineForm() {
-  if (this.timelineForm.valid) {
-    this.personnelService.addTimelineEvent(
-      this.client.id,
-      this.timelineForm.value.date,
-      this.timelineForm.value.type,
-      this.timelineForm.value.event).subscribe(
-      (data) => {
-        const date = new Date(this.timelineForm.value.date).toISOString();
-        if (this.client.events.length > 0) {
-          for (let i = 0; i < this.client.events.length; i++) {
-            const event = this.client.events[i];
-            if (event.date > date) {
-              this.addEvent(data.id, i);
-              break;
+    if (this.timelineForm.valid) {
+      this.personnelService.addTimelineEvent(
+        this.project.id,
+        this.timelineForm.value.date,
+        this.timelineForm.value.type,
+        this.timelineForm.value.event).subscribe(
+        (data) => {
+          const date = new Date(this.timelineForm.value.date).toISOString();
+          if (this.project.events.length > 0) {
+            for (let i = 0; i < this.project.events.length; i++) {
+              const event = this.project.events[i];
+              if (event.date > date) {
+                this.addEvent(data.id, i);
+                break;
+              }
+              const j = i + 1;
+              if (j == this.project.events.length) {
+                this.addEvent(data.id, j);
+                break;
+              }
             }
-            const j = i + 1;
-            if (j == this.client.events.length) {
-              this.addEvent(data.id, j);
-              break;
-            }
+          } else {
+            this.addEvent(data.id, 0);
           }
-        } else {
-          this.addEvent(data.id, 0);
         }
-      }
-    );
+      );
+    }
   }
-}
 
   submitNotesForm() {
     if (this.notesForm.valid) {
       this.personnelService.addNotes(
-        this.client.id,
+        this.project.id,
         this.notesForm.value.notes
       ).subscribe(
         (data) => {
-          this.client.notes.push({
+          this.project.notes.push({
             id: data.id,
             notes: this.notesForm.value.notes
           });

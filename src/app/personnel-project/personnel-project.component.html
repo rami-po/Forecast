@@ -3,16 +3,14 @@
   <div class="three-column__column">
     <div class="profile__details card">
       <div class="profile_details__top flex-column">
-        <h1>{{client.name}}</h1>
-        <hr>
-        <h2 *ngFor="let project of projects">{{project.name}}</h2>
+        <h1>{{project.name}}</h1>
       </div>
     </div>
   </div>
 
   <div class="three-column__column">
     <div class="card card--bordered">
-      <h3 class="card__heading">Client Timeline</h3>
+      <h3 class="card__heading">Project Timeline</h3>
       <ul class="timeline-list">
         <!-- NOTE: remove these hard-coded examples -->
         <li class="timeline-list-item type--review">
@@ -24,9 +22,9 @@
           <div class="timeline-list-item__event">Compensation</div>
         </li>
 
-        <li *ngFor="let event of client.events, let i = index" class="timeline-list-item">
+        <li *ngFor="let event of project.events, let i = index" class="timeline-list-item">
           <div class="timeline-list-item__date">
-            {{event.date | date: 'MMM d, y'}} ({{event.name}})
+            {{event.date | date: 'MMM d, y'}}
             <mat-icon svgIcon="remove" title="Delete Event" (click)="removeTimelineEvent(event, i)"></mat-icon>
           </div>
           <div class="timeline-list-item__event">{{event.event}}</div>
@@ -61,7 +59,7 @@
     <div class="card card--bordered">
       <h3 class="card__heading">Notes</h3>
       <ul class="notes-list">
-        <li *ngFor="let note of client.notes, let i = index" class="notes-list-item">{{note.notes}} <mat-icon svgIcon="remove" title="Delete Note" (click)="removeNote(note, i)"></mat-icon></li>
+        <li *ngFor="let note of project.notes, let i = index" class="notes-list-item">{{note.notes}} <mat-icon svgIcon="remove" title="Delete Note" (click)="removeNote(note, i)"></mat-icon></li>
       </ul>
 
       <hr>

@@ -15,6 +15,24 @@ export class PersonnelService {
 
   private apiBase = document.location.protocol + '//' + window.location.hostname + ':3000/resource';
 
+  // type: 'project' or 'client'
+  getPersonnelData(id, type) {
+    let URL;
+    switch (type) {
+      case 'client':
+        URL = this.apiBase + '/personnel/client/' + id;
+        break;
+      case 'project':
+        URL = this.apiBase + '/personnel/project/' + id;
+        break;
+      default:
+        return;
+    }
+    return this.http.get(URL)
+      .map((response: Response) => response.json())
+      .catch((error: Response) => Observable.throw(error.json()));
+  }
+
   uploadPicture(id, picture) {
     const headers = new Headers({'Content-Type': 'image/jpeg'});
     const h1 = new Headers({'Encoding-Type': 'multipart/form-data'});

@@ -9,6 +9,10 @@
       <mat-icon svgIcon="drop-down"></mat-icon>
     </button>
 
+    <button  *ngIf="params.id != ''" (click)="goToPersonnelPage()">
+      Go to personal page
+    </button>
+
     <!-- PRIMARY MENU -->
     <mat-menu [overlapTrigger]="false" #filterMenu="matMenu">
       <button (click)="filter('ap', 'All Projects')" mat-menu-item>All Projects</button>
