@@ -19,8 +19,8 @@ export class TableComponent implements OnInit {
   private timerSubscription: any;
 
   public ynOptions = [
-    {name: 'Yes', value: 1},
-    {name: 'No', value: 0}
+    {name: 'No', value: 0},
+    {name: 'Yes', value: 1}
   ];
 
   public statusOptions = [
@@ -75,10 +75,10 @@ export class TableComponent implements OnInit {
 
     dialog.afterClosed().subscribe(
       confirmed => {
+        console.log(confirmed);
         if (confirmed) {
           this.funnelService.updateFunnelItems();
         }
-        console.log(confirmed);
       }
     );
   }
@@ -190,6 +190,14 @@ export class TableComponent implements OnInit {
       return revenue;
     }
     return NaN;
+  }
+
+  getProjectName(id) {
+    for (const project of this.projects) {
+      if (project.id == id) {
+        return project.name;
+      }
+    }
   }
 
 }
