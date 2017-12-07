@@ -5,6 +5,7 @@ import {FunnelService} from "../funnel.service";
 import {MatDialog, MatIconRegistry} from "@angular/material";
 import {DomSanitizer} from "@angular/platform-browser";
 import {AddFunnelItemComponent} from "../add-funnel-item/add-funnel-item.component";
+import {StatusMessageDialogComponent} from "../../forecast/status-message/status-message.component";
 
 @Component({
   selector: 'app-table',
@@ -84,12 +85,24 @@ export class TableComponent implements OnInit {
   }
 
   remove(item) {
-    this.funnelService.deleteFunnelItem(item).subscribe(
-      () => {
-        console.log('DELETED!');
-        this.funnelService.updateFunnelItems();
+    const dialog = this.dialog.open(StatusMessageDialogComponent);
+    dialog.componentInstance.error = true;
+    dialog.componentInstance.dismissible = true;
+    dialog.componentInstance.title = 'Are you sure?';
+    dialog.componentInstance.messages = ['Are you sure you want to delete ' + item.client_name + ' from the Funnel view?'];
+    dialog.afterClosed().subscribe(
+      confirmed => {
+        if (confirmed) {
+          this.funnelService.deleteFunnelItem(item).subscribe(
+            () => {
+              console.log('DELETED!');
+              this.funnelService.updateFunnelItems();
+            }
+          );
+        }
       }
     );
+
   }
 
   equalsThisMonth(signingDate) {
