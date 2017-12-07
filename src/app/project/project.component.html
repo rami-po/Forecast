@@ -9,9 +9,11 @@
       <mat-icon svgIcon="drop-down"></mat-icon>
     </button>
 
+    <!--
     <button  *ngIf="params.id != ''" (click)="goToPersonnelPage()">
       Go to personal page
     </button>
+-->
 
     <!-- PRIMARY MENU -->
     <mat-menu [overlapTrigger]="false" #filterMenu="matMenu">
@@ -71,7 +73,7 @@
     <app-graph [params]="params"></app-graph>
   </div>
 
-  <!-- SOWS -->
+  <!-- SOWS --> <!--
   <div *ngIf="isSOWReady">
     <a *ngFor="let SOW of SOWs" href="{{SOW.URL}}" target="_blank">{{SOW.name}} - </a>
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
@@ -79,7 +81,7 @@
       <input title="URL" formControlName="URL">
       <button>clickity</button>
     </form>
-  </div>
+  </div> -->
 </div>
 
 
