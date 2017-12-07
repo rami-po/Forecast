@@ -73,6 +73,7 @@ export class TableComponent implements OnInit {
     dialog.componentInstance.isCompleted = item.completed == 1;
     dialog.componentInstance.notes = item.notes;
     dialog.componentInstance.URL = item.URL;
+    dialog.componentInstance.priority = item.priority;
 
     dialog.afterClosed().subscribe(
       confirmed => {
