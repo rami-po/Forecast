@@ -17,6 +17,7 @@ export class FunnelComponent implements OnInit, OnDestroy {
   private subscriptions = [];
   public funnelItems;
   public projects;
+  public keyedProjects = [];
   public isDataReady = false;
 
   constructor(private funnelService: FunnelService,
@@ -43,7 +44,10 @@ export class FunnelComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.forecastService.getProjects('?active=1').subscribe(
       data => {
         this.projects = data.result;
-        this.projects.unshift({name: 'No Scala Project', id: -1});
+        // this.projects.unshift({name: 'No Scala Project', id: -1});
+        for (const project of this.projects) {
+          this.keyedProjects[project.name] = project.id;
+        }
         console.log(this.projects);
         this.isDataReady = true;
       }
@@ -62,7 +66,8 @@ export class FunnelComponent implements OnInit, OnDestroy {
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.projects = JSON.parse(JSON.stringify(this.projects));
-    dialog.componentInstance.title = 'Add Funnel Item';
+    dialog.componentInstance.keyedProjects = this.keyedProjects;
+    dialog.componentInstance.title = 'Funnel Item';
     dialog.afterClosed().subscribe(
       confirmed => {
         if (confirmed) {

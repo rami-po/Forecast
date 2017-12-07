@@ -3,25 +3,24 @@
     <thead>
     <tr>
       <th></th>
-      <th>Client Name</th>
-      <th>New Client?</th>
-      <th>Project Name</th>
-      <th>Project Manager</th>
-      <th>Estimated Revenue</th>
+      <th>Client</th>
+      <!--<th>New Client?</th>-->
+      <th>Project</th>
+      <th>PM</th>
+      <th>Est Revenue</th>
       <th>Confidence</th>
       <th>Status</th>
-      <th>Estimated Signing Date</th>
-      <th>Signing This Month?</th>
-      <th>Projected Start Date</th>
-      <th>Starting This Month?</th>
-      <th>Project End Date</th>
-      <th>Project Duration (weeks)</th>
-      <th>Project Duration (months)</th>
-      <th>Scala Project Name</th>
-      <th>Estimated Monthly Revenue</th>
-      <th>Revenue from New Business</th>
-      <th>Total Pipeline Revenue</th>
-      <th>Completed?</th>
+      <th>Est Signing</th>
+      <!--<th>Signing This Month?</th>-->
+      <th>Est Start</th>
+      <!--<th>Starting This Month?</th>-->
+      <!--<th>Project End Date</th>-->
+      <!--<th>Duration (weeks)</th>-->
+      <!--<th>Duration (months)</th>-->
+      <th>Est Monthly</th>
+      <!--<th>Revenue from New Business</th>-->
+      <!--<th>Total Pipeline Revenue</th>-->
+      <!--<th>Completed?</th>-->
       <th>Notes</th>
     </tr>
     </thead>
@@ -42,12 +41,12 @@
         </div>
       </td>
 
-      <!-- NEW CLIENT? -->
+      <!-- NEW CLIENT?
       <td>
         <div>
           {{ynOptions[item.is_new_client].name}}
         </div>
-      </td>
+      </td> -->
 
       <!-- PROJECT NAME -->
       <td>
@@ -66,14 +65,14 @@
       <!-- ESTIMATED REVENUE -->
       <td class="no-edit">
         <div class="text-money text-right">
-          ${{item.revenue | number: '1.2-2'}}
+          ${{item.revenue | number: '1.0-0'}}
         </div>
       </td>
 
       <!-- CONFIDENCE -->
       <td>
         <div class="progress progress--confidence progress--positive" [style.width]="item.confidence + 'px'">
-          {{item.confidence}}
+          {{item.confidence}}%
         </div>
       </td>
 
@@ -91,12 +90,12 @@
         </div>
       </td>
 
-      <!-- SIGNING THIS MONTH? -->
+      <!-- SIGNING THIS MONTH?
       <td class="no-edit">
         <div>
           {{equalsThisMonth(item.signing_date)}}
         </div>
-      </td>
+      </td> -->
 
       <!-- PROJECTED START DATE -->
       <td>
@@ -105,61 +104,54 @@
         </div>
       </td>
 
-      <!-- STARTING THIS MONTH? -->
+      <!-- STARTING THIS MONTH?
       <td class="no-edit">
         <div>{{equalsThisMonth(item.start_date)}}</div>
-      </td>
+      </td> -->
 
-      <!-- PROJECT END DATE -->
+      <!-- PROJECT END DATE
       <td class="no-edit">
         <div>
           {{getEndDate(item.duration_weeks, item.start_date) | date: 'MM/dd/yyyy'}}
         </div>
-      </td>
+      </td> -->
 
-      <!-- PROJECT DURATION (WEEKS) -->
+      <!-- PROJECT DURATION (WEEKS)
       <td>
         <div>
           {{item.duration_weeks}}
         </div>
-      </td>
+      </td> -->
 
-      <!-- PROJECT DURATION (MONTHS) -->
+      <!-- PROJECT DURATION (MONTHS)
       <td>
         <div class="cell-duration-months">{{getDurationMonths(item.duration_weeks) | number: '1.2-2'}}</div>
-      </td>
-
-      <!-- SCALA PROJECT NAME -->
-      <td>
-        <div>
-          {{getProjectName(item.project_id)}}
-        </div>
-      </td>
+      </td> -->
 
       <!-- ESTIMATED MONTHLY REVENUE -->
       <td class="no-edit">
         <div class="text-money text-right">
-          ${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.2-2'}}
+          ${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.0-0'}}
         </div>
       </td>
 
-      <!-- REVENUE FROM NEW BUSINESS -->
+      <!-- REVENUE FROM NEW BUSINESS
       <td class="no-edit">
         <div class="text-money text-right">${{getRevenueFromNewBusiness(item.revenue, item.is_new_client) | number: '1.2-2'}}</div>
-      </td>
+      </td> -->
 
-      <!-- PIPELINE REVENUE -->
+      <!-- PIPELINE REVENUE
       <td class="no-edit">
         <div class="text-money text-right">${{getPipelineRevenue(item.revenue, item.confidence) | number: '1.2-2'}}
         </div>
-      </td>
+      </td> -->
 
-      <!-- COMPLETED? -->
+      <!-- COMPLETED?
       <td>
         <div>
           {{ynOptions[item.completed].name}}
         </div>
-      </td>
+      </td> -->
 
       <!-- NOTES -->
       <td>

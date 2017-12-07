@@ -2,7 +2,6 @@
 $width: 240px;
 
 .table-wrapper {
-  overflow: scroll;
   display: block;
   white-space: nowrap;
 }
@@ -30,7 +29,7 @@ input {
   border: 0;
 }
 
-md-input-container {
+mat-input-container {
   width: $width;
   height: 62px;
 }

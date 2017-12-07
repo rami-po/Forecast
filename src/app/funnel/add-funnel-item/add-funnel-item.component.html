@@ -6,12 +6,20 @@
 <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
 
 
-  <mat-dialog-content class="two-col-form">
+  <mat-dialog-content (click)="test()" class="two-col-form">
     <mat-input-container *ngFor="let entry of entries">
       <input matInput formControlName="{{entry.formValue}}"
              placeholder="{{entry.name}}"
+             [(ngModel)]="entry.text"
              type="text">
+      <mat-icon *ngIf="entry.formValue == 'projectName'" [style.cursor]="'pointer'" svgIcon="drop"
+                [matMenuTriggerFor]="projectMenu" matSuffix></mat-icon>
     </mat-input-container>
+
+    <mat-menu #projectMenu="matMenu">
+      <button *ngFor="let project of projects" (click)="setProjectName(project.name)" mat-menu-item> {{project.name}}
+      </button>
+    </mat-menu>
 
     <mat-input-container *ngFor="let entry of numberEntries">
       <input matInput formControlName="{{entry.formValue}}"
@@ -21,21 +29,21 @@
       <span *ngIf="entry.formValue == 'confidence'" matSuffix>%</span>
     </mat-input-container>
 
-    <div *ngFor="let entry of selectEntries">
-      <mat-form-field>
-        <mat-select placeholder="{{entry.name}}" formControlName="{{entry.formValue}}">
-          <mat-option *ngFor="let option of entry.options" [value]="option.id">
-            {{option.name}}
-          </mat-option>
-        </mat-select>
+    <mat-form-field>
+      <mat-select placeholder="{{statusEntry.name}}" formControlName="{{statusEntry.formValue}}">
+        <mat-option *ngFor="let option of statusEntry.options" [value]="option.value">
+          {{option.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-      </mat-form-field>
-    </div>
+    <mat-checkbox *ngFor="let entry of checkBoxEntries" formControlName="{{entry.formValue}}" >{{entry.name}}
+    </mat-checkbox>
 
     <div>
       <mat-input-container>
         <input readonly="readonly" formControlName="projectedStartDate" matInput [matDatepicker]="picker2"
-               placeholder="Projected Start Date">
+               placeholder="Estimated Start Date">
         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
       </mat-input-container>
       <mat-datepicker #picker2></mat-datepicker>
@@ -56,7 +64,7 @@
 
   <mat-dialog-actions>
     <button mat-button *ngIf="dismissible" class="btn btn--secondary" (click)="dialogRef.close(false)">Cancel</button>
-    <button mat-button class="btn btn--primary" autofocus="true" type="submit">OK</button>
+    <button mat-button class="btn btn--primary" autofocus="true" type="submit">Save</button>
     <span class="clear"></span>
   </mat-dialog-actions>
 

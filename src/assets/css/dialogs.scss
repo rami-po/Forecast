@@ -12,7 +12,6 @@
 
   .mat-dialog-content {
     margin: 2rem 0 1rem;
-    overflow: scroll;
     padding: 0;
     width: 30rem;
 
@@ -28,7 +27,7 @@
   }
 
   .mat-select {
-    margin-bottom: 1rem;
+    //margin-bottom: 1rem;
   }
 
   md-select {
@@ -38,6 +37,7 @@
 
   .mat-dialog-actions {
     &:last-child {
+      float: right;
       margin: 0;
     }
   }

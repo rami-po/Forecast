@@ -16,6 +16,7 @@ export class TableComponent implements OnInit {
 
   @Input() funnelItems: any;
   @Input() projects: any;
+  @Input() keyedProjects: any;
   private timerSubscription: any;
 
   public ynOptions = [
@@ -24,6 +25,7 @@ export class TableComponent implements OnInit {
   ];
 
   public statusOptions = [
+    {name: 'Lead', value: 'Lead'},
     {name: 'Initial Contact', value: 'Initial Contact'},
     {name: 'Pitched', value: 'Pitched'},
     {name: 'Scoped', value: 'Scoped'},
@@ -38,11 +40,9 @@ export class TableComponent implements OnInit {
               private sanitizer: DomSanitizer,
               private dialog: MatDialog) {
     iconRegistry.addSvgIcon(
-      'edit',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit.svg'));
-    iconRegistry.addSvgIcon(
-      'delete',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete.svg'));
+      'edit', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit.svg'))
+      .addSvgIcon(
+      'delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete.svg'));
   }
 
   ngOnInit() {
@@ -55,7 +55,8 @@ export class TableComponent implements OnInit {
     dialog.componentInstance.custom = true;
     dialog.componentInstance.dismissible = true;
     dialog.componentInstance.projects = JSON.parse(JSON.stringify(this.projects));
-    dialog.componentInstance.title = 'Add Funnel Item';
+    dialog.componentInstance.keyedProjects = this.keyedProjects;
+    dialog.componentInstance.title = 'Funnel Item';
 
     dialog.componentInstance.id = item.id;
     dialog.componentInstance.clientName = item.client_name;
@@ -68,7 +69,6 @@ export class TableComponent implements OnInit {
     dialog.componentInstance.estimatedSigningDate = item.signing_date;
     dialog.componentInstance.projectedStartDate = item.start_date;
     dialog.componentInstance.projectDuration = item.duration_weeks;
-    dialog.componentInstance.scalaProjectId = item.project_id;
     dialog.componentInstance.isCompleted = item.completed == 1;
     dialog.componentInstance.notes = item.notes;
     dialog.componentInstance.URL = item.URL;
