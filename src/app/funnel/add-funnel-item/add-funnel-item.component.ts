@@ -39,6 +39,7 @@ export class AddFunnelItemComponent implements OnInit {
   public isCompleted = false;
   public notes = null;
   public URL = null;
+  public priority = null;
 
   public entries = [
     {name: 'Client', text: '', formValue: 'clientName'},
@@ -63,6 +64,14 @@ export class AddFunnelItemComponent implements OnInit {
       {name: 'SOW Presented', value: 'SOW Presented'},
       {name: 'SOW Negotiation', value: 'SOW Negotiation'},
       {name: 'SOW Signed', value: 'SOW Signed'}
+    ]
+  };
+
+  public priorityEntry = {
+    name: 'Priority', formValue: 'priority', options: [
+      {name: 'a', value: 'a'},
+      {name: 'b', value: 'b'},
+      {name: 'c', value: 'c'}
     ]
   };
 
@@ -97,7 +106,8 @@ export class AddFunnelItemComponent implements OnInit {
       projectDuration: new FormControl(this.projectDuration, Validators.required),
       isCompleted: new FormControl(this.isCompleted, null),
       notes: new FormControl(this.notes, null),
-      URL: new FormControl(this.URL, null)
+      URL: new FormControl(this.URL, null),
+      priority: new FormControl(this.priority, Validators.required)
     });
   }
 
@@ -125,14 +135,15 @@ export class AddFunnelItemComponent implements OnInit {
           scalaProjectId: this.keyedProjects[form.projectName],
           completed: form.isCompleted,
           notes: form.notes,
-          URL: form.URL
+          URL: form.URL,
+          priority: form.priority
         };
         this.funnelService.updateFunnelItem(funnel).subscribe();
       } else {
         const funnel = new Funnel(
           form.clientName, form.newClient, form.projectName, form.projectManager, form.estimatedRevenue, form.confidence,
           form.status, form.estimatedSigningDate, form.projectedStartDate, form.projectDuration, this.keyedProjects[form.projectName],
-          form.isCompleted, form.notes, form.URL
+          form.isCompleted, form.notes, form.URL, form.priority
         );
         this.funnelService.addFunnelItem(funnel).subscribe();
       }
@@ -147,11 +158,6 @@ export class AddFunnelItemComponent implements OnInit {
     this.myForm.value.projectName = name;
   }
 
-  test() {
-    console.log(this.entries[1].text);
-    console.log(this.myForm.value.projectName);
-
-  }
 
   initializeEntries() {
     this.entries[0].text = (this.clientName === null ? '' : this.clientName);

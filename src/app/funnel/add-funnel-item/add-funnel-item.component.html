@@ -6,7 +6,7 @@
 <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
 
 
-  <mat-dialog-content (click)="test()" class="two-col-form">
+  <mat-dialog-content class="two-col-form">
     <mat-input-container *ngFor="let entry of entries">
       <input matInput formControlName="{{entry.formValue}}"
              placeholder="{{entry.name}}"
@@ -14,12 +14,11 @@
              type="text">
       <mat-icon *ngIf="entry.formValue == 'projectName'" [style.cursor]="'pointer'" svgIcon="drop"
                 [matMenuTriggerFor]="projectMenu" matSuffix></mat-icon>
+      <mat-menu #projectMenu="matMenu">
+        <button *ngFor="let project of projects" (click)="setProjectName(project.name)" mat-menu-item> {{project.name}}
+        </button>
+      </mat-menu>
     </mat-input-container>
-
-    <mat-menu #projectMenu="matMenu">
-      <button *ngFor="let project of projects" (click)="setProjectName(project.name)" mat-menu-item> {{project.name}}
-      </button>
-    </mat-menu>
 
     <mat-input-container *ngFor="let entry of numberEntries">
       <input matInput formControlName="{{entry.formValue}}"
@@ -32,6 +31,14 @@
     <mat-form-field>
       <mat-select placeholder="{{statusEntry.name}}" formControlName="{{statusEntry.formValue}}">
         <mat-option *ngFor="let option of statusEntry.options" [value]="option.value">
+          {{option.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select placeholder="{{priorityEntry.name}}" formControlName="{{priorityEntry.formValue}}">
+        <mat-option *ngFor="let option of priorityEntry.options" [value]="option.value">
           {{option.name}}
         </mat-option>
       </mat-select>

@@ -17,11 +17,12 @@ export class Funnel {
   isCompleted: boolean;
   notes: string;
   URL: string;
+  priority: string;
 
   constructor(clientName: string, newClient: boolean, projectName: string, projectManager: string,
               estimatedRevenue: number, confidence: number, status: string, estimatedSigningDate: Date,
               projectedStartDate: Date, projectDuration: number, scalaProjectId: number,
-              isCompleted: boolean, notes: string, URL: string) {
+              isCompleted: boolean, notes: string, URL: string, priority: string) {
     this.clientName = clientName;
     this.newClient = newClient;
     this.projectName = projectName;
@@ -36,6 +37,7 @@ export class Funnel {
     this.isCompleted = isCompleted;
     this.notes = notes;
     this.URL = URL;
+    this.priority = priority;
   }
 
 }

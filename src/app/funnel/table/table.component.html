@@ -3,6 +3,7 @@
     <thead>
     <tr>
       <th></th>
+      <th>Priority</th>
       <th>Client</th>
       <!--<th>New Client?</th>-->
       <th>Project</th>
@@ -32,6 +33,10 @@
         <mat-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit" title="Edit"></mat-icon>
         <!-- DELETE -->
         <mat-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete" title="Delete"></mat-icon>
+      </td>
+
+      <td>
+        {{item.priority}}
       </td>
 
       <!-- CLIENT NAME -->
