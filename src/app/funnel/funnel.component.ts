@@ -16,6 +16,7 @@ export class FunnelComponent implements OnInit, OnDestroy {
 
   private subscriptions = [];
   public funnelItems;
+  public defaultFunnelItems;
   public projects;
   public keyedProjects = [];
   public isDataReady = false;
@@ -31,11 +32,12 @@ export class FunnelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     this.subscriptions.push(this.funnelService.funnelItems$.subscribe(
       data => {
         console.log('FUNNEL ITEMS!!!');
+        console.log(data);
         this.funnelItems = data;
+        this.defaultFunnelItems = JSON.parse(JSON.stringify(data));
       }
     ));
 

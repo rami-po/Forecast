@@ -3,36 +3,17 @@
     <thead>
     <tr>
       <th></th>
-      <th>Priority</th>
-      <th>Client</th>
-      <!--<th>New Client?</th>-->
-      <th>Project</th>
-      <th>PM</th>
-      <th>Est Revenue</th>
-      <th>Confidence</th>
-      <th>Status</th>
-      <th>Est Signing</th>
-      <!--<th>Signing This Month?</th>-->
-      <th>Est Start</th>
-      <!--<th>Starting This Month?</th>-->
-      <!--<th>Project End Date</th>-->
-      <!--<th>Duration (weeks)</th>-->
-      <!--<th>Duration (months)</th>-->
-      <th>Est Monthly</th>
-      <!--<th>Revenue from New Business</th>-->
-      <!--<th>Total Pipeline Revenue</th>-->
-      <!--<th>Completed?</th>-->
-      <th>Notes</th>
+      <th *ngFor="let header of headers, let i = index">{{header.name}}<mat-icon svgIcon="{{getIcon(i)}}" (click)="changeIcon(i)"></mat-icon></th>
     </tr>
     </thead>
     <tbody class="striped-rows">
-    <tr *ngFor="let item of funnelItems">
+    <tr *ngFor="let item of funnelItems, let i = index">
 
       <td class="utility-buttons">
         <!-- EDIT -->
-        <mat-icon [style.cursor]="'pointer'" (click)="edit(item)" svgIcon="edit" title="Edit"></mat-icon>
+        <mat-icon (click)="edit(item)" svgIcon="edit" title="Edit"></mat-icon>
         <!-- DELETE -->
-        <mat-icon [style.cursor]="'pointer'" (click)="remove(item)" svgIcon="delete" title="Delete"></mat-icon>
+        <mat-icon (click)="remove(item)" svgIcon="delete" title="Delete"></mat-icon>
       </td>
 
       <td>
@@ -136,7 +117,7 @@
       <!-- ESTIMATED MONTHLY REVENUE -->
       <td class="no-edit">
         <div class="text-money text-right">
-          ${{getMonthlyRevenue(item.revenue, item.duration_weeks) | number: '1.0-0'}}
+          ${{getMonthlyRevenue(item.revenue, item.duration_weeks, i) | number: '1.0-0'}}
         </div>
       </td>
 

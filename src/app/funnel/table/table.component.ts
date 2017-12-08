@@ -15,6 +15,7 @@ import {StatusMessageDialogComponent} from "../../forecast/status-message/status
 })
 export class TableComponent implements OnInit {
 
+  @Input() defaultFunnelItems: any;
   @Input() funnelItems: any;
   @Input() projects: any;
   @Input() keyedProjects: any;
@@ -36,6 +37,31 @@ export class TableComponent implements OnInit {
     {name: 'SOW Signed', value: 'SOW Signed'}
   ];
 
+  public headers = [
+    {name: 'Priority', sortValue: 1},
+    {name: 'Project', sortValue: 1},
+    {name: 'Client', sortValue: 1},
+    // {name: 'New Client?', sortValue: 1},
+    {name: 'PM', sortValue: 1},
+    {name: 'Est Revenue', sortValue: 1},
+    {name: 'Confidence', sortValue: 1},
+    {name: 'Status', sortValue: 1},
+    {name: 'Est Signing', sortValue: 1},
+    // {name: 'Signing This Month?', sortValue: 1},
+    {name: 'Est Start', sortValue: 1},
+    // {name: 'Starting This Month?', sortValue: 1},
+    // {name: 'Project End Date', sortValue: 1},
+    // {name: 'Duration (weeks)', sortValue: 1},
+    // {name: 'Duration (months)', sortValue: 1},
+    {name: 'Est Monthly', sortValue: 1},
+    // {name: 'Revenue From New Business', sortValue: 1},
+    // {name: 'Total Pipeline Revenue', sortValue: 1},
+    // {name: 'Completed?', sortValue: 1},
+    {name: 'Notes', sortValue: 1},
+  ];
+
+  private funnelKeys = ['priority', 'project_name', 'client_name', 'project_manager', 'revenue', 'confidence', 'status', 'signing_date', 'start_date', 'monthly_revenue', 'notes'];
+
   constructor(private funnelService: FunnelService,
               private iconRegistry: MatIconRegistry,
               private sanitizer: DomSanitizer,
@@ -43,7 +69,21 @@ export class TableComponent implements OnInit {
     iconRegistry.addSvgIcon(
       'edit', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_mode_edit.svg'))
       .addSvgIcon(
-      'delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete.svg'));
+      'delete', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_delete.svg'))
+      .addSvgIcon(
+        'drop-down', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_arrow_drop_down_black_48px.svg'))
+      .addSvgIcon(
+        'drop-up', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_arrow_drop_up_black_48px.svg'))
+      .addSvgIcon(
+        'circle-filled', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_lens_black_48px.svg'))
+      .addSvgIcon(
+        'circle-empty', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_panorama_fish_eye_black_48px.svg'))
+      .addSvgIcon(
+        'circle-empty2', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_radio_button_unchecked_black_24px.svg'))
+      .addSvgIcon(
+        'square-empty', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_check_box_outline_blank_black_24px.svg'))
+      .addSvgIcon(
+        'drop-default', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/ic_black_box_48px.svg'));
   }
 
   ngOnInit() {
@@ -182,8 +222,10 @@ export class TableComponent implements OnInit {
     return weeks / 4.34;
   }
 
-  getMonthlyRevenue(revenue, weeks) {
-    return revenue / (weeks / 4.34);
+  getMonthlyRevenue(revenue, weeks, index) {
+    const monthlyRevenue = revenue / (weeks / 4.34);
+    this.funnelItems[index]['monthly_revenue'] = monthlyRevenue;
+    return monthlyRevenue;
   }
 
   round(value, precision) {
@@ -211,6 +253,67 @@ export class TableComponent implements OnInit {
       if (project.id == id) {
         return project.name;
       }
+    }
+  }
+
+  getIcon(index) {
+    switch (this.headers[index].sortValue) {
+      case 1:
+        return 'drop-default';
+      case 2:
+        return 'drop-down';
+      case 3:
+        return 'drop-up';
+    }
+  }
+
+  changeIcon(index) {
+    for (let i = 0; i < this.headers.length; i++) {
+      if (i !== index) {
+        this.headers[i].sortValue = 1;
+      }
+    }
+
+    this.headers[index].sortValue += 1;
+    if (this.headers[index].sortValue > 3) {
+      this.headers[index].sortValue = 1;
+    }
+
+    this.sort(index);
+
+  }
+
+  sort(index) {
+    switch (this.headers[index].sortValue) {
+      case 1: // drop-default
+        console.log('ONE!!!');
+      console.log(this.defaultFunnelItems);
+        this.funnelItems = JSON.parse(JSON.stringify(this.defaultFunnelItems));
+        break;
+      case 2: // drop-down
+        this.funnelItems.sort(
+          (a, b) => {
+            if (a[this.funnelKeys[index]] < b[this.funnelKeys[index]]) {
+              return -1;
+            } else if (a[this.funnelKeys[index]] > b[this.funnelKeys[index]]) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        break;
+      case 3: // drop-up
+        this.funnelItems.sort(
+          (a, b) => {
+            if (a[this.funnelKeys[index]] > b[this.funnelKeys[index]]) {
+              return -1;
+            } else if (a[this.funnelKeys[index]] < b[this.funnelKeys[index]]) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        break;
     }
   }
 

@@ -11,6 +11,10 @@ table thead tr th {
   text-align: left;
 }
 
+mat-icon {
+  cursor: pointer;
+}
+
 td {
   color: $dark-blue;
   padding: .5rem 1rem;
